@@ -1,6 +1,6 @@
 /* eslint-disable no-fallthrough */
 import { uniqueId } from "lodash";
-import { CombatHpUpdateAction } from "./CombatHpUpdateAction";
+import { CombatHpUpdateAction } from "./actions/CombatHpUpdateAction";
 import { CombatUnit } from "./CombatUnit";
 import {
   CombatResult,

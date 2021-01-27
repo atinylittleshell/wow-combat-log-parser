@@ -7,8 +7,8 @@ export * from "./CombatData";
 export * from "./types";
 export * from "./utils";
 export * from "./CombatUnit";
-export * from "./CombatAction";
-export * from "./CombatHpUpdateAction";
+export * from "./actions/CombatAction";
+export * from "./actions/CombatHpUpdateAction";
 
 enum LogParsingState {
   NOT_IN_MATCH,

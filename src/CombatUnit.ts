@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { CombatHpUpdateAction } from "./CombatHpUpdateAction";
+import { CombatHpUpdateAction } from "./actions/CombatHpUpdateAction";
 import {
   CombatUnitClass,
   CombatUnitReaction,
