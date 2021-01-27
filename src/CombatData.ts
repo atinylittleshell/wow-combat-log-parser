@@ -40,7 +40,81 @@ export class CombatData {
     }
     this.endTime = logLine.timestamp;
 
-    const event = logLine.event;
+    if (logLine.event === LogEvent.COMBATANT_INFO) {
+      const unitId = logLine.parameters[0];
+      const specId = parseInt(logLine.parameters[23], 10);
+      if (specId in CombatUnitSpec) {
+        const spec = specId as CombatUnitSpec;
+        let unitClass = CombatUnitClass.None;
+        switch (spec) {
+          case CombatUnitSpec.DeathKnight_Blood:
+          case CombatUnitSpec.DeathKnight_Frost:
+          case CombatUnitSpec.DeathKnight_Unholy:
+            unitClass = CombatUnitClass.DeathKnight;
+            break;
+          case CombatUnitSpec.DemonHunter_Havoc:
+          case CombatUnitSpec.DemonHunter_Vengeance:
+            unitClass = CombatUnitClass.DemonHunter;
+            break;
+          case CombatUnitSpec.Druid_Balance:
+          case CombatUnitSpec.Druid_Feral:
+          case CombatUnitSpec.Druid_Guardian:
+          case CombatUnitSpec.Druid_Restoration:
+            unitClass = CombatUnitClass.Druid;
+            break;
+          case CombatUnitSpec.Hunter_BeastMastery:
+          case CombatUnitSpec.Hunter_Marksmanship:
+          case CombatUnitSpec.Hunter_Survival:
+            unitClass = CombatUnitClass.Hunter;
+            break;
+          case CombatUnitSpec.Mage_Arcane:
+          case CombatUnitSpec.Mage_Fire:
+          case CombatUnitSpec.Mage_Frost:
+            unitClass = CombatUnitClass.Mage;
+            break;
+          case CombatUnitSpec.Monk_BrewMaster:
+          case CombatUnitSpec.Monk_Windwalker:
+          case CombatUnitSpec.Monk_Mistweaver:
+            unitClass = CombatUnitClass.Monk;
+            break;
+          case CombatUnitSpec.Paladin_Holy:
+          case CombatUnitSpec.Paladin_Protection:
+          case CombatUnitSpec.Paladin_Retribution:
+            unitClass = CombatUnitClass.Paladin;
+            break;
+          case CombatUnitSpec.Priest_Discipline:
+          case CombatUnitSpec.Priest_Holy:
+          case CombatUnitSpec.Priest_Shadow:
+            unitClass = CombatUnitClass.Priest;
+            break;
+          case CombatUnitSpec.Rogue_Assassination:
+          case CombatUnitSpec.Rogue_Outlaw:
+          case CombatUnitSpec.Rogue_Subtlety:
+            unitClass = CombatUnitClass.Rogue;
+            break;
+          case CombatUnitSpec.Shaman_Elemental:
+          case CombatUnitSpec.Shaman_Enhancement:
+          case CombatUnitSpec.Shaman_Restoration:
+            unitClass = CombatUnitClass.Shaman;
+            break;
+          case CombatUnitSpec.Warlock_Affliction:
+          case CombatUnitSpec.Warlock_Demonology:
+          case CombatUnitSpec.Warlock_Destruction:
+            unitClass = CombatUnitClass.Warlock;
+            break;
+          case CombatUnitSpec.Warrior_Arms:
+          case CombatUnitSpec.Warrior_Fury:
+          case CombatUnitSpec.Warrior_Protection:
+            unitClass = CombatUnitClass.Warrior;
+            break;
+        }
+        this.registerCombatant(unitId, {
+          spec,
+          class: unitClass,
+        });
+      }
+      return;
+    }
 
     const srcGUID = logLine.parameters[0];
     const srcName = parseQuotedName(logLine.parameters[1]);
@@ -76,14 +150,14 @@ export class CombatData {
     destUnit.proveReaction(this.getUnitReaction(destFlag));
 
     if (
-      event === LogEvent.UNIT_DIED &&
+      logLine.event === LogEvent.UNIT_DIED &&
       this.getUnitType(destFlag) === CombatUnitType.Player &&
       this.getUnitReaction(destFlag) !== CombatUnitReaction.Neutral
     ) {
       this.lastDeathReaction = this.getUnitReaction(destFlag);
     }
 
-    switch (event) {
+    switch (logLine.event) {
       case LogEvent.SWING_DAMAGE:
       // case LogEvent.SWING_MISSED:
       case LogEvent.RANGE_DAMAGE:
