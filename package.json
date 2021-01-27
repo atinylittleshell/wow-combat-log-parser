@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -19,9 +19,9 @@
     "size": "size-limit",
     "analyze": "size-limit --why",
     "publish:no-bump": "git checkout publish-to-npm && git merge --no-edit --no-ff main && git push && git checkout main",
-    "publish:patch": "npm-bump patch -b main && yarn publish:no-bump",
-    "publish:minor": "npm-bump minor -b main && yarn publish:no-bump",
-    "publish:major": "npm-bump major -b main && yarn publish:no-bump"
+    "publish:patch": "git checkout main && bump patch -t \"v%s\" -p && yarn publish:no-bump",
+    "publish:minor": "git checkout main && bump minor -t \"v%s\" -p && yarn publish:no-bump",
+    "publish:major": "git checkout main && bump major -t \"v%s\" -p && yarn publish:no-bump"
   },
   "peerDependencies": {},
   "husky": {
@@ -52,11 +52,11 @@
     "@size-limit/preset-small-lib": "^4.9.1",
     "@types/lodash": "^4.14.168",
     "husky": "^4.3.8",
-    "npm-bump": "^0.0.30",
     "size-limit": "^4.9.1",
     "tsdx": "^0.14.1",
     "tslib": "^2.1.0",
-    "typescript": "^4.1.3"
+    "typescript": "^4.1.3",
+    "version-bump-prompt": "^6.1.0"
   },
   "dependencies": {
     "eventemitter3": "^4.0.7",
