@@ -8,7 +8,7 @@
     "src"
   ],
   "engines": {
-    "node": ">=10"
+    "node": ">=12"
   },
   "scripts": {
     "start": "tsdx watch",
@@ -19,9 +19,9 @@
     "size": "size-limit",
     "analyze": "size-limit --why",
     "publish:no-bump": "git checkout publish-to-npm && git merge --no-edit --no-ff main && git push && git checkout main",
-    "publish:patch": "npm-bump patch && yarn publish:no-bump",
-    "publish:minor": "npm-bump minor && yarn publish:no-bump",
-    "publish:major": "npm-bump major && yarn publish:no-bump"
+    "publish:patch": "npm-bump patch -b main && yarn publish:no-bump",
+    "publish:minor": "npm-bump minor -b main && yarn publish:no-bump",
+    "publish:major": "npm-bump major -b main && yarn publish:no-bump"
   },
   "peerDependencies": {},
   "husky": {
