@@ -18,7 +18,10 @@
     "prepare": "tsdx build",
     "size": "size-limit",
     "analyze": "size-limit --why",
-    "publish-to-npm": "git checkout publish-to-npm && git merge --no-edit --no-ff main && git push && git checkout main"
+    "publish:no-bump": "git checkout publish-to-npm && git merge --no-edit --no-ff main && git push && git checkout main",
+    "publish:patch": "npm-bump patch && yarn publish:no-bump",
+    "publish:minor": "npm-bump minor && yarn publish:no-bump",
+    "publish:major": "npm-bump major && yarn publish:no-bump"
   },
   "peerDependencies": {},
   "husky": {
@@ -49,6 +52,7 @@
     "@size-limit/preset-small-lib": "^4.9.1",
     "@types/lodash": "^4.14.168",
     "husky": "^4.3.8",
+    "npm-bump": "^0.0.30",
     "size-limit": "^4.9.1",
     "tsdx": "^0.14.1",
     "tslib": "^2.1.0",
