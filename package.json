@@ -17,7 +17,8 @@
     "lint": "tsdx lint",
     "prepare": "tsdx build",
     "size": "size-limit",
-    "analyze": "size-limit --why"
+    "analyze": "size-limit --why",
+    "publish-to-npm": "git checkout publish-to-npm && git merge --no-edit --no-ff master && git push && git checkout master"
   },
   "peerDependencies": {},
   "husky": {
