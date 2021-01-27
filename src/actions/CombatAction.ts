@@ -1,5 +1,5 @@
-import { ILogLine } from "./types";
-import { parseQuotedName } from "./utils";
+import { ILogLine } from "../types";
+import { parseQuotedName } from "../utils";
 
 export abstract class CombatAction {
   public static supports(logLine: ILogLine): boolean {

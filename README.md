@@ -36,7 +36,7 @@ const lines = [];
 
 lines.forEach((line) => {
   // this can trigger the arena_match_started and arena_match_ended events
-  parser.parseLine(line);
+  logParser.parseLine(line);
 });
 
 // clean up

@@ -1,5 +1,5 @@
 import { CombatAction } from "./CombatAction";
-import { ILogLine } from "./types";
+import { ILogLine } from "../types";
 
 export class CombatHpUpdateAction extends CombatAction {
   public static supports(logLine: ILogLine): boolean {
