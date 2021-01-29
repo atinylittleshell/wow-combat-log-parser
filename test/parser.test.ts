@@ -73,3 +73,18 @@ describe("parser tests", () => {
     });
   });
 });
+
+describe("parsing a malformed log file that has double start bug", () => {
+  let combats: CombatData[] = [];
+  beforeAll(async () => {
+    combats = await parseLogFileAsync("double_start.txt");
+  });
+
+  it("should return two matches", () => {
+    expect(combats).toHaveLength(2);
+  });
+
+  it("should mark the first match as malformed", () => {
+    expect(combats[0].isWellFormed).toBeFalsy();
+  });
+});
