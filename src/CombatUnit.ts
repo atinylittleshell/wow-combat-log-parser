@@ -1,4 +1,5 @@
 import _ from "lodash";
+import { CombatAdvancedAction } from "./actions/CombatAdvancedAction";
 import { CombatHpUpdateAction } from "./actions/CombatHpUpdateAction";
 import {
   CombatUnitClass,
@@ -26,6 +27,7 @@ export class CombatUnit {
   public actionIn: ILogLine[] = [];
   public actionOut: ILogLine[] = [];
   public deathRecords: ILogLine[] = [];
+  public advancedActions: CombatAdvancedAction[] = [];
 
   public startTime: number = 0;
   public endTime: number = 0;

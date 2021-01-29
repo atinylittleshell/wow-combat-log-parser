@@ -1,5 +1,6 @@
 /* eslint-disable no-fallthrough */
 import { uniqueId } from "lodash";
+import { CombatAdvancedAction } from "./actions/CombatAdvancedAction";
 import { CombatHpUpdateAction } from "./actions/CombatHpUpdateAction";
 import { CombatUnit } from "./CombatUnit";
 import {
@@ -23,6 +24,7 @@ export class CombatData {
   public playerTeamId: number = -1;
   public playerTeamRating: number = 0;
   public result: CombatResult = CombatResult.Unknown;
+  public hasAdvancedLogging: boolean = false;
 
   private lastDeathReaction: CombatUnitReaction = CombatUnitReaction.Neutral;
   private combatantMetadata: Map<string, ICombatantMetadata> = new Map<
@@ -159,32 +161,30 @@ export class CombatData {
 
     switch (logLine.event) {
       case LogEvent.SWING_DAMAGE:
-      // case LogEvent.SWING_MISSED:
       case LogEvent.RANGE_DAMAGE:
-      // case LogEvent.RANGE_MISSED:
       case LogEvent.SPELL_DAMAGE:
-      // case LogEvent.SPELL_MISSED:
       case LogEvent.SPELL_PERIODIC_DAMAGE:
-        // case LogEvent.SPELL_PERIODIC_MISSED:
-        // case LogEvent.DAMAGE_SHIELD:
-        // case LogEvent.DAMAGE_SHIELD_MISSED:
-        // case LogEvent.DAMAGE_SPLIT:
-        // case LogEvent.ENVIRONMENTAL_DAMAGE:
-        // case LogEvent.SPELL_DRAIN:
-        // case LogEvent.SPELL_LEECH:
-        // case LogEvent.SPELL_PERIODIC_DRAIN:
-        // case LogEvent.SPELL_PERIODIC_LEECH:
         const damageAction = new CombatHpUpdateAction(logLine);
         if (srcGUID !== destGUID) {
           srcUnit.damageOut.push(damageAction);
         }
         destUnit.damageIn.push(damageAction);
+        if (damageAction.advanced) {
+          const advancedActor = this.units.get(damageAction.advancedActorId);
+          advancedActor?.advancedActions.push(damageAction);
+          this.hasAdvancedLogging = true;
+        }
         break;
       case LogEvent.SPELL_HEAL:
       case LogEvent.SPELL_PERIODIC_HEAL:
         const healAction = new CombatHpUpdateAction(logLine);
         srcUnit.healOut.push(healAction);
         destUnit.healIn.push(healAction);
+        if (healAction.advanced) {
+          const advancedActor = this.units.get(healAction.advancedActorId);
+          advancedActor?.advancedActions.push(healAction);
+          this.hasAdvancedLogging = true;
+        }
         break;
       case LogEvent.SPELL_AURA_APPLIED:
       case LogEvent.SPELL_AURA_APPLIED_DOSE:
@@ -209,8 +209,14 @@ export class CombatData {
       case LogEvent.UNIT_DIED:
         destUnit.deathRecords.push(logLine);
         break;
-      case LogEvent.SPELL_PERIODIC_ENERGIZE:
-      case LogEvent.SPELL_ENERGIZE:
+      case LogEvent.SPELL_CAST_SUCCESS:
+        const advancedAction = new CombatAdvancedAction(logLine);
+        if (advancedAction.advanced) {
+          const advancedActor = this.units.get(advancedAction.advancedActorId);
+          advancedActor?.advancedActions.push(advancedAction);
+          this.hasAdvancedLogging = true;
+        }
+        srcUnit.actionOut.push(logLine);
         destUnit.actionIn.push(logLine);
         break;
     }
