@@ -1,16 +1,11 @@
-import { CombatAction } from "./CombatAction";
 import { ILogLine } from "../types";
+import { CombatAdvancedAction } from "./CombatAdvancedAction";
 
-export class CombatHpUpdateAction extends CombatAction {
+export class CombatHpUpdateAction extends CombatAdvancedAction {
   public static supports(logLine: ILogLine): boolean {
     return (
       super.supports(logLine) &&
-      (logLine.event === "SPELL_DAMAGE" ||
-        logLine.event === "SPELL_PERIODIC_DAMAGE" ||
-        logLine.event === "SPELL_HEAL" ||
-        logLine.event === "SPELL_PERIODIC_HEAL" ||
-        logLine.event === "RANGE_DAMAGE" ||
-        logLine.event === "SWING_DAMAGE")
+      (logLine.event.endsWith("_DAMAGE") || logLine.event.endsWith("_HEAL"))
     );
   }
 

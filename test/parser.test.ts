@@ -71,6 +71,13 @@ describe("parser tests", () => {
       const combat = combats[0];
       expect(combat.result).toEqual(CombatResult.Lose);
     });
+
+    it("should have advanced logs parsed correctly", () => {
+      const combat = combats[0];
+      expect(
+        combat.units.get("Player-57-0CE7FCBF")?.advancedActions
+      ).toHaveLength(1);
+    });
   });
 });
 
