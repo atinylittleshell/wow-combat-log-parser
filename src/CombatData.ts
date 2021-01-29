@@ -234,16 +234,11 @@ export class CombatData {
     });
 
     // a valid arena combat should have at least two friendly units and two hostile units
-    if (
-      Array.from(this.units.values()).filter(
-        unit => unit.reaction === CombatUnitReaction.Friendly
-      ).length >= 2 &&
-      Array.from(this.units.values()).filter(
-        unit => unit.reaction === CombatUnitReaction.Hostile
-      ).length >= 2
-    ) {
-      this.isWellFormed = true;
-    }
+    const playerUnits = Array.from(this.units.values()).filter(
+      unit => unit.type === CombatUnitType.Player
+    );
+    const deadPlayerCount = playerUnits.filter(p => p.deathRecords.length > 0)
+      .length;
 
     if (this.playerTeamId >= 0) {
       this.playerTeamRating =
@@ -252,12 +247,21 @@ export class CombatData {
           : 0;
     }
 
-    if (this.lastDeathReaction === CombatUnitReaction.Neutral) {
-      this.result = CombatResult.DrawGame;
-    } else if (this.lastDeathReaction === CombatUnitReaction.Friendly) {
+    if (this.lastDeathReaction === CombatUnitReaction.Friendly) {
       this.result = CombatResult.Lose;
     } else if (this.lastDeathReaction === CombatUnitReaction.Hostile) {
       this.result = CombatResult.Win;
+    } else {
+      this.result = CombatResult.Unknown;
+    }
+
+    if (
+      playerUnits.length === this.combatantMetadata.size &&
+      deadPlayerCount > 0 &&
+      deadPlayerCount < this.combatantMetadata.size &&
+      (this.result === CombatResult.Win || this.result === CombatResult.Lose)
+    ) {
+      this.isWellFormed = true;
     }
   }
 

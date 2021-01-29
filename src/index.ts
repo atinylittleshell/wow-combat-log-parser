@@ -54,6 +54,9 @@ export class WoWCombatLogParser extends EventEmitter {
     } else {
       if (logLine.event === LogEvent.ARENA_MATCH_END) {
         this.endCurrentCombat(logLine);
+      } else if (logLine.event === LogEvent.ARENA_MATCH_START) {
+        this.endCurrentCombat();
+        this.startNewCombat(logLine);
       } else {
         this.processLogLine(logLine);
       }
