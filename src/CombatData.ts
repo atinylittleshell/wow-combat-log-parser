@@ -1,5 +1,6 @@
 /* eslint-disable no-fallthrough */
 import { uniqueId } from "lodash";
+import { CombatAction } from "./actions/CombatAction";
 import { CombatAdvancedAction } from "./actions/CombatAdvancedAction";
 import { CombatHpUpdateAction } from "./actions/CombatHpUpdateAction";
 import { CombatUnit } from "./CombatUnit";
@@ -189,20 +190,18 @@ export class CombatData {
       case LogEvent.SPELL_AURA_APPLIED:
       case LogEvent.SPELL_AURA_APPLIED_DOSE:
       case LogEvent.SPELL_AURA_REFRESH:
-        srcUnit.actionOut.push(logLine);
-        destUnit.actionIn.push(logLine);
-        break;
       case LogEvent.SPELL_AURA_REMOVED:
       case LogEvent.SPELL_AURA_REMOVED_DOSE:
-        destUnit.actionIn.push(logLine);
+      case LogEvent.SPELL_AURA_BROKEN:
+      case LogEvent.SPELL_AURA_BROKEN_SPELL:
+        const auraEvent = new CombatAction(logLine);
+        destUnit.auraEvents.push(auraEvent);
         break;
       case LogEvent.SPELL_INTERRUPT:
       case LogEvent.SPELL_STOLEN:
       case LogEvent.SPELL_DISPEL:
       case LogEvent.SPELL_DISPEL_FAILED:
       case LogEvent.SPELL_EXTRA_ATTACKS:
-      case LogEvent.SPELL_AURA_BROKEN:
-      case LogEvent.SPELL_AURA_BROKEN_SPELL:
         srcUnit.actionOut.push(logLine);
         destUnit.actionIn.push(logLine);
         break;
@@ -216,8 +215,14 @@ export class CombatData {
           advancedActor?.advancedActions.push(advancedAction);
           this.hasAdvancedLogging = true;
         }
+        srcUnit.spellCastEvents.push(advancedAction);
         srcUnit.actionOut.push(logLine);
         destUnit.actionIn.push(logLine);
+        break;
+      case LogEvent.SPELL_CAST_START:
+      case LogEvent.SPELL_CAST_FAILED:
+        const action = new CombatAction(logLine);
+        srcUnit.spellCastEvents.push(action);
         break;
     }
   }

@@ -108,5 +108,17 @@ describe("parser tests", () => {
     it("should not mark the combat as having advanced logging", () => {
       expect(combats[0].hasAdvancedLogging).toBeFalsy();
     });
+
+    it("should have aura events", () => {
+      expect(
+        combats[0].units.get("Player-57-0CE7FCBF")?.auraEvents || []
+      ).not.toHaveLength(0);
+    });
+
+    it("should have spell cast events", () => {
+      expect(
+        combats[0].units.get("Player-57-0CE7FCBF")?.spellCastEvents || []
+      ).not.toHaveLength(0);
+    });
   });
 });

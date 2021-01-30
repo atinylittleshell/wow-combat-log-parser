@@ -1,7 +1,7 @@
 import { ILogLine } from "../types";
 import { parseQuotedName } from "../utils";
 
-export abstract class CombatAction {
+export class CombatAction {
   public static supports(logLine: ILogLine): boolean {
     return (
       logLine.event.startsWith("SWING_") ||

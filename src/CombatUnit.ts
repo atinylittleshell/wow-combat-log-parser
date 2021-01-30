@@ -1,4 +1,5 @@
 import _ from "lodash";
+import { CombatAction } from "./actions/CombatAction";
 import { CombatAdvancedAction } from "./actions/CombatAdvancedAction";
 import { CombatHpUpdateAction } from "./actions/CombatHpUpdateAction";
 import {
@@ -26,6 +27,8 @@ export class CombatUnit {
   public healOut: CombatHpUpdateAction[] = [];
   public actionIn: ILogLine[] = [];
   public actionOut: ILogLine[] = [];
+  public auraEvents: CombatAction[] = [];
+  public spellCastEvents: CombatAction[] = [];
   public deathRecords: ILogLine[] = [];
   public advancedActions: CombatAdvancedAction[] = [];
 
