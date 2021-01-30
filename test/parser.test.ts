@@ -79,19 +79,34 @@ describe("parser tests", () => {
       ).toHaveLength(1);
     });
   });
-});
 
-describe("parsing a malformed log file that has double start bug", () => {
-  let combats: CombatData[] = [];
-  beforeAll(async () => {
-    combats = await parseLogFileAsync("double_start.txt");
+  describe("parsing a malformed log file that has double start bug", () => {
+    let combats: CombatData[] = [];
+    beforeAll(async () => {
+      combats = await parseLogFileAsync("double_start.txt");
+    });
+
+    it("should return two matches", () => {
+      expect(combats).toHaveLength(2);
+    });
+
+    it("should mark the first match as malformed", () => {
+      expect(combats[0].isWellFormed).toBeFalsy();
+    });
   });
 
-  it("should return two matches", () => {
-    expect(combats).toHaveLength(2);
-  });
+  describe("parsing a real log file without advanced combat logging", () => {
+    let combats: CombatData[] = [];
+    beforeAll(async () => {
+      combats = await parseLogFileAsync("real_match_no_advanced.txt");
+    });
 
-  it("should mark the first match as malformed", () => {
-    expect(combats[0].isWellFormed).toBeFalsy();
+    it("should return a single match", () => {
+      expect(combats).toHaveLength(1);
+    });
+
+    it("should not mark the combat as having advanced logging", () => {
+      expect(combats[0].hasAdvancedLogging).toBeFalsy();
+    });
   });
 });

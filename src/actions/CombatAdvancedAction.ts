@@ -28,11 +28,26 @@ export class CombatAdvancedAction extends CombatAction {
       throw new Error("event not supported");
     }
 
-    this.advanced = logLine.parameters[11] !== "0000000000000000";
-    this.advancedActorId = logLine.parameters[11];
-    this.advancedActorCurrentHp = parseInt(logLine.parameters[13], 10);
-    this.advancedActorMaxHp = parseInt(logLine.parameters[14], 10);
-    this.advancedActorPositionX = parseInt(logLine.parameters[23], 10);
-    this.advancedActorPositionY = parseInt(logLine.parameters[24], 10);
+    const advancedLoggingOffset = logLine.event.startsWith("SWING_") ? 8 : 11;
+
+    this.advanced =
+      logLine.parameters[advancedLoggingOffset] !== "0000000000000000";
+    this.advancedActorId = logLine.parameters[advancedLoggingOffset];
+    this.advancedActorCurrentHp = parseInt(
+      logLine.parameters[advancedLoggingOffset + 2],
+      10
+    );
+    this.advancedActorMaxHp = parseInt(
+      logLine.parameters[advancedLoggingOffset + 3],
+      10
+    );
+    this.advancedActorPositionX = parseInt(
+      logLine.parameters[advancedLoggingOffset + 12],
+      10
+    );
+    this.advancedActorPositionY = parseInt(
+      logLine.parameters[advancedLoggingOffset + 13],
+      10
+    );
   }
 }
