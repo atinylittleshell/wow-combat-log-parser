@@ -9,6 +9,7 @@ export * from "./types";
 export * from "./utils";
 export * from "./actions/CombatAction";
 export * from "./actions/CombatHpUpdateAction";
+export * from "./classMetadata";
 
 enum LogParsingState {
   NOT_IN_MATCH,
