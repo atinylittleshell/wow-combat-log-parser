@@ -10,7 +10,28 @@ import {
   ILogLine,
 } from "./types";
 
-export class CombatUnit {
+export interface ICombatUnit {
+  id: string;
+  name: string;
+  isWellFormed: boolean;
+  reaction: CombatUnitReaction;
+  type: CombatUnitType;
+  class: CombatUnitClass;
+  spec: CombatUnitSpec;
+
+  damageIn: CombatHpUpdateAction[];
+  damageOut: CombatHpUpdateAction[];
+  healIn: CombatHpUpdateAction[];
+  healOut: CombatHpUpdateAction[];
+  actionIn: ILogLine[];
+  actionOut: ILogLine[];
+  auraEvents: CombatAction[];
+  spellCastEvents: CombatAction[];
+  deathRecords: ILogLine[];
+  advancedActions: CombatAdvancedAction[];
+}
+
+export class CombatUnit implements ICombatUnit {
   public reaction: CombatUnitReaction = CombatUnitReaction.Neutral;
   public type: CombatUnitType = CombatUnitType.None;
   public class: CombatUnitClass = CombatUnitClass.None;

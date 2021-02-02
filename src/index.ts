@@ -1,12 +1,12 @@
 import EventEmitter from "eventemitter3";
 import moment from "moment";
-import { CombatData } from "./CombatData";
+import { CombatData, ICombatData } from "./CombatData";
 import { ILogLine, LogEvent } from "./types";
 
-export * from "./CombatData";
+export { ICombatData } from "./CombatData";
+export { ICombatUnit } from "./CombatUnit";
 export * from "./types";
 export * from "./utils";
-export * from "./CombatUnit";
 export * from "./actions/CombatAction";
 export * from "./actions/CombatHpUpdateAction";
 
@@ -115,7 +115,6 @@ export class WoWCombatLogParser extends EventEmitter {
     }
 
     this.currentCombat.readLogLine(logLine);
-    this.emit("arena_match_updated", this.currentCombat);
   }
 
   private startNewCombat(logLine: ILogLine): void {
@@ -123,7 +122,19 @@ export class WoWCombatLogParser extends EventEmitter {
     this.currentCombat.startTime = logLine.timestamp || 0;
     this.currentCombat.playerTeamId = parseInt(logLine.parameters[3]);
     this.state = LogParsingState.IN_MATCH;
-    this.emit("arena_match_started", this.currentCombat);
+
+    const plainCombatDataObject: ICombatData = {
+      id: this.currentCombat.id,
+      isWellFormed: this.currentCombat.isWellFormed,
+      startTime: this.currentCombat.startTime,
+      endTime: this.currentCombat.endTime,
+      units: this.currentCombat.units,
+      playerTeamId: this.currentCombat.playerTeamId,
+      playerTeamRating: this.currentCombat.playerTeamRating,
+      result: this.currentCombat.result,
+      hasAdvancedLogging: this.currentCombat.hasAdvancedLogging,
+    };
+    this.emit("arena_match_started", plainCombatDataObject);
   }
 
   private endCurrentCombat(logLine?: ILogLine): void {
@@ -132,7 +143,18 @@ export class WoWCombatLogParser extends EventEmitter {
         parseInt(logLine ? logLine.parameters[2] : "0"), // team0 rating
         parseInt(logLine ? logLine.parameters[3] : "0"), // team1 rating
       ]);
-      this.emit("arena_match_ended", this.currentCombat);
+      const plainCombatDataObject: ICombatData = {
+        id: this.currentCombat.id,
+        isWellFormed: this.currentCombat.isWellFormed,
+        startTime: this.currentCombat.startTime,
+        endTime: this.currentCombat.endTime,
+        units: this.currentCombat.units,
+        playerTeamId: this.currentCombat.playerTeamId,
+        playerTeamRating: this.currentCombat.playerTeamRating,
+        result: this.currentCombat.result,
+        hasAdvancedLogging: this.currentCombat.hasAdvancedLogging,
+      };
+      this.emit("arena_match_ended", plainCombatDataObject);
       this.currentCombat = null;
     }
     this.state = LogParsingState.NOT_IN_MATCH;
