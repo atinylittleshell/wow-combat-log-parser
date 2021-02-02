@@ -1,9 +1,10 @@
 /* eslint-disable no-fallthrough */
+import _ from "lodash";
 import { uniqueId } from "lodash";
 import { CombatAction } from "./actions/CombatAction";
 import { CombatAdvancedAction } from "./actions/CombatAdvancedAction";
 import { CombatHpUpdateAction } from "./actions/CombatHpUpdateAction";
-import { CombatUnit } from "./CombatUnit";
+import { CombatUnit, ICombatUnit } from "./CombatUnit";
 import {
   CombatResult,
   CombatUnitClass,
@@ -16,12 +17,24 @@ import {
 } from "./types";
 import { parseQuotedName } from "./utils";
 
-export class CombatData {
+export interface ICombatData {
+  id: string;
+  isWellFormed: boolean;
+  startTime: number;
+  endTime: number;
+  units: { [unitId: string]: ICombatUnit };
+  playerTeamId: number;
+  playerTeamRating: number;
+  result: CombatResult;
+  hasAdvancedLogging: boolean;
+}
+
+export class CombatData implements ICombatData {
   public id: string = uniqueId("combat");
   public isWellFormed: boolean = false;
   public startTime: number = 0;
   public endTime: number = 0;
-  public units: Map<string, CombatUnit> = new Map<string, CombatUnit>();
+  public units: { [unitId: string]: CombatUnit } = {};
   public playerTeamId: number = -1;
   public playerTeamRating: number = 0;
   public result: CombatResult = CombatResult.Unknown;
@@ -129,15 +142,15 @@ export class CombatData {
     // tslint:disable-next-line: radix
     const destFlag = parseInt(logLine.parameters[6]);
 
-    if (!this.units.has(srcGUID)) {
-      this.units.set(srcGUID, new CombatUnit(srcGUID, srcName));
+    if (!this.units[srcGUID]) {
+      this.units[srcGUID] = new CombatUnit(srcGUID, srcName);
     }
-    if (!this.units.has(destGUID)) {
-      this.units.set(destGUID, new CombatUnit(destGUID, destName));
+    if (!this.units[destGUID]) {
+      this.units[destGUID] = new CombatUnit(destGUID, destName);
     }
 
-    const srcUnit = this.units.get(srcGUID);
-    const destUnit = this.units.get(destGUID);
+    const srcUnit = this.units[srcGUID];
+    const destUnit = this.units[destGUID];
     if (!srcUnit || !destUnit) {
       throw new Error(
         "failed to parse source unit or dest unit from the log line"
@@ -171,7 +184,7 @@ export class CombatData {
         }
         destUnit.damageIn.push(damageAction);
         if (damageAction.advanced) {
-          const advancedActor = this.units.get(damageAction.advancedActorId);
+          const advancedActor = this.units[damageAction.advancedActorId];
           advancedActor?.advancedActions.push(damageAction);
           this.hasAdvancedLogging = true;
         }
@@ -182,7 +195,7 @@ export class CombatData {
         srcUnit.healOut.push(healAction);
         destUnit.healIn.push(healAction);
         if (healAction.advanced) {
-          const advancedActor = this.units.get(healAction.advancedActorId);
+          const advancedActor = this.units[healAction.advancedActorId];
           advancedActor?.advancedActions.push(healAction);
           this.hasAdvancedLogging = true;
         }
@@ -211,7 +224,7 @@ export class CombatData {
       case LogEvent.SPELL_CAST_SUCCESS:
         const advancedAction = new CombatAdvancedAction(logLine);
         if (advancedAction.advanced) {
-          const advancedActor = this.units.get(advancedAction.advancedActorId);
+          const advancedActor = this.units[advancedAction.advancedActorId];
           advancedActor?.advancedActions.push(advancedAction);
           this.hasAdvancedLogging = true;
         }
@@ -232,10 +245,8 @@ export class CombatData {
   }
 
   public end(teamRatings: number[]) {
-    this.units.forEach(unit => {
+    _.forEach(this.units, unit => {
       unit.endActivity();
-    });
-    this.units.forEach(unit => {
       if (this.combatantMetadata.has(unit.id)) {
         const metadata = this.combatantMetadata.get(unit.id);
         unit.proveClass(metadata?.class || CombatUnitClass.None);
@@ -245,7 +256,7 @@ export class CombatData {
     });
 
     // a valid arena combat should have at least two friendly units and two hostile units
-    const playerUnits = Array.from(this.units.values()).filter(
+    const playerUnits = Array.from(_.values(this.units)).filter(
       unit => unit.type === CombatUnitType.Player
     );
     const deadPlayerCount = playerUnits.filter(p => p.deathRecords.length > 0)
