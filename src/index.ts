@@ -37,6 +37,7 @@ export class WoWCombatLogParser extends EventEmitter {
 
     // skip if it's not a valid line
     if (!logLine) {
+      console.log("Unparsed line", logLine);
       return;
     }
 
