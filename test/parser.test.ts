@@ -93,13 +93,10 @@ describe("parser tests", () => {
     });
 
     it("should buffer the raw log [0]", () => {
-      console.log(combats[0].rawLines);
       expect(combats[0].rawLines.length).toEqual(7);
     });
 
     it("should buffer the raw log [1]", () => {
-      console.log("--");
-      console.log(combats[1].rawLines);
       expect(combats[1].rawLines.length).toEqual(10);
     });
 

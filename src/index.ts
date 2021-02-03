@@ -34,12 +34,12 @@ export class WoWCombatLogParser extends EventEmitter {
   }
 
   public parseLine(line: string): void {
-    this.currentLinebuffer.push(line);
-
     const logLine = this.parseLogLine(line);
 
     // skip if it's not a valid line
     if (!logLine) {
+      // Record the line even if it can't be parsed
+      this.currentLinebuffer.push(line);
       return;
     }
 
@@ -51,9 +51,15 @@ export class WoWCombatLogParser extends EventEmitter {
       this.endCurrentCombat();
     }
 
+    // If we're on match start we must wait until new combat to record the raw line
+    if (logLine.event !== LogEvent.ARENA_MATCH_START) {
+      this.currentLinebuffer.push(line);
+    }
+
     if (this.state === LogParsingState.NOT_IN_MATCH) {
       if (logLine.event === LogEvent.ARENA_MATCH_START) {
         this.startNewCombat(logLine);
+        this.currentLinebuffer.push(line);
       }
     } else {
       if (logLine.event === LogEvent.ARENA_MATCH_END) {
@@ -61,6 +67,7 @@ export class WoWCombatLogParser extends EventEmitter {
       } else if (logLine.event === LogEvent.ARENA_MATCH_START) {
         this.endCurrentCombat();
         this.startNewCombat(logLine);
+        this.currentLinebuffer.push(line);
       } else {
         this.processLogLine(logLine);
       }
