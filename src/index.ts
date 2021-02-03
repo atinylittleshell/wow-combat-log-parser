@@ -24,6 +24,7 @@ export class WoWCombatLogParser extends EventEmitter {
   private lastTimestamp = 0;
   private state: LogParsingState = LogParsingState.NOT_IN_MATCH;
   private currentCombat: CombatData | null = null;
+  private currentLinebuffer: string[] = [];
 
   public resetParserStates(): void {
     this.lastTimestamp = 0;
@@ -33,11 +34,12 @@ export class WoWCombatLogParser extends EventEmitter {
   }
 
   public parseLine(line: string): void {
+    this.currentLinebuffer.push(line);
+
     const logLine = this.parseLogLine(line);
 
     // skip if it's not a valid line
     if (!logLine) {
-      console.log("Unparsed line", logLine);
       return;
     }
 
@@ -135,6 +137,7 @@ export class WoWCombatLogParser extends EventEmitter {
       playerTeamRating: this.currentCombat.playerTeamRating,
       result: this.currentCombat.result,
       hasAdvancedLogging: this.currentCombat.hasAdvancedLogging,
+      rawLines: this.currentLinebuffer,
     };
     this.emit("arena_match_started", plainCombatDataObject);
   }
@@ -155,9 +158,11 @@ export class WoWCombatLogParser extends EventEmitter {
         playerTeamRating: this.currentCombat.playerTeamRating,
         result: this.currentCombat.result,
         hasAdvancedLogging: this.currentCombat.hasAdvancedLogging,
+        rawLines: this.currentLinebuffer,
       };
       this.emit("arena_match_ended", plainCombatDataObject);
       this.currentCombat = null;
+      this.currentLinebuffer = [];
     }
     this.state = LogParsingState.NOT_IN_MATCH;
   }

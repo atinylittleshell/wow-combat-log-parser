@@ -53,6 +53,10 @@ describe("parser tests", () => {
       expect(combats).toHaveLength(1);
     });
 
+    it("should buffer the raw log", () => {
+      expect(combats[0].rawLines.length).toEqual(10);
+    });
+
     it("should have correct combatant metadata", () => {
       const combat = combats[0];
       expect(combat.units["Player-57-0CE7FCBF"]?.spec).toEqual(
@@ -88,6 +92,17 @@ describe("parser tests", () => {
       expect(combats).toHaveLength(2);
     });
 
+    it("should buffer the raw log [0]", () => {
+      console.log(combats[0].rawLines);
+      expect(combats[0].rawLines.length).toEqual(7);
+    });
+
+    it("should buffer the raw log [1]", () => {
+      console.log("--");
+      console.log(combats[1].rawLines);
+      expect(combats[1].rawLines.length).toEqual(10);
+    });
+
     it("should mark the first match as malformed", () => {
       expect(combats[0].isWellFormed).toBeFalsy();
     });
@@ -101,6 +116,10 @@ describe("parser tests", () => {
 
     it("should return a single match", () => {
       expect(combats).toHaveLength(1);
+    });
+
+    it("should buffer the raw log", () => {
+      expect(combats[0].rawLines.length).toEqual(2073);
     });
 
     it("should not mark the combat as having advanced logging", () => {
