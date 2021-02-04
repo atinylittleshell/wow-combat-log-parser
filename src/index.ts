@@ -56,7 +56,10 @@ export class WoWCombatLogParser extends EventEmitter {
     }
 
     // If we're on match start we must wait until new combat to record the raw line
-    if (logLine.event !== LogEvent.ARENA_MATCH_START && this.state === LogParsingState.IN_MATCH) {
+    if (
+      logLine.event !== LogEvent.ARENA_MATCH_START &&
+      this.state === LogParsingState.IN_MATCH
+    ) {
       this.currentLinebuffer.push(line);
     }
 
