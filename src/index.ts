@@ -24,6 +24,8 @@ export class WoWCombatLogParser extends EventEmitter {
   private lastTimestamp = 0;
   private state: LogParsingState = LogParsingState.NOT_IN_MATCH;
   private currentCombat: CombatData | null = null;
+  private currentLinebuffer: string[] = [];
+  private linesNotParsedCount: number = 0;
 
   public resetParserStates(): void {
     this.lastTimestamp = 0;
@@ -37,6 +39,11 @@ export class WoWCombatLogParser extends EventEmitter {
 
     // skip if it's not a valid line
     if (!logLine) {
+      // Record the line even if it can't be parsed if we're in a match
+      if (this.state === LogParsingState.IN_MATCH) {
+        this.linesNotParsedCount++;
+        this.currentLinebuffer.push(line);
+      }
       return;
     }
 
@@ -48,9 +55,18 @@ export class WoWCombatLogParser extends EventEmitter {
       this.endCurrentCombat();
     }
 
+    // If we're on match start we must wait until new combat to record the raw line
+    if (
+      logLine.event !== LogEvent.ARENA_MATCH_START &&
+      this.state === LogParsingState.IN_MATCH
+    ) {
+      this.currentLinebuffer.push(line);
+    }
+
     if (this.state === LogParsingState.NOT_IN_MATCH) {
       if (logLine.event === LogEvent.ARENA_MATCH_START) {
         this.startNewCombat(logLine);
+        this.currentLinebuffer.push(line);
       }
     } else {
       if (logLine.event === LogEvent.ARENA_MATCH_END) {
@@ -58,6 +74,7 @@ export class WoWCombatLogParser extends EventEmitter {
       } else if (logLine.event === LogEvent.ARENA_MATCH_START) {
         this.endCurrentCombat();
         this.startNewCombat(logLine);
+        this.currentLinebuffer.push(line);
       } else {
         this.processLogLine(logLine);
       }
@@ -134,6 +151,8 @@ export class WoWCombatLogParser extends EventEmitter {
       playerTeamRating: this.currentCombat.playerTeamRating,
       result: this.currentCombat.result,
       hasAdvancedLogging: this.currentCombat.hasAdvancedLogging,
+      rawLines: this.currentLinebuffer,
+      linesNotParsedCount: this.linesNotParsedCount,
     };
     this.emit("arena_match_started", plainCombatDataObject);
   }
@@ -154,9 +173,13 @@ export class WoWCombatLogParser extends EventEmitter {
         playerTeamRating: this.currentCombat.playerTeamRating,
         result: this.currentCombat.result,
         hasAdvancedLogging: this.currentCombat.hasAdvancedLogging,
+        rawLines: this.currentLinebuffer,
+        linesNotParsedCount: this.linesNotParsedCount,
       };
       this.emit("arena_match_ended", plainCombatDataObject);
       this.currentCombat = null;
+      this.currentLinebuffer = [];
+      this.linesNotParsedCount = 0;
     }
     this.state = LogParsingState.NOT_IN_MATCH;
   }
