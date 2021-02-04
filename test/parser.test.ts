@@ -143,4 +143,48 @@ describe("parser tests", () => {
       ).not.toHaveLength(0);
     });
   });
+
+  describe("parsing a log with two matches", () => {
+    let combats: ICombatData[] = [];
+    beforeAll(async () => {
+      combats = await parseLogFileAsync("two_short_matches.txt");
+    });
+
+    it("should return a single match", () => {
+      expect(combats).toHaveLength(2);
+    });
+
+    it("should buffer the raw logs", () => {
+      expect(combats[0].rawLines.length).toEqual(11);
+      expect(combats[1].rawLines.length).toEqual(9);
+    });
+
+    it("should count the lines it cant parse", () => {
+      expect(combats[0].linesNotParsedCount).toEqual(1);
+      expect(combats[1].linesNotParsedCount).toEqual(0);
+    });
+  });
+
+  describe("parsing a log with no end will time out", () => {
+    let combats: ICombatData[] = [];
+    beforeAll(async () => {
+      combats = await parseLogFileAsync("match_without_end.txt");
+    });
+
+    it("should return a single match", () => {
+      expect(combats).toHaveLength(1);
+    });
+
+    it("should buffer the raw logs", () => {
+      expect(combats[0].rawLines.length).toEqual(10);
+    });
+
+    it("should count the lines it cant parse", () => {
+      expect(combats[0].linesNotParsedCount).toEqual(1);
+    });
+
+    it("should mark the match as malformed", () => {
+      expect(combats[0].isWellFormed).toBeFalsy();
+    });
+  });
 });
