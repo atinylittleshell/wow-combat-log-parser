@@ -248,7 +248,7 @@ export class CombatData implements ICombatData {
     this.combatantMetadata.set(id, combatantMetadata);
   }
 
-  public end(teamRatings: number[]) {
+  public end(teamRatings: number[], wasTimeout?: boolean) {
     _.forEach(this.units, unit => {
       unit.endActivity();
       if (this.combatantMetadata.has(unit.id)) {
@@ -284,6 +284,7 @@ export class CombatData implements ICombatData {
     if (
       playerUnits.length === this.combatantMetadata.size &&
       deadPlayerCount > 0 &&
+      !wasTimeout &&
       deadPlayerCount < this.combatantMetadata.size &&
       (this.result === CombatResult.Win || this.result === CombatResult.Lose)
     ) {
