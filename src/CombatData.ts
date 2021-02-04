@@ -28,6 +28,7 @@ export interface ICombatData {
   result: CombatResult;
   hasAdvancedLogging: boolean;
   rawLines: string[];
+  linesNotParsedCount: number;
 }
 
 export class CombatData implements ICombatData {
@@ -41,6 +42,7 @@ export class CombatData implements ICombatData {
   public result: CombatResult = CombatResult.Unknown;
   public hasAdvancedLogging: boolean = false;
   public rawLines: string[] = [];
+  public linesNotParsedCount: number = 0;
 
   private lastDeathReaction: CombatUnitReaction = CombatUnitReaction.Neutral;
   private combatantMetadata: Map<string, ICombatantMetadata> = new Map<

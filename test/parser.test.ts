@@ -54,7 +54,11 @@ describe("parser tests", () => {
     });
 
     it("should buffer the raw log", () => {
-      expect(combats[0].rawLines.length).toEqual(10);
+      expect(combats[0].rawLines.length).toEqual(11);
+    });
+
+    it("should count the lines it cant parse", () => {
+      expect(combats[0].linesNotParsedCount).toEqual(1);
     });
 
     it("should have correct combatant metadata", () => {
@@ -121,6 +125,10 @@ describe("parser tests", () => {
 
     it("should not mark the combat as having advanced logging", () => {
       expect(combats[0].hasAdvancedLogging).toBeFalsy();
+    });
+
+    it("should count the lines it cant parse", () => {
+      expect(combats[0].linesNotParsedCount).toEqual(98);
     });
 
     it("should have aura events", () => {
