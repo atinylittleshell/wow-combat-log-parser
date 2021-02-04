@@ -155,10 +155,13 @@ export class WoWCombatLogParser extends EventEmitter {
 
   private endCurrentCombat(logLine?: ILogLine, wasTimeout?: boolean): void {
     if (this.currentCombat) {
-      this.currentCombat.end([
-        parseInt(logLine ? logLine.parameters[2] : "0"), // team0 rating
-        parseInt(logLine ? logLine.parameters[3] : "0"), // team1 rating
-      ], wasTimeout);
+      this.currentCombat.end(
+        [
+          parseInt(logLine ? logLine.parameters[2] : "0"), // team0 rating
+          parseInt(logLine ? logLine.parameters[3] : "0"), // team1 rating
+        ],
+        wasTimeout
+      );
       const plainCombatDataObject: ICombatData = {
         id: this.currentCombat.id,
         isWellFormed: this.currentCombat.isWellFormed,
