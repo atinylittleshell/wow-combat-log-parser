@@ -1,5 +1,12 @@
 import { CombatAction } from "./CombatAction";
-import { ILogLine } from "../types";
+import { CombatUnitPowerType, ILogLine } from "../types";
+import _ from "lodash";
+
+export interface ICombatUnitPower {
+  type: CombatUnitPowerType;
+  current: number;
+  max: number;
+}
 
 export class CombatAdvancedAction extends CombatAction {
   public static supports(logLine: ILogLine): boolean {
@@ -18,6 +25,7 @@ export class CombatAdvancedAction extends CombatAction {
   public readonly advancedActorId: string;
   public readonly advancedActorCurrentHp: number;
   public readonly advancedActorMaxHp: number;
+  public readonly advancedActorPowers: ICombatUnitPower[];
   public readonly advancedActorPositionX: number;
   public readonly advancedActorPositionY: number;
   public readonly advanced: boolean;
@@ -41,6 +49,22 @@ export class CombatAdvancedAction extends CombatAction {
       logLine.parameters[advancedLoggingOffset + 3],
       10
     );
+
+    const powerType = logLine.parameters[advancedLoggingOffset + 8]
+      .split("|")
+      .map(v => parseInt(v));
+    const currentPower = logLine.parameters[advancedLoggingOffset + 9]
+      .split("|")
+      .map(v => parseInt(v));
+    const maxPower = logLine.parameters[advancedLoggingOffset + 10]
+      .split("|")
+      .map(v => parseInt(v));
+    this.advancedActorPowers = _.range(0, powerType.length).map(i => ({
+      type: powerType[i],
+      current: currentPower[i],
+      max: maxPower[i],
+    }));
+
     this.advancedActorPositionX = parseInt(
       logLine.parameters[advancedLoggingOffset + 12],
       10
