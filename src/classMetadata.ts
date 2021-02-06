@@ -74,6 +74,17 @@ const Warrior = {
     { spellId: "206572", name: "Dragon Charge", tags: [] },
     { spellId: "213871", name: "Bodyguard", tags: [] },
     { spellId: "228920", name: "Ravager", tags: [] },
+    // -- PvP
+    {
+      spellId: "235941",
+      name: "Master and Commander",
+      tags: [SpellTag.Defensive],
+    },
+    {
+      spellId: "236320",
+      name: "War Banner",
+      tags: [SpellTag.Defensive],
+    },
   ],
 };
 
@@ -114,7 +125,7 @@ const Paladin = {
     { spellId: "105809", name: "Holy Avenger", tags: [] },
     { spellId: "114158", name: "Light's Hammer", tags: [] },
     { spellId: "200652", name: "Tyr's Deliverance", tags: [] },
-    { spellId: "210294", name: "Divine Favor", tags: [] },
+    { spellId: "210294", name: "Divine Favor", tags: [SpellTag.Defensive] },
     { spellId: "214202", name: "Rule of Law", tags: [] },
     // -- Protection
     { spellId: "31850", name: "Ardent Defender", tags: [] },
@@ -141,6 +152,12 @@ const Paladin = {
     { spellId: "205273", name: "Wake of Ashes", tags: [] },
     { spellId: "210220", name: "Holy Wrath", tags: [] },
     { spellId: "210256", name: "Blessing of Sanctuary", tags: [] },
+    // -- PvP
+    {
+      spellId: "199452",
+      name: "Ultimate Sacrifice",
+      tags: [SpellTag.Defensive],
+    },
   ],
 };
 
@@ -152,7 +169,7 @@ const Hunter = {
     { spellId: "136", name: "Mend Pet", tags: [] },
     { spellId: "1543", name: "Flare", tags: [] },
     { spellId: "5384", name: "Feign Death", tags: [SpellTag.Defensive] },
-    { spellId: "53480", name: "Roar of Sacrifice", tags: [] },
+    { spellId: "53480", name: "Roar of Sacrifice", tags: [SpellTag.Defensive] },
     {
       spellId: "109304",
       name: "Exhilaration (Beast Mastery, Survival)",
@@ -207,6 +224,8 @@ const Hunter = {
     { spellId: "205691", name: "Dire Beast: Basilisk", tags: [] },
     { spellId: "212640", name: "Mending Bandage", tags: [] },
     { spellId: "266779", name: "Coordinated Assault", tags: [] },
+    // -- PvP
+    { spellId: "212638", name: "Tracker's Net", tags: [SpellTag.Control] },
   ],
 };
 
@@ -250,10 +269,10 @@ const Rogue = {
     // -- Subtlety
     { spellId: "121471", name: "Shadow Blades", tags: [SpellTag.Offensive] },
     { spellId: "185313", name: "Shadow Dance", tags: [SpellTag.Offensive] },
-    { spellId: "207736", name: "Shadowy Duel", tags: [] },
+    { spellId: "207736", name: "Shadowy Duel", tags: [SpellTag.Offensive] },
     { spellId: "209782", name: "Goremaw's Bite", tags: [] },
     { spellId: "212182", name: "Smoke Bomb", tags: [SpellTag.Control] },
-    { spellId: "213981", name: "Cold Blood", tags: [] },
+    { spellId: "213981", name: "Cold Blood", tags: [SpellTag.Offensive] },
   ],
 };
 
@@ -263,7 +282,6 @@ const Priest = {
   blizNumber: 5,
   abilities: [
     { spellId: "586", name: "Fade", tags: [] },
-    { spellId: "213602", name: "Greater Fade", tags: [] },
     { spellId: "32375", name: "Mass Dispel", tags: [] },
     { spellId: "605", name: "Mind Control", tags: [SpellTag.Control] },
     // -- Discipline
@@ -273,12 +291,16 @@ const Priest = {
       name: "Power Infusion",
       tags: [SpellTag.Defensive, SpellTag.Offensive],
     },
-    { spellId: "33206", name: "Pain Suppression", tags: [] },
+    { spellId: "33206", name: "Pain Suppression", tags: [SpellTag.Defensive] },
     { spellId: "34433", name: "Shadowfiend", tags: [] },
     { spellId: "123040", name: "Mindbender (Discipline)", tags: [] },
     { spellId: "200174", name: "Mindbender (Shadow)", tags: [] },
     { spellId: "47536", name: "Rapture", tags: [SpellTag.Defensive] },
-    { spellId: "62618", name: "Power Word: Barrier", tags: [] },
+    {
+      spellId: "62618",
+      name: "Power Word: Barrier",
+      tags: [SpellTag.Defensive],
+    },
     { spellId: "73325", name: "Leap of Faith", tags: [] },
     { spellId: "197862", name: "Archangel", tags: [] },
     { spellId: "197871", name: "Dark Archangel", tags: [SpellTag.Offensive] },
@@ -305,6 +327,9 @@ const Priest = {
     { spellId: "205065", name: "Void Torrent", tags: [] },
     { spellId: "205369", name: "Mind Bomb", tags: [] },
     { spellId: "211522", name: "Psyfiend", tags: [] },
+    // -- PvP
+    { spellId: "213602", name: "Greater Fade", tags: [SpellTag.Defensive] },
+    { spellId: "328530", name: "Divine Ascension", tags: [SpellTag.Defensive] },
   ],
 };
 
@@ -392,7 +417,7 @@ const Shaman = {
     { spellId: "211015", name: "Hex (Cockroach)", tags: [] },
     { spellId: "57994", name: "Wind Shear", tags: [] },
     { spellId: "108271", name: "Astral Shift", tags: [] },
-    { spellId: "210918", name: "Ethereal Form", tags: [] },
+    { spellId: "210918", name: "Ethereal Form", tags: [SpellTag.Defensive] },
     { spellId: "114049", name: "Ascendance", tags: [SpellTag.Offensive] },
     {
       spellId: "114050",
@@ -411,7 +436,7 @@ const Shaman = {
     },
     { spellId: "192058", name: "Capacitor", tags: [] },
     { spellId: "192077", name: "Wind Rush Totem", tags: [] },
-    { spellId: "204330", name: "Skyfury Totem", tags: [] },
+    { spellId: "204330", name: "Skyfury Totem", tags: [SpellTag.Offensive] },
     { spellId: "204331", name: "Counterstrike Totem", tags: [] },
     { spellId: "204332", name: "Windfury Totem", tags: [] },
     // -- Elemental
@@ -447,6 +472,8 @@ const Shaman = {
     { spellId: "204336", name: "Grounding Totem", tags: [SpellTag.Defensive] },
     { spellId: "207399", name: "Ancestral Protection Totem", tags: [] },
     { spellId: "207778", name: "Gift of the Queen", tags: [] },
+    // -- PvP
+    { spellId: "305483", name: "Lightning Lasso", tags: [SpellTag.Offensive] },
   ],
 };
 
@@ -471,6 +498,9 @@ const Mage = {
     { spellId: "28271", name: "Polymorph", tags: [SpellTag.Control] },
     { spellId: "61780", name: "Polymorph", tags: [SpellTag.Control] },
     { spellId: "277792", name: "Polymorph", tags: [SpellTag.Control] },
+    { spellId: "82691", name: "Ring of Frost", tags: [SpellTag.Control] },
+    { spellId: "136511", name: "Ring of Frost", tags: [SpellTag.Control] },
+    { spellId: "140376", name: "Ring of Frost", tags: [SpellTag.Control] },
     { spellId: "113724", name: "Ring of Frost", tags: [SpellTag.Control] },
     { spellId: "116011", name: "Rune of Power", tags: [] },
     { spellId: "198111", name: "Temporal Shield", tags: [SpellTag.Defensive] },
@@ -540,7 +570,7 @@ const Warlock = {
     { spellId: "199890", name: "Curse of Tongues", tags: [] },
     { spellId: "199892", name: "Curse of Weakness", tags: [] },
     { spellId: "199954", name: "Curse of Fragility", tags: [] },
-    { spellId: "212295", name: "Nether Ward", tags: [] },
+    { spellId: "212295", name: "Nether Ward", tags: [SpellTag.Defensive] },
     { spellId: "221703", name: "Casting Circle", tags: [] },
     // -- Affliction
     { spellId: "5484", name: "Howl of Terror", tags: [SpellTag.Control] },
