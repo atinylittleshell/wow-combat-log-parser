@@ -52,32 +52,28 @@ export class WoWCombatLogParser extends EventEmitter {
       WoWCombatLogParser.COMBAT_AUTO_TIMEOUT_SECS * 1000;
 
     if (timeout) {
-      this.endCurrentCombat();
-    }
-
-    // If we're on match start we must wait until new combat to record the raw line
-    if (
-      logLine.event !== LogEvent.ARENA_MATCH_START &&
-      this.state === LogParsingState.IN_MATCH
-    ) {
-      this.currentLinebuffer.push(line);
+      this.endCurrentCombat(undefined, true);
     }
 
     if (this.state === LogParsingState.NOT_IN_MATCH) {
       if (logLine.event === LogEvent.ARENA_MATCH_START) {
         this.startNewCombat(logLine);
-        this.currentLinebuffer.push(line);
       }
     } else {
       if (logLine.event === LogEvent.ARENA_MATCH_END) {
+        this.currentLinebuffer.push(line);
         this.endCurrentCombat(logLine);
       } else if (logLine.event === LogEvent.ARENA_MATCH_START) {
         this.endCurrentCombat();
         this.startNewCombat(logLine);
-        this.currentLinebuffer.push(line);
       } else {
         this.processLogLine(logLine);
       }
+    }
+
+    // If we're in a match now, record the line
+    if (this.state === LogParsingState.IN_MATCH) {
+      this.currentLinebuffer.push(line);
     }
 
     this.lastTimestamp = logLine.timestamp;
@@ -155,14 +151,21 @@ export class WoWCombatLogParser extends EventEmitter {
       linesNotParsedCount: this.linesNotParsedCount,
     };
     this.emit("arena_match_started", plainCombatDataObject);
+    this.currentCombat.readLogLine(logLine);
   }
 
-  private endCurrentCombat(logLine?: ILogLine): void {
+  private endCurrentCombat(logLine?: ILogLine, wasTimeout?: boolean): void {
     if (this.currentCombat) {
-      this.currentCombat.end([
-        parseInt(logLine ? logLine.parameters[2] : "0"), // team0 rating
-        parseInt(logLine ? logLine.parameters[3] : "0"), // team1 rating
-      ]);
+      if (logLine) {
+        this.currentCombat.readLogLine(logLine);
+      }
+      this.currentCombat.end(
+        [
+          parseInt(logLine ? logLine.parameters[2] : "0"), // team0 rating
+          parseInt(logLine ? logLine.parameters[3] : "0"), // team1 rating
+        ],
+        wasTimeout
+      );
       const plainCombatDataObject: ICombatData = {
         id: this.currentCombat.id,
         isWellFormed: this.currentCombat.isWellFormed,
@@ -175,6 +178,8 @@ export class WoWCombatLogParser extends EventEmitter {
         hasAdvancedLogging: this.currentCombat.hasAdvancedLogging,
         rawLines: this.currentLinebuffer,
         linesNotParsedCount: this.linesNotParsedCount,
+        startInfo: this.currentCombat.startInfo,
+        endInfo: this.currentCombat.endInfo
       };
       this.emit("arena_match_ended", plainCombatDataObject);
       this.currentCombat = null;

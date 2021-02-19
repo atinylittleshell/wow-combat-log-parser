@@ -1,6 +1,8 @@
 /* eslint-disable no-fallthrough */
 import _ from "lodash";
 import { uniqueId } from "lodash";
+import { ArenaMatchStart } from './actions/ArenaMatchStart';
+import { ArenaMatchEnd } from './actions/ArenaMatchEnd';
 import { CombatAction } from "./actions/CombatAction";
 import { CombatAdvancedAction } from "./actions/CombatAdvancedAction";
 import { CombatHpUpdateAction } from "./actions/CombatHpUpdateAction";
@@ -29,9 +31,13 @@ export interface ICombatData {
   hasAdvancedLogging: boolean;
   rawLines: string[];
   linesNotParsedCount: number;
+  startInfo?: ArenaMatchStart;
+  endInfo?: ArenaMatchEnd;
 }
 
 export class CombatData implements ICombatData {
+  public endInfo: ArenaMatchEnd | undefined = undefined;
+  public startInfo: ArenaMatchStart | undefined = undefined;
   public id: string = uniqueId("combat");
   public isWellFormed: boolean = false;
   public startTime: number = 0;
@@ -51,14 +57,22 @@ export class CombatData implements ICombatData {
   >();
 
   public readLogLine(logLine: ILogLine) {
-    if (logLine.parameters.length < 8) {
-      return;
-    }
 
     if (this.startTime === 0) {
       this.startTime = logLine.timestamp;
     }
     this.endTime = logLine.timestamp;
+
+    if (logLine.event === LogEvent.ARENA_MATCH_START) {
+      this.startInfo = new ArenaMatchStart(logLine);
+    }
+    if (logLine.event === LogEvent.ARENA_MATCH_END) {
+      this.endInfo = new ArenaMatchEnd(logLine);
+    }
+
+    if (logLine.parameters.length < 8) {
+      return;
+    }
 
     if (logLine.event === LogEvent.COMBATANT_INFO) {
       const unitId = logLine.parameters[0];
@@ -248,7 +262,7 @@ export class CombatData implements ICombatData {
     this.combatantMetadata.set(id, combatantMetadata);
   }
 
-  public end(teamRatings: number[]) {
+  public end(teamRatings: number[], wasTimeout?: boolean) {
     _.forEach(this.units, unit => {
       unit.endActivity();
       if (this.combatantMetadata.has(unit.id)) {
@@ -284,6 +298,7 @@ export class CombatData implements ICombatData {
     if (
       playerUnits.length === this.combatantMetadata.size &&
       deadPlayerCount > 0 &&
+      !wasTimeout &&
       deadPlayerCount < this.combatantMetadata.size &&
       (this.result === CombatResult.Win || this.result === CombatResult.Lose)
     ) {
