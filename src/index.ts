@@ -151,10 +151,14 @@ export class WoWCombatLogParser extends EventEmitter {
       linesNotParsedCount: this.linesNotParsedCount,
     };
     this.emit("arena_match_started", plainCombatDataObject);
+    this.currentCombat.readLogLine(logLine);
   }
 
   private endCurrentCombat(logLine?: ILogLine, wasTimeout?: boolean): void {
     if (this.currentCombat) {
+      if (logLine) {
+        this.currentCombat.readLogLine(logLine);
+      }
       this.currentCombat.end(
         [
           parseInt(logLine ? logLine.parameters[2] : "0"), // team0 rating
@@ -174,6 +178,8 @@ export class WoWCombatLogParser extends EventEmitter {
         hasAdvancedLogging: this.currentCombat.hasAdvancedLogging,
         rawLines: this.currentLinebuffer,
         linesNotParsedCount: this.linesNotParsedCount,
+        startInfo: this.currentCombat.startInfo,
+        endInfo: this.currentCombat.endInfo,
       };
       this.emit("arena_match_ended", plainCombatDataObject);
       this.currentCombat = null;

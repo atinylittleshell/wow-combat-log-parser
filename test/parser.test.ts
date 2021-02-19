@@ -69,6 +69,24 @@ describe("parser tests", () => {
       );
     });
 
+    it("should parse arena start event", () => {
+      const combat = combats[0];
+      expect(combat.startInfo?.timestamp).toEqual(1611028941959);
+      expect(combat.startInfo?.zoneId).toEqual("1552");
+      expect(combat.startInfo?.item1).toEqual("30");
+      expect(combat.startInfo?.bracket).toEqual("2v2");
+      expect(combat.startInfo?.isRanked).toEqual(true);
+    });
+
+    it("should parse arena end event", () => {
+      const combat = combats[0];
+      expect(combat.endInfo?.timestamp).toEqual(1611029047191);
+      expect(combat.endInfo?.matchDurationInSeconds).toEqual(465);
+      expect(combat.endInfo?.winningTeamId).toEqual("1");
+      expect(combat.endInfo?.team0MMR).toEqual(1440);
+      expect(combat.endInfo?.team1MMR).toEqual(1437);
+    });
+
     it("should have a correct death record", () => {
       const combat = combats[0];
       expect(combat.units["Player-57-0CE7FCBF"]?.deathRecords).toHaveLength(1);
@@ -163,6 +181,30 @@ describe("parser tests", () => {
     it("should count the lines it cant parse", () => {
       expect(combats[0].linesNotParsedCount).toEqual(1);
       expect(combats[1].linesNotParsedCount).toEqual(0);
+    });
+
+    it("should parse arena start events", () => {
+      expect(combats[0].startInfo?.zoneId).toEqual("1552");
+      expect(combats[0].startInfo?.item1).toEqual("30");
+      expect(combats[0].startInfo?.bracket).toEqual("2v2");
+      expect(combats[0].startInfo?.isRanked).toEqual(true);
+
+      expect(combats[1].startInfo?.zoneId).toEqual("1551");
+      expect(combats[1].startInfo?.item1).toEqual("30");
+      expect(combats[1].startInfo?.bracket).toEqual("3v3");
+      expect(combats[1].startInfo?.isRanked).toEqual(false);
+    });
+
+    it("should parse arena end events", () => {
+      expect(combats[0].endInfo?.winningTeamId).toEqual("1");
+      expect(combats[0].endInfo?.matchDurationInSeconds).toEqual(465);
+      expect(combats[0].endInfo?.team0MMR).toEqual(1440);
+      expect(combats[0].endInfo?.team1MMR).toEqual(1437);
+
+      expect(combats[1].endInfo?.winningTeamId).toEqual("0");
+      expect(combats[1].endInfo?.matchDurationInSeconds).toEqual(465);
+      expect(combats[1].endInfo?.team0MMR).toEqual(1333);
+      expect(combats[1].endInfo?.team1MMR).toEqual(1437);
     });
   });
 
