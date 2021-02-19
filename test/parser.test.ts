@@ -5,6 +5,7 @@ import {
   CombatResult,
   CombatUnitSpec,
   WoWCombatLogParser,
+  CombatUnitPowerType,
 } from "../src";
 
 const parseLogFileAsync = (logFileName: string): Promise<ICombatData[]> => {
@@ -227,6 +228,34 @@ describe("parser tests", () => {
 
     it("should mark the match as malformed", () => {
       expect(combats[0].isWellFormed).toBeFalsy();
+    });
+  });
+
+  describe("parsing a log with advanced logging", () => {
+    let combats: ICombatData[] = [];
+    beforeAll(async () => {
+      combats = await parseLogFileAsync("skirmish_with_advanced_logging.txt");
+    });
+
+    it("should return a single match", () => {
+      expect(combats).toHaveLength(1);
+    });
+
+    it("should have correct mana data", () => {
+      expect(
+        combats[0].units["Player-57-0A628E42"].advancedActions[0]
+          .advancedActorPowers
+      ).toHaveLength(1);
+
+      expect(
+        combats[0].units["Player-57-0A628E42"].advancedActions[0]
+          .advancedActorPowers[0].type
+      ).toEqual(CombatUnitPowerType.Mana);
+
+      expect(
+        combats[0].units["Player-57-0A628E42"].advancedActions[0]
+          .advancedActorPowers[0].max
+      ).toEqual(42565);
     });
   });
 });
