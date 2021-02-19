@@ -114,12 +114,22 @@ export class WoWCombatLogParser extends EventEmitter {
     const timestamp = timestampValue.valueOf();
 
     const parameters = regex_matches[8].split(",");
+    let combatantInfo;
 
+    if (event === LogEvent.COMBATANT_INFO) {
+      // const playerAndPetGuids = /((Player-|Pet-)[A-Za-z-0-9]*)/g;
+      // let parsedString = regex_matches[8].replace(playerAndPetGuids, '\"$1\"');
+      // parsedString = parsedString.replace(/\(/g, '[');
+      // parsedString = parsedString.replace(/\)/g, ']');
+      // combatantInfo = JSON.parse(`{"data":[${parsedString}]}`);
+    }
+  
     return {
       id: (WoWCombatLogParser.nextId++).toFixed(),
       timestamp,
       event,
       parameters,
+      combatantInfo
     };
   }
 
