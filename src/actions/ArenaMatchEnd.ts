@@ -2,9 +2,7 @@ import { ILogLine } from "../types";
 
 export class ArenaMatchEnd {
   public static supports(logLine: ILogLine): boolean {
-    return (
-      logLine.event.startsWith("ARENA_MATCH_END")
-    );
+    return logLine.event.startsWith("ARENA_MATCH_END");
   }
 
   public readonly timestamp: number;

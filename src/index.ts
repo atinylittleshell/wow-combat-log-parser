@@ -179,7 +179,7 @@ export class WoWCombatLogParser extends EventEmitter {
         rawLines: this.currentLinebuffer,
         linesNotParsedCount: this.linesNotParsedCount,
         startInfo: this.currentCombat.startInfo,
-        endInfo: this.currentCombat.endInfo
+        endInfo: this.currentCombat.endInfo,
       };
       this.emit("arena_match_ended", plainCombatDataObject);
       this.currentCombat = null;

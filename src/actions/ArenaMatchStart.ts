@@ -2,9 +2,7 @@ import { ILogLine } from "../types";
 
 export class ArenaMatchStart {
   public static supports(logLine: ILogLine): boolean {
-    return (
-      logLine.event.startsWith("ARENA_MATCH_START")
-    );
+    return logLine.event.startsWith("ARENA_MATCH_START");
   }
 
   public readonly timestamp: number;
@@ -23,6 +21,6 @@ export class ArenaMatchStart {
     this.zoneId = logLine.parameters[0];
     this.item1 = logLine.parameters[1];
     this.bracket = logLine.parameters[2];
-    this.isRanked = logLine.parameters[3] === '1';
+    this.isRanked = logLine.parameters[3] === "1";
   }
 }

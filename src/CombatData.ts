@@ -1,8 +1,8 @@
 /* eslint-disable no-fallthrough */
 import _ from "lodash";
 import { uniqueId } from "lodash";
-import { ArenaMatchStart } from './actions/ArenaMatchStart';
-import { ArenaMatchEnd } from './actions/ArenaMatchEnd';
+import { ArenaMatchStart } from "./actions/ArenaMatchStart";
+import { ArenaMatchEnd } from "./actions/ArenaMatchEnd";
 import { CombatAction } from "./actions/CombatAction";
 import { CombatAdvancedAction } from "./actions/CombatAdvancedAction";
 import { CombatHpUpdateAction } from "./actions/CombatHpUpdateAction";
@@ -57,7 +57,6 @@ export class CombatData implements ICombatData {
   >();
 
   public readLogLine(logLine: ILogLine) {
-
     if (this.startTime === 0) {
       this.startTime = logLine.timestamp;
     }
