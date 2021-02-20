@@ -159,9 +159,9 @@ export interface EquippedItem {
 export interface CovenantInfo {
   covenantId: number;
   soulbindId: number;
-  conduitIds: number[];
-  item2: number[]; // I have never seen values in these
-  item3: number[];
+  conduitIds: Record<number, number[]>;
+  item2: number[]; // Always empty?
+  item3: Record<number, number[]>; // This is related to soulbind tree choices somehow
 }
 
 export interface CombatantInfo {
