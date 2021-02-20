@@ -2,7 +2,7 @@ import EventEmitter from "eventemitter3";
 import moment from "moment";
 import { CombatData, ICombatData } from "./CombatData";
 import { ILogLine, LogEvent } from "./types";
-
+import { parseWowToJSON } from "./jsonparse";
 export { ICombatData } from "./CombatData";
 export { ICombatUnit } from "./CombatUnit";
 export * from "./types";
@@ -115,57 +115,7 @@ export class WoWCombatLogParser extends EventEmitter {
 
     const parameters = regex_matches[8].split(",");
 
-    /*
-      JSON parse strategy:
-      re-constitute the string from params but inspect each one to insure
-      it's correctly quoted and escaped for JSON.parse to succeed
-    */
-    let jsonParameters;
-    let buf = "";
-    for (const p of parameters) {
-      if (buf) {
-        buf += ",";
-      }
-      // Does the string only contain numbers or ()[], characters?
-      if (/^[-0-9)(.\][]+$/g.test(p)) {
-        // Is it actually a long string of zeros? (json.parse does not like this)
-        if (/^0+$/g.test(p)) {
-          buf += "0"; // reduce to a single zero
-        } else {
-          buf += p;
-        }
-      } else {
-        if (p[0] === '"') {
-          // This is an already quoted string, nothing to do
-          buf += p;
-        } else {
-          // This is a string that needs quoting
-
-          // Prefix and suffix represent the potential []() characters
-          //  that are list separators in the log. Find these and save them.
-          // eslint-disable-next-line no-useless-escape
-          let openingMarkers = /^([\(\)\]\[]+)/g;
-          // eslint-disable-next-line no-useless-escape
-          let closingMarkers = /([\(\)\]\[]+)$/g;
-          let prefix = openingMarkers.exec(p) || "";
-          let suffix = closingMarkers.exec(p) || "";
-          prefix = prefix ? prefix[0] : "";
-          suffix = suffix ? suffix[0] : "";
-
-          // Remove the prefix/suffix from the string needing quotes
-          let tempP = p.replace(openingMarkers, "");
-          tempP = tempP.replace(closingMarkers, "");
-
-          // Quote the non-separator bits and add the prefix/suffix back in
-          buf += `${prefix}"${tempP}"${suffix}`;
-        }
-      }
-    }
-    // Finally, normalize all list terminators
-    buf = buf.replace(/\(/g, "[");
-    buf = buf.replace(/\)/g, "]");
-
-    jsonParameters = JSON.parse(`{"data":[${buf}]}`);
+    const jsonParameters = parseWowToJSON(regex_matches[8]);
 
     return {
       id: (WoWCombatLogParser.nextId++).toFixed(),

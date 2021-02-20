@@ -8,6 +8,7 @@ import {
   CombatUnitPowerType,
 } from "../src";
 
+jest.setTimeout(300000);
 const parseLogFileAsync = (logFileName: string): Promise<ICombatData[]> => {
   return new Promise(resolve => {
     const logParser = new WoWCombatLogParser();
@@ -55,7 +56,7 @@ describe("parser tests", () => {
     });
 
     it("should buffer the raw log", () => {
-      expect(combats[0].rawLines.length).toEqual(11);
+      expect(combats[0].rawLines.length).toEqual(12);
     });
 
     it("should count the lines it cant parse", () => {
