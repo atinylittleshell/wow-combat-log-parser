@@ -8,7 +8,6 @@ import {
   CombatUnitPowerType,
 } from "../src";
 
-jest.setTimeout(300000);
 const parseLogFileAsync = (logFileName: string): Promise<ICombatData[]> => {
   return new Promise(resolve => {
     const logParser = new WoWCombatLogParser();
