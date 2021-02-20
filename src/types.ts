@@ -52,6 +52,7 @@ export interface ILogLine {
   timestamp: number;
   event: LogEvent;
   parameters: string[];
+  jsonParameters: any;
 }
 
 export enum CombatUnitReaction {
@@ -147,7 +148,59 @@ export enum CombatUnitPowerType {
   NumPowerTypes = 19,
 }
 
+export interface EquippedItem {
+  bonuses: number[];
+  enchants: number[];
+  gems: number[];
+  id: number;
+  ilvl: number;
+}
+
+export interface CovenantInfo {
+  covenantId: number;
+  soulbindId: number;
+  conduitIds: number[];
+  item2: number[]; // I have never seen values in these
+  item3: number[];
+}
+
+export interface CombatantInfo {
+  teamId: number;
+  strength: number;
+  agility: number;
+  stamina: number;
+  intelligence: number;
+  dodge: number;
+  parry: number;
+  block: number;
+  critMelee: number;
+  critRanged: number;
+  critSpell: number;
+  speed: number;
+  lifesteal: number;
+  hasteMelee: number;
+  hasteRanged: number;
+  hasteSpell: number;
+  avoidance: number;
+  mastery: number;
+  versatilityDamgeDone: number;
+  versatilityHealingDone: number;
+  versatilityDamageTaken: number;
+  armor: number;
+  specId: number;
+  talents: number[];
+  pvpTalents: number[];
+  covenantInfo: CovenantInfo;
+  equipment: EquippedItem[];
+  interestingAuras: (string | number)[];
+  item29: number;
+  item30: number;
+  personalRating: number;
+  highestPvpTier: number;
+}
+
 export interface ICombatantMetadata {
   class: CombatUnitClass;
   spec: CombatUnitSpec;
+  info: CombatantInfo;
 }

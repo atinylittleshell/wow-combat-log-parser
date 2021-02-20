@@ -2,7 +2,7 @@ import EventEmitter from "eventemitter3";
 import moment from "moment";
 import { CombatData, ICombatData } from "./CombatData";
 import { ILogLine, LogEvent } from "./types";
-
+import { parseWowToJSON } from "./jsonparse";
 export { ICombatData } from "./CombatData";
 export { ICombatUnit } from "./CombatUnit";
 export * from "./types";
@@ -115,11 +115,14 @@ export class WoWCombatLogParser extends EventEmitter {
 
     const parameters = regex_matches[8].split(",");
 
+    const jsonParameters = parseWowToJSON(regex_matches[8]);
+
     return {
       id: (WoWCombatLogParser.nextId++).toFixed(),
       timestamp,
       event,
       parameters,
+      jsonParameters,
     };
   }
 
@@ -130,7 +133,6 @@ export class WoWCombatLogParser extends EventEmitter {
 
     this.currentCombat.readLogLine(logLine);
   }
-
   private startNewCombat(logLine: ILogLine): void {
     this.currentCombat = new CombatData();
     this.currentCombat.startTime = logLine.timestamp || 0;

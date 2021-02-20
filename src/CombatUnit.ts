@@ -7,6 +7,7 @@ import {
   CombatUnitReaction,
   CombatUnitSpec,
   CombatUnitType,
+  CombatantInfo,
   ILogLine,
 } from "./types";
 
@@ -18,6 +19,7 @@ export interface ICombatUnit {
   type: CombatUnitType;
   class: CombatUnitClass;
   spec: CombatUnitSpec;
+  info: CombatantInfo;
 
   damageIn: CombatHpUpdateAction[];
   damageOut: CombatHpUpdateAction[];
@@ -37,6 +39,7 @@ export class CombatUnit implements ICombatUnit {
   public class: CombatUnitClass = CombatUnitClass.None;
   public spec: CombatUnitSpec = CombatUnitSpec.None;
 
+  public info: CombatantInfo = {} as CombatantInfo;
   public id: string = "";
   public name: string = "";
   public isWellFormed: boolean = false;

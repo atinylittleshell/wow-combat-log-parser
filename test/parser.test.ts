@@ -55,7 +55,7 @@ describe("parser tests", () => {
     });
 
     it("should buffer the raw log", () => {
-      expect(combats[0].rawLines.length).toEqual(11);
+      expect(combats[0].rawLines.length).toEqual(12);
     });
 
     it("should count the lines it cant parse", () => {
@@ -64,9 +64,12 @@ describe("parser tests", () => {
 
     it("should have correct combatant metadata", () => {
       const combat = combats[0];
-      expect(combat.units["Player-57-0CE7FCBF"]?.spec).toEqual(
-        CombatUnitSpec.Warrior_Arms
-      );
+      const combatant = combat.units["Player-57-0CE7FCBF"];
+      expect(combatant.spec).toEqual(CombatUnitSpec.Warrior_Arms);
+      expect(combatant.info.specId).toEqual(CombatUnitSpec.Warrior_Arms);
+      expect(combatant.info.equipment[10].bonuses[2]).toEqual(1492);
+      expect(combatant.info.teamId).toEqual(0);
+      expect(combatant.info.highestPvpTier).toEqual(2);
     });
 
     it("should parse arena start event", () => {
