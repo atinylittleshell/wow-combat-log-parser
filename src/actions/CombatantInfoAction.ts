@@ -25,7 +25,7 @@ export class CombatantInfoAction {
     return logLine.event.startsWith("COMBATANT_INFO");
   }
 
-  public readonly timestamp;
+  public readonly timestamp: number;
   public readonly info: CombatantInfo;
 
   constructor(public readonly logLine: ILogLine) {
