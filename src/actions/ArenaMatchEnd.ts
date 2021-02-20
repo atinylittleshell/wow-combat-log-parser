@@ -1,6 +1,14 @@
 import { ILogLine } from "../types";
 
-export class ArenaMatchEnd {
+export interface ArenaMatchEndInfo {
+  timestamp: number;
+  winningTeamId: string;
+  matchDurationInSeconds: number;
+  team0MMR: number;
+  team1MMR: number;
+}
+
+export class ArenaMatchEnd implements ArenaMatchEndInfo {
   public static supports(logLine: ILogLine): boolean {
     return logLine.event.startsWith("ARENA_MATCH_END");
   }
