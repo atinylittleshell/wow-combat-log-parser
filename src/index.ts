@@ -114,22 +114,81 @@ export class WoWCombatLogParser extends EventEmitter {
     const timestamp = timestampValue.valueOf();
 
     const parameters = regex_matches[8].split(",");
-    let combatantInfo;
+    let jsonParameters;
 
-    if (event === LogEvent.COMBATANT_INFO) {
-      // const playerAndPetGuids = /((Player-|Pet-)[A-Za-z-0-9]*)/g;
-      // let parsedString = regex_matches[8].replace(playerAndPetGuids, '\"$1\"');
-      // parsedString = parsedString.replace(/\(/g, '[');
-      // parsedString = parsedString.replace(/\)/g, ']');
-      // combatantInfo = JSON.parse(`{"data":[${parsedString}]}`);
+    let buf = '';
+    // const onlyNumbers = /^[\-0-9\)\(\.]+$/g;
+    for(const p of parameters) {
+      if (buf) {
+        buf += ',';
+      }
+      // console.log(`LINE #${p}# ${typeof p}`);
+      if (/^[\-0-9\)\(\.\]\[]+$/g.test(p) ) {
+        // console.log('ONLY_NUMBERS', `#${p}#`);
+        if (/^0+$/g.test(p)) {
+          buf += '0';
+        } else {
+          buf += p;
+        }
+      } else {
+        if (p[0] === '"') {
+          // console.log('ALREADY_QUOTED', `#${p}#`);
+          buf += p;
+        } else {
+          let openingMarkers = /^([\(\)\]\[]+)/g;
+          let closingMarkers = /([\(\)\]\[]+)$/g;
+          let prefix = openingMarkers.exec(p) || '';
+          let suffix = closingMarkers.exec(p) || '';
+
+          prefix = prefix ? prefix[0] : '';
+          suffix = suffix ? suffix[0] : '';
+
+          let tempP = p.replace(openingMarkers, '');
+          tempP = tempP.replace(closingMarkers, '');
+          // console.log('MUST_QUOTE', `#${p}#`);
+          // console.log(suffix);
+          // console.log('MUST_QUOTE', `#${tempP}#`);
+          // console.log('MUST_QUOTE', `#${prefix}"${tempP}"${suffix}#`);
+          buf += `${prefix}"${tempP}"${suffix}`;
+        }
+      }
     }
-  
+    buf = buf.replace(/\(/g, '[');
+    buf = buf.replace(/\)/g, ']');
+    // console.log(buf);
+    
+    jsonParameters = JSON.parse(`{"data":[${buf}]}`);
+    // console.log(jsonParameters);
+    // try{
+    //   // Anything that JSON.parse() might not like
+    //   // Examples:
+    //   // Player-11-0B0DD774
+    //   // 0x0
+    //   // nil
+    //   const nonJSPrimitives = /(([a-zA-Z]+|0x)[0-9a-zA-Zó\- :!']*)/g;
+    //   // Wrap non-primitives in quotes
+    //   let parsedString = regex_matches[8].replace(nonJSPrimitives, '\"$1\"');
+
+    //   // If there is some funky string that's all zeros .parse will fail
+    //   // ... collapse them to a single zero
+    //   const longZeros = /(^|,)0{2,}/g;
+    //   parsedString = parsedString.replace(longZeros, '$10');
+
+    //   // If an already quoted string ended up doubly quoted, fix that
+    //   const doubleQuotes = /\"\"/g;
+    //   parsedString = parsedString.replace(doubleQuotes, '"');
+    //   // Convert all lists to [] instead of mixed (),[]
+    //   parsedString = parsedString.replace(/\(/g, '[');
+    //   parsedString = parsedString.replace(/\)/g, ']');
+    //   jsonParameters = JSON.parse(`{"data":[${parsedString}]}`);
+    // }
+
     return {
       id: (WoWCombatLogParser.nextId++).toFixed(),
       timestamp,
       event,
       parameters,
-      combatantInfo
+      jsonParameters
     };
   }
 
@@ -140,7 +199,6 @@ export class WoWCombatLogParser extends EventEmitter {
 
     this.currentCombat.readLogLine(logLine);
   }
-
   private startNewCombat(logLine: ILogLine): void {
     this.currentCombat = new CombatData();
     this.currentCombat.startTime = logLine.timestamp || 0;
