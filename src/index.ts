@@ -114,81 +114,65 @@ export class WoWCombatLogParser extends EventEmitter {
     const timestamp = timestampValue.valueOf();
 
     const parameters = regex_matches[8].split(",");
-    let jsonParameters;
 
-    let buf = '';
-    // const onlyNumbers = /^[\-0-9\)\(\.]+$/g;
-    for(const p of parameters) {
+    /*
+      JSON parse strategy:
+      re-constitute the string from params but inspect each one to insure
+      it's correctly quoted and escaped for JSON.parse to succeed
+    */
+    let jsonParameters;
+    let buf = "";
+    for (const p of parameters) {
       if (buf) {
-        buf += ',';
+        buf += ",";
       }
-      // console.log(`LINE #${p}# ${typeof p}`);
-      if (/^[\-0-9\)\(\.\]\[]+$/g.test(p) ) {
-        // console.log('ONLY_NUMBERS', `#${p}#`);
+      // Does the string only contain numbers or ()[], characters?
+      if (/^[-0-9)(.\][]+$/g.test(p)) {
+        // Is it actually a long string of zeros? (json.parse does not like this)
         if (/^0+$/g.test(p)) {
-          buf += '0';
+          buf += "0"; // reduce to a single zero
         } else {
           buf += p;
         }
       } else {
         if (p[0] === '"') {
-          // console.log('ALREADY_QUOTED', `#${p}#`);
+          // This is an already quoted string, nothing to do
           buf += p;
         } else {
+          // This is a string that needs quoting
+
+          // Prefix and suffix represent the potential []() characters
+          //  that are list separators in the log. Find these and save them.
+          // eslint-disable-next-line no-useless-escape
           let openingMarkers = /^([\(\)\]\[]+)/g;
+          // eslint-disable-next-line no-useless-escape
           let closingMarkers = /([\(\)\]\[]+)$/g;
-          let prefix = openingMarkers.exec(p) || '';
-          let suffix = closingMarkers.exec(p) || '';
+          let prefix = openingMarkers.exec(p) || "";
+          let suffix = closingMarkers.exec(p) || "";
+          prefix = prefix ? prefix[0] : "";
+          suffix = suffix ? suffix[0] : "";
 
-          prefix = prefix ? prefix[0] : '';
-          suffix = suffix ? suffix[0] : '';
+          // Remove the prefix/suffix from the string needing quotes
+          let tempP = p.replace(openingMarkers, "");
+          tempP = tempP.replace(closingMarkers, "");
 
-          let tempP = p.replace(openingMarkers, '');
-          tempP = tempP.replace(closingMarkers, '');
-          // console.log('MUST_QUOTE', `#${p}#`);
-          // console.log(suffix);
-          // console.log('MUST_QUOTE', `#${tempP}#`);
-          // console.log('MUST_QUOTE', `#${prefix}"${tempP}"${suffix}#`);
+          // Quote the non-separator bits and add the prefix/suffix back in
           buf += `${prefix}"${tempP}"${suffix}`;
         }
       }
     }
-    buf = buf.replace(/\(/g, '[');
-    buf = buf.replace(/\)/g, ']');
-    // console.log(buf);
-    
+    // Finally, normalize all list terminators
+    buf = buf.replace(/\(/g, "[");
+    buf = buf.replace(/\)/g, "]");
+
     jsonParameters = JSON.parse(`{"data":[${buf}]}`);
-    // console.log(jsonParameters);
-    // try{
-    //   // Anything that JSON.parse() might not like
-    //   // Examples:
-    //   // Player-11-0B0DD774
-    //   // 0x0
-    //   // nil
-    //   const nonJSPrimitives = /(([a-zA-Z]+|0x)[0-9a-zA-Zó\- :!']*)/g;
-    //   // Wrap non-primitives in quotes
-    //   let parsedString = regex_matches[8].replace(nonJSPrimitives, '\"$1\"');
-
-    //   // If there is some funky string that's all zeros .parse will fail
-    //   // ... collapse them to a single zero
-    //   const longZeros = /(^|,)0{2,}/g;
-    //   parsedString = parsedString.replace(longZeros, '$10');
-
-    //   // If an already quoted string ended up doubly quoted, fix that
-    //   const doubleQuotes = /\"\"/g;
-    //   parsedString = parsedString.replace(doubleQuotes, '"');
-    //   // Convert all lists to [] instead of mixed (),[]
-    //   parsedString = parsedString.replace(/\(/g, '[');
-    //   parsedString = parsedString.replace(/\)/g, ']');
-    //   jsonParameters = JSON.parse(`{"data":[${parsedString}]}`);
-    // }
 
     return {
       id: (WoWCombatLogParser.nextId++).toFixed(),
       timestamp,
       event,
       parameters,
-      jsonParameters
+      jsonParameters,
     };
   }
 

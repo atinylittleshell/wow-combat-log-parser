@@ -4,6 +4,7 @@ import { uniqueId } from "lodash";
 import { ArenaMatchStart } from "./actions/ArenaMatchStart";
 import { ArenaMatchEnd } from "./actions/ArenaMatchEnd";
 import { CombatAction } from "./actions/CombatAction";
+import { CombatantInfoAction } from "./actions/CombatantInfoAction";
 import { CombatAdvancedAction } from "./actions/CombatAdvancedAction";
 import { CombatHpUpdateAction } from "./actions/CombatHpUpdateAction";
 import { CombatUnit, ICombatUnit } from "./CombatUnit";
@@ -74,6 +75,7 @@ export class CombatData implements ICombatData {
     }
 
     if (logLine.event === LogEvent.COMBATANT_INFO) {
+      const infoAction = new CombatantInfoAction(logLine);
       const unitId = logLine.parameters[0];
       const specId = parseInt(logLine.parameters[23], 10);
       if (specId in CombatUnitSpec) {
@@ -144,6 +146,7 @@ export class CombatData implements ICombatData {
         this.registerCombatant(unitId, {
           spec,
           class: unitClass,
+          info: infoAction.info,
         });
       }
       return;
@@ -266,6 +269,9 @@ export class CombatData implements ICombatData {
       unit.endActivity();
       if (this.combatantMetadata.has(unit.id)) {
         const metadata = this.combatantMetadata.get(unit.id);
+        if (metadata) {
+          unit.info = metadata?.info;
+        }
         unit.proveClass(metadata?.class || CombatUnitClass.None);
         unit.proveSpec(metadata?.spec || CombatUnitSpec.None);
       }
