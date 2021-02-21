@@ -66,12 +66,12 @@ describe("parser tests", () => {
       const combat = combats[0];
       const combatant = combat.units["Player-57-0CE7FCBF"];
       expect(combatant.spec).toEqual(CombatUnitSpec.Warrior_Arms);
-      expect(combatant.info.specId).toEqual(CombatUnitSpec.Warrior_Arms);
-      expect(combatant.info.equipment[10].bonuses[2]).toEqual(1492);
-      expect(combatant.info.teamId).toEqual(0);
-      expect(combatant.info.highestPvpTier).toEqual(2);
-      expect(combatant.info.covenantInfo.conduitIds[1][0]).toEqual(8);
-      expect(typeof combatant.info.covenantInfo.conduitIds).toEqual("object");
+      expect(combatant.info?.specId).toEqual(CombatUnitSpec.Warrior_Arms);
+      expect(combatant.info?.equipment[10].bonuses[2]).toEqual(1492);
+      expect(combatant.info?.teamId).toEqual(0);
+      expect(combatant.info?.highestPvpTier).toEqual(2);
+      expect(combatant.info?.covenantInfo.conduitIds[1][0]).toEqual(8);
+      expect(typeof combatant.info?.covenantInfo.conduitIds).toEqual("object");
     });
 
     it("should parse arena start event", () => {
