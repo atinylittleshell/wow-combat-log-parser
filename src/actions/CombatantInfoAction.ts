@@ -64,7 +64,7 @@ export class CombatantInfoAction {
       pvpTalents: jsData[25],
       covenantInfo: parseCovenantInfo(jsData[26]),
       equipment: parseEquippedItems(jsData[27]),
-      interestingAuras: jsData[28],
+      interestingAurasJSON: JSON.stringify(jsData[28]),
       item29: parseInt(jsData[29]),
       item30: parseInt(jsData[30]),
       personalRating: parseInt(jsData[31]),
