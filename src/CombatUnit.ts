@@ -19,7 +19,7 @@ export interface ICombatUnit {
   type: CombatUnitType;
   class: CombatUnitClass;
   spec: CombatUnitSpec;
-  info: CombatantInfo;
+  info?: CombatantInfo;
 
   damageIn: CombatHpUpdateAction[];
   damageOut: CombatHpUpdateAction[];
@@ -39,7 +39,7 @@ export class CombatUnit implements ICombatUnit {
   public class: CombatUnitClass = CombatUnitClass.None;
   public spec: CombatUnitSpec = CombatUnitSpec.None;
 
-  public info: CombatantInfo = {} as CombatantInfo;
+  public info: CombatantInfo | undefined = undefined;
   public id: string = "";
   public name: string = "";
   public isWellFormed: boolean = false;
