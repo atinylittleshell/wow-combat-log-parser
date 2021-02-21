@@ -1,18 +1,12 @@
 import { ILogLine, CombatantInfo, EquippedItem, CovenantInfo } from "../types";
 
-function unrollArray(val: any[]) {
-  const rval: Record<number, number[]> = {};
-  val.forEach((a, i) => (rval[i] = a));
-  return rval;
-}
-
 function parseCovenantInfo(val: any[]): CovenantInfo {
   return {
     soulbindId: val[0],
     covenantId: val[1],
-    conduitIds: unrollArray(val[4]),
+    conduitIdsJSON: JSON.stringify(val[4]),
     item2: val[2],
-    item3: unrollArray(val[3]),
+    item3JSON: JSON.stringify(val[3]),
   };
 }
 

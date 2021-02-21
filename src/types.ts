@@ -159,9 +159,9 @@ export interface EquippedItem {
 export interface CovenantInfo {
   covenantId: number;
   soulbindId: number;
-  conduitIds: Record<number, number[]>;
+  conduitIdsJSON: string;
   item2: number[]; // Always empty?
-  item3: Record<number, number[]>; // This is related to soulbind tree choices somehow
+  item3JSON: string; // This is related to soulbind tree choices somehow
 }
 
 export interface CombatantInfo {
