@@ -192,7 +192,7 @@ export interface CombatantInfo {
   pvpTalents: number[];
   covenantInfo: CovenantInfo;
   equipment: EquippedItem[];
-  interestingAuras: (string | number)[];
+  interestingAurasJSON: string;
   item29: number;
   item30: number;
   personalRating: number;
