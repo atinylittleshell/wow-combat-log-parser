@@ -1,9 +1,13 @@
 /* eslint-disable no-fallthrough */
 import _ from "lodash";
 import { uniqueId } from "lodash";
-import { ArenaMatchStart } from "./actions/ArenaMatchStart";
-import { ArenaMatchEnd } from "./actions/ArenaMatchEnd";
+import {
+  ArenaMatchStart,
+  ArenaMatchStartInfo,
+} from "./actions/ArenaMatchStart";
+import { ArenaMatchEnd, ArenaMatchEndInfo } from "./actions/ArenaMatchEnd";
 import { CombatAction } from "./actions/CombatAction";
+import { CombatantInfoAction } from "./actions/CombatantInfoAction";
 import { CombatAdvancedAction } from "./actions/CombatAdvancedAction";
 import { CombatHpUpdateAction } from "./actions/CombatHpUpdateAction";
 import { CombatUnit, ICombatUnit } from "./CombatUnit";
@@ -31,13 +35,13 @@ export interface ICombatData {
   hasAdvancedLogging: boolean;
   rawLines: string[];
   linesNotParsedCount: number;
-  startInfo?: ArenaMatchStart;
-  endInfo?: ArenaMatchEnd;
+  startInfo?: ArenaMatchStartInfo;
+  endInfo?: ArenaMatchEndInfo;
 }
 
 export class CombatData implements ICombatData {
-  public endInfo: ArenaMatchEnd | undefined = undefined;
-  public startInfo: ArenaMatchStart | undefined = undefined;
+  public endInfo: ArenaMatchEndInfo | undefined = undefined;
+  public startInfo: ArenaMatchStartInfo | undefined = undefined;
   public id: string = uniqueId("combat");
   public isWellFormed: boolean = false;
   public startTime: number = 0;
@@ -63,10 +67,24 @@ export class CombatData implements ICombatData {
     this.endTime = logLine.timestamp;
 
     if (logLine.event === LogEvent.ARENA_MATCH_START) {
-      this.startInfo = new ArenaMatchStart(logLine);
+      const arenaStart = new ArenaMatchStart(logLine);
+      this.startInfo = {
+        timestamp: arenaStart.timestamp,
+        zoneId: arenaStart.zoneId,
+        item1: arenaStart.item1,
+        bracket: arenaStart.bracket,
+        isRanked: arenaStart.isRanked,
+      };
     }
     if (logLine.event === LogEvent.ARENA_MATCH_END) {
-      this.endInfo = new ArenaMatchEnd(logLine);
+      const arenaEnd = new ArenaMatchEnd(logLine);
+      this.endInfo = {
+        timestamp: arenaEnd.timestamp,
+        winningTeamId: arenaEnd.winningTeamId,
+        matchDurationInSeconds: arenaEnd.matchDurationInSeconds,
+        team0MMR: arenaEnd.team0MMR,
+        team1MMR: arenaEnd.team1MMR,
+      };
     }
 
     if (logLine.parameters.length < 8) {
@@ -74,6 +92,7 @@ export class CombatData implements ICombatData {
     }
 
     if (logLine.event === LogEvent.COMBATANT_INFO) {
+      const infoAction = new CombatantInfoAction(logLine);
       const unitId = logLine.parameters[0];
       const specId = parseInt(logLine.parameters[23], 10);
       if (specId in CombatUnitSpec) {
@@ -144,6 +163,7 @@ export class CombatData implements ICombatData {
         this.registerCombatant(unitId, {
           spec,
           class: unitClass,
+          info: infoAction.info,
         });
       }
       return;
@@ -266,6 +286,9 @@ export class CombatData implements ICombatData {
       unit.endActivity();
       if (this.combatantMetadata.has(unit.id)) {
         const metadata = this.combatantMetadata.get(unit.id);
+        if (metadata) {
+          unit.info = metadata?.info;
+        }
         unit.proveClass(metadata?.class || CombatUnitClass.None);
         unit.proveSpec(metadata?.spec || CombatUnitSpec.None);
       }

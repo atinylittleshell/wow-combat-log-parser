@@ -55,7 +55,7 @@ describe("parser tests", () => {
     });
 
     it("should buffer the raw log", () => {
-      expect(combats[0].rawLines.length).toEqual(11);
+      expect(combats[0].rawLines.length).toEqual(12);
     });
 
     it("should count the lines it cant parse", () => {
@@ -64,16 +64,23 @@ describe("parser tests", () => {
 
     it("should have correct combatant metadata", () => {
       const combat = combats[0];
-      expect(combat.units["Player-57-0CE7FCBF"]?.spec).toEqual(
-        CombatUnitSpec.Warrior_Arms
+      const combatant = combat.units["Player-57-0CE7FCBF"];
+      expect(combatant.spec).toEqual(CombatUnitSpec.Warrior_Arms);
+      expect(combatant.info?.specId).toEqual(CombatUnitSpec.Warrior_Arms);
+      expect(combatant.info?.equipment[10].bonuses[2]).toEqual(1492);
+      expect(combatant.info?.teamId).toEqual(0);
+      expect(combatant.info?.highestPvpTier).toEqual(2);
+      expect(combatant.info?.covenantInfo.conduitIdsJSON).toEqual(
+        "[[169,184],[8,145]]"
+      );
+      expect(combatant.info?.covenantInfo.item3JSON).toEqual(
+        "[[1393],[1395],[1406],[1397]]"
       );
     });
 
     it("should parse arena start event", () => {
       const combat = combats[0];
-      expect(combat.startInfo?.timestamp).toEqual(
-        combat.startInfo?.logLine.timestamp
-      );
+      expect(combat.startInfo?.timestamp).toBeGreaterThan(5000);
       expect(combat.startInfo?.zoneId).toEqual("1552");
       expect(combat.startInfo?.item1).toEqual("30");
       expect(combat.startInfo?.bracket).toEqual("2v2");
@@ -82,9 +89,7 @@ describe("parser tests", () => {
 
     it("should parse arena end event", () => {
       const combat = combats[0];
-      expect(combat.endInfo?.timestamp).toEqual(
-        combat.endInfo?.logLine.timestamp
-      );
+      expect(combat.endInfo?.timestamp).toBeGreaterThan(5000);
       expect(combat.endInfo?.matchDurationInSeconds).toEqual(465);
       expect(combat.endInfo?.winningTeamId).toEqual("1");
       expect(combat.endInfo?.team0MMR).toEqual(1440);

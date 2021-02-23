@@ -1,6 +1,14 @@
 import { ILogLine } from "../types";
 
-export class ArenaMatchStart {
+export interface ArenaMatchStartInfo {
+  timestamp: number;
+  zoneId: string;
+  item1: string;
+  bracket: string;
+  isRanked: boolean;
+}
+
+export class ArenaMatchStart implements ArenaMatchStartInfo {
   public static supports(logLine: ILogLine): boolean {
     return logLine.event.startsWith("ARENA_MATCH_START");
   }
