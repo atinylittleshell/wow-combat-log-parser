@@ -548,6 +548,7 @@ const Warlock = {
     // --{ spellId: "18540", name: "Summon Doomguard", tags: [] },
     { spellId: "20707", name: "Soulstone", tags: [] },
     { spellId: "5782", name: "Fear", tags: [SpellTag.Control] },
+    { spellId: "342914", name: "Fear", tags: [SpellTag.Control] },
     { spellId: "30283", name: "Shadowfury", tags: [SpellTag.Control] },
     { spellId: "104773", name: "Unending Resolve", tags: [SpellTag.Defensive] },
     { spellId: "108416", name: "Dark Pact", tags: [] },
