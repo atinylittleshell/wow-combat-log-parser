@@ -115,16 +115,13 @@ export class WoWCombatLogParser extends EventEmitter {
     const timestampValue = moment(timestampValueObj);
     const timestamp = timestampValue.valueOf();
 
-    const parameters = regex_matches[8].split(",");
-
     const jsonParameters = parseWowToJSON(regex_matches[8]);
 
     return {
       id: (WoWCombatLogParser.nextId++).toFixed(),
       timestamp,
       event,
-      parameters,
-      jsonParameters,
+      parameters: jsonParameters.data,
     };
   }
 

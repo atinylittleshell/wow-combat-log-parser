@@ -25,17 +25,17 @@ export class CombatAction {
 
     this.timestamp = logLine.timestamp;
 
-    this.srcUnitId = logLine.parameters[0];
+    this.srcUnitId = logLine.parameters[0].toString();
     this.srcUnitName = parseQuotedName(logLine.parameters[1]);
 
-    this.destUnitId = logLine.parameters[4];
+    this.destUnitId = logLine.parameters[4].toString();
     this.destUnitName = parseQuotedName(logLine.parameters[5]);
 
     if (
       logLine.event.startsWith("RANGE_") ||
       logLine.event.startsWith("SPELL_")
     ) {
-      this.spellId = logLine.parameters[8];
+      this.spellId = logLine.parameters[8].toString();
       this.spellName = parseQuotedName(logLine.parameters[9]);
     } else {
       this.spellId = null;

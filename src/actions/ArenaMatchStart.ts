@@ -26,9 +26,9 @@ export class ArenaMatchStart implements ArenaMatchStartInfo {
 
     this.timestamp = logLine.timestamp;
 
-    this.zoneId = logLine.parameters[0];
-    this.item1 = logLine.parameters[1];
-    this.bracket = logLine.parameters[2];
-    this.isRanked = logLine.parameters[3] === "1";
+    this.zoneId = logLine.parameters[0].toString();
+    this.item1 = logLine.parameters[1].toString();
+    this.bracket = logLine.parameters[2].toString();
+    this.isRanked = logLine.parameters[3] == 1;
   }
 }

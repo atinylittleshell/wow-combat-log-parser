@@ -38,40 +38,32 @@ export class CombatAdvancedAction extends CombatAction {
 
     const advancedLoggingOffset = logLine.event.startsWith("SWING_") ? 8 : 11;
 
-    this.advanced =
-      logLine.parameters[advancedLoggingOffset] !== "0000000000000000";
-    this.advancedActorId = logLine.parameters[advancedLoggingOffset];
-    this.advancedActorCurrentHp = parseInt(
-      logLine.parameters[advancedLoggingOffset + 2],
-      10
-    );
-    this.advancedActorMaxHp = parseInt(
-      logLine.parameters[advancedLoggingOffset + 3],
-      10
-    );
+    this.advanced = logLine.parameters[advancedLoggingOffset] != 0;
+    this.advancedActorId = logLine.parameters[advancedLoggingOffset].toString();
+    this.advancedActorCurrentHp = logLine.parameters[advancedLoggingOffset + 2];
+    this.advancedActorMaxHp = logLine.parameters[advancedLoggingOffset + 3];
 
     const powerType = logLine.parameters[advancedLoggingOffset + 8]
+      .toString()
       .split("|")
-      .map(v => parseInt(v));
+      .map((v: string) => parseInt(v));
     const currentPower = logLine.parameters[advancedLoggingOffset + 9]
+      .toString()
       .split("|")
-      .map(v => parseInt(v));
+      .map((v: string) => parseInt(v));
     const maxPower = logLine.parameters[advancedLoggingOffset + 10]
+      .toString()
       .split("|")
-      .map(v => parseInt(v));
+      .map((v: string) => parseInt(v));
     this.advancedActorPowers = _.range(0, powerType.length).map(i => ({
       type: powerType[i],
       current: currentPower[i],
       max: maxPower[i],
     }));
 
-    this.advancedActorPositionX = parseInt(
-      logLine.parameters[advancedLoggingOffset + 12],
-      10
-    );
-    this.advancedActorPositionY = parseInt(
-      logLine.parameters[advancedLoggingOffset + 13],
-      10
-    );
+    this.advancedActorPositionX =
+      logLine.parameters[advancedLoggingOffset + 12];
+    this.advancedActorPositionY =
+      logLine.parameters[advancedLoggingOffset + 13];
   }
 }
