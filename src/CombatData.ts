@@ -93,7 +93,7 @@ export class CombatData implements ICombatData {
 
     if (logLine.event === LogEvent.COMBATANT_INFO) {
       const infoAction = new CombatantInfoAction(logLine);
-      const unitId = logLine.parameters[0];
+      const unitId = logLine.parameters[0].toString();
       const specId = logLine.parameters[23];
       if (specId in CombatUnitSpec) {
         const spec = specId as CombatUnitSpec;
@@ -169,11 +169,11 @@ export class CombatData implements ICombatData {
       return;
     }
 
-    const srcGUID = logLine.parameters[0];
+    const srcGUID = logLine.parameters[0].toString();
     const srcName = parseQuotedName(logLine.parameters[1]);
     const srcFlag = logLine.parameters[2];
 
-    const destGUID = logLine.parameters[4];
+    const destGUID = logLine.parameters[4].toString();
     const destName = parseQuotedName(logLine.parameters[5]);
     const destFlag = logLine.parameters[6];
 
