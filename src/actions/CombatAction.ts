@@ -35,7 +35,7 @@ export class CombatAction {
       logLine.event.startsWith("RANGE_") ||
       logLine.event.startsWith("SPELL_")
     ) {
-      this.spellId = logLine.parameters[8];
+      this.spellId = logLine.parameters[8].toString();
       this.spellName = parseQuotedName(logLine.parameters[9]);
     } else {
       this.spellId = null;

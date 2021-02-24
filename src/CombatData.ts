@@ -94,7 +94,7 @@ export class CombatData implements ICombatData {
     if (logLine.event === LogEvent.COMBATANT_INFO) {
       const infoAction = new CombatantInfoAction(logLine);
       const unitId = logLine.parameters[0];
-      const specId = parseInt(logLine.parameters[23], 10);
+      const specId = logLine.parameters[23];
       if (specId in CombatUnitSpec) {
         const spec = specId as CombatUnitSpec;
         let unitClass = CombatUnitClass.None;
@@ -171,13 +171,11 @@ export class CombatData implements ICombatData {
 
     const srcGUID = logLine.parameters[0];
     const srcName = parseQuotedName(logLine.parameters[1]);
-    // tslint:disable-next-line: radix
-    const srcFlag = parseInt(logLine.parameters[2]);
+    const srcFlag = logLine.parameters[2];
 
     const destGUID = logLine.parameters[4];
     const destName = parseQuotedName(logLine.parameters[5]);
-    // tslint:disable-next-line: radix
-    const destFlag = parseInt(logLine.parameters[6]);
+    const destFlag = logLine.parameters[6];
 
     if (!this.units[srcGUID]) {
       this.units[srcGUID] = new CombatUnit(srcGUID, srcName);

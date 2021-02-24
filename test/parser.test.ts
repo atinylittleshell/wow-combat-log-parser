@@ -148,7 +148,7 @@ describe("parser tests", () => {
     });
 
     it("should buffer the raw log", () => {
-      expect(combats[0].rawLines.length).toEqual(2073);
+      expect(combats[0].rawLines.length).toEqual(2074);
     });
 
     it("should not mark the combat as having advanced logging", () => {

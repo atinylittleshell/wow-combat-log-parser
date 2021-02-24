@@ -26,9 +26,9 @@ export class ArenaMatchEnd implements ArenaMatchEndInfo {
 
     this.timestamp = logLine.timestamp;
 
-    this.winningTeamId = logLine.parameters[0];
-    this.matchDurationInSeconds = parseInt(logLine.parameters[1]);
-    this.team0MMR = parseInt(logLine.parameters[2]);
-    this.team1MMR = parseInt(logLine.parameters[3]);
+    this.winningTeamId = logLine.parameters[0].toString();
+    this.matchDurationInSeconds = logLine.parameters[1];
+    this.team0MMR = logLine.parameters[2];
+    this.team1MMR = logLine.parameters[3];
   }
 }
