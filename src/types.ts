@@ -51,8 +51,7 @@ export interface ILogLine {
   id: string;
   timestamp: number;
   event: LogEvent;
-  parameters: string[];
-  jsonParameters: any;
+  parameters: any[];
 }
 
 export enum CombatUnitReaction {

@@ -18,11 +18,11 @@ export class CombatHpUpdateAction extends CombatAdvancedAction {
     }
 
     if (logLine.event === "SWING_DAMAGE") {
-      this.amount = -1 * parseInt(logLine.parameters[25], 10);
+      this.amount = -1 * logLine.parameters[25];
     } else if (logLine.event.endsWith("_DAMAGE")) {
-      this.amount = -1 * parseInt(logLine.parameters[28], 10);
+      this.amount = -1 * logLine.parameters[28];
     } else {
-      this.amount = parseInt(logLine.parameters[28], 10);
+      this.amount = logLine.parameters[28];
     }
   }
 }
