@@ -12,6 +12,7 @@ export * from "./actions/ArenaMatchEnd";
 export * from "./actions/ArenaMatchStart";
 export * from "./actions/CombatHpUpdateAction";
 export * from "./classMetadata";
+export * from "./covenantMetadata";
 
 enum LogParsingState {
   NOT_IN_MATCH,
