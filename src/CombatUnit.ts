@@ -40,10 +40,10 @@ export class CombatUnit implements ICombatUnit {
   public spec: CombatUnitSpec = CombatUnitSpec.None;
 
   public info: CombatantInfo | undefined = undefined;
-  public id: string = "";
-  public name: string = "";
-  public isWellFormed: boolean = false;
-  public isActive: boolean = false;
+  public id = "";
+  public name = "";
+  public isWellFormed = false;
+  public isActive = false;
 
   public damageIn: CombatHpUpdateAction[] = [];
   public damageOut: CombatHpUpdateAction[] = [];
@@ -56,8 +56,8 @@ export class CombatUnit implements ICombatUnit {
   public deathRecords: ILogLine[] = [];
   public advancedActions: CombatAdvancedAction[] = [];
 
-  public startTime: number = 0;
-  public endTime: number = 0;
+  public startTime = 0;
+  public endTime = 0;
   private reactionProofs: Map<CombatUnitReaction, number> = new Map<
     CombatUnitReaction,
     number

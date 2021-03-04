@@ -28,7 +28,7 @@ export class WoWCombatLogParser extends EventEmitter {
   private state: LogParsingState = LogParsingState.NOT_IN_MATCH;
   private currentCombat: CombatData | null = null;
   private currentLinebuffer: string[] = [];
-  private linesNotParsedCount: number = 0;
+  private linesNotParsedCount = 0;
 
   public resetParserStates(): void {
     this.lastTimestamp = 0;

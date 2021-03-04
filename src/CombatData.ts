@@ -43,16 +43,16 @@ export class CombatData implements ICombatData {
   public endInfo: ArenaMatchEndInfo | undefined = undefined;
   public startInfo: ArenaMatchStartInfo | undefined = undefined;
   public id: string = uniqueId("combat");
-  public isWellFormed: boolean = false;
-  public startTime: number = 0;
-  public endTime: number = 0;
+  public isWellFormed = false;
+  public startTime = 0;
+  public endTime = 0;
   public units: { [unitId: string]: CombatUnit } = {};
-  public playerTeamId: number = -1;
-  public playerTeamRating: number = 0;
+  public playerTeamId = -1;
+  public playerTeamRating = 0;
   public result: CombatResult = CombatResult.Unknown;
-  public hasAdvancedLogging: boolean = false;
+  public hasAdvancedLogging = false;
   public rawLines: string[] = [];
-  public linesNotParsedCount: number = 0;
+  public linesNotParsedCount = 0;
 
   private lastDeathReaction: CombatUnitReaction = CombatUnitReaction.Neutral;
   private combatantMetadata: Map<string, ICombatantMetadata> = new Map<
@@ -213,26 +213,30 @@ export class CombatData implements ICombatData {
       case LogEvent.RANGE_DAMAGE:
       case LogEvent.SPELL_DAMAGE:
       case LogEvent.SPELL_PERIODIC_DAMAGE:
-        const damageAction = new CombatHpUpdateAction(logLine);
-        if (srcGUID !== destGUID) {
-          srcUnit.damageOut.push(damageAction);
-        }
-        destUnit.damageIn.push(damageAction);
-        if (damageAction.advanced) {
-          const advancedActor = this.units[damageAction.advancedActorId];
-          advancedActor?.advancedActions.push(damageAction);
-          this.hasAdvancedLogging = true;
+        {
+          const damageAction = new CombatHpUpdateAction(logLine);
+          if (srcGUID !== destGUID) {
+            srcUnit.damageOut.push(damageAction);
+          }
+          destUnit.damageIn.push(damageAction);
+          if (damageAction.advanced) {
+            const advancedActor = this.units[damageAction.advancedActorId];
+            advancedActor?.advancedActions.push(damageAction);
+            this.hasAdvancedLogging = true;
+          }
         }
         break;
       case LogEvent.SPELL_HEAL:
       case LogEvent.SPELL_PERIODIC_HEAL:
-        const healAction = new CombatHpUpdateAction(logLine);
-        srcUnit.healOut.push(healAction);
-        destUnit.healIn.push(healAction);
-        if (healAction.advanced) {
-          const advancedActor = this.units[healAction.advancedActorId];
-          advancedActor?.advancedActions.push(healAction);
-          this.hasAdvancedLogging = true;
+        {
+          const healAction = new CombatHpUpdateAction(logLine);
+          srcUnit.healOut.push(healAction);
+          destUnit.healIn.push(healAction);
+          if (healAction.advanced) {
+            const advancedActor = this.units[healAction.advancedActorId];
+            advancedActor?.advancedActions.push(healAction);
+            this.hasAdvancedLogging = true;
+          }
         }
         break;
       case LogEvent.SPELL_AURA_APPLIED:
@@ -242,8 +246,10 @@ export class CombatData implements ICombatData {
       case LogEvent.SPELL_AURA_REMOVED_DOSE:
       case LogEvent.SPELL_AURA_BROKEN:
       case LogEvent.SPELL_AURA_BROKEN_SPELL:
-        const auraEvent = new CombatAction(logLine);
-        destUnit.auraEvents.push(auraEvent);
+        {
+          const auraEvent = new CombatAction(logLine);
+          destUnit.auraEvents.push(auraEvent);
+        }
         break;
       case LogEvent.SPELL_INTERRUPT:
       case LogEvent.SPELL_STOLEN:
@@ -257,20 +263,24 @@ export class CombatData implements ICombatData {
         destUnit.deathRecords.push(logLine);
         break;
       case LogEvent.SPELL_CAST_SUCCESS:
-        const advancedAction = new CombatAdvancedAction(logLine);
-        if (advancedAction.advanced) {
-          const advancedActor = this.units[advancedAction.advancedActorId];
-          advancedActor?.advancedActions.push(advancedAction);
-          this.hasAdvancedLogging = true;
+        {
+          const advancedAction = new CombatAdvancedAction(logLine);
+          if (advancedAction.advanced) {
+            const advancedActor = this.units[advancedAction.advancedActorId];
+            advancedActor?.advancedActions.push(advancedAction);
+            this.hasAdvancedLogging = true;
+          }
+          srcUnit.spellCastEvents.push(advancedAction);
+          srcUnit.actionOut.push(logLine);
+          destUnit.actionIn.push(logLine);
         }
-        srcUnit.spellCastEvents.push(advancedAction);
-        srcUnit.actionOut.push(logLine);
-        destUnit.actionIn.push(logLine);
         break;
       case LogEvent.SPELL_CAST_START:
       case LogEvent.SPELL_CAST_FAILED:
-        const action = new CombatAction(logLine);
-        srcUnit.spellCastEvents.push(action);
+        {
+          const action = new CombatAction(logLine);
+          srcUnit.spellCastEvents.push(action);
+        }
         break;
     }
   }

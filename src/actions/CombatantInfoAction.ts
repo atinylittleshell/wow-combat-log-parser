@@ -1,5 +1,6 @@
 import { ILogLine, CombatantInfo, EquippedItem, CovenantInfo } from "../types";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function parseCovenantInfo(val: any[]): CovenantInfo {
   return {
     soulbindId: val[0],
@@ -10,6 +11,7 @@ function parseCovenantInfo(val: any[]): CovenantInfo {
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function parseEquippedItems(val: any[]): EquippedItem[] {
   return val.map(eqi => ({
     id: eqi[0],
