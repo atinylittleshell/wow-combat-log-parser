@@ -2,7 +2,7 @@ import { ILogLine } from "../types";
 
 export interface ArenaMatchEndInfo {
   timestamp: number;
-  winningTeamId: string;
+  winningTeamId: number;
   matchDurationInSeconds: number;
   team0MMR: number;
   team1MMR: number;
@@ -14,7 +14,7 @@ export class ArenaMatchEnd implements ArenaMatchEndInfo {
   }
 
   public readonly timestamp: number;
-  public readonly winningTeamId: string;
+  public readonly winningTeamId: number;
   public readonly matchDurationInSeconds: number;
   public readonly team0MMR: number;
   public readonly team1MMR: number;
@@ -26,7 +26,7 @@ export class ArenaMatchEnd implements ArenaMatchEndInfo {
 
     this.timestamp = logLine.timestamp;
 
-    this.winningTeamId = logLine.parameters[0].toString();
+    this.winningTeamId = logLine.parameters[0];
     this.matchDurationInSeconds = logLine.parameters[1];
     this.team0MMR = logLine.parameters[2];
     this.team1MMR = logLine.parameters[3];
