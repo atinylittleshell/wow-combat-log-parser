@@ -100,7 +100,7 @@ describe("parser tests", () => {
       const combat = combats[0];
       expect(combat.endInfo?.timestamp).toBeGreaterThan(5000);
       expect(combat.endInfo?.matchDurationInSeconds).toEqual(465);
-      expect(combat.endInfo?.winningTeamId).toEqual("1");
+      expect(combat.endInfo?.winningTeamId).toEqual(1);
       expect(combat.endInfo?.team0MMR).toEqual(1440);
       expect(combat.endInfo?.team1MMR).toEqual(1437);
     });
@@ -214,12 +214,12 @@ describe("parser tests", () => {
     });
 
     it("should parse arena end events", () => {
-      expect(combats[0].endInfo?.winningTeamId).toEqual("1");
+      expect(combats[0].endInfo?.winningTeamId).toEqual(1);
       expect(combats[0].endInfo?.matchDurationInSeconds).toEqual(465);
       expect(combats[0].endInfo?.team0MMR).toEqual(1440);
       expect(combats[0].endInfo?.team1MMR).toEqual(1437);
 
-      expect(combats[1].endInfo?.winningTeamId).toEqual("0");
+      expect(combats[1].endInfo?.winningTeamId).toEqual(0);
       expect(combats[1].endInfo?.matchDurationInSeconds).toEqual(465);
       expect(combats[1].endInfo?.team0MMR).toEqual(1333);
       expect(combats[1].endInfo?.team1MMR).toEqual(1437);
