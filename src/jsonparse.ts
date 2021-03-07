@@ -29,7 +29,7 @@ function escape_commas(line: string): string {
       }
     }
   }
-  for (let m of marks) {
+  for (const m of marks) {
     line = replaceAt(line, m, COMMA_SENTINEL_CHARACTER);
   }
   return line;
@@ -51,6 +51,7 @@ function un_escape_commas(line: string): string {
   return line.replace(COMMA_SENTINEL_CHARACTER, ",");
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function parseWowToJSON(logline: string): any {
   /*
     JSON parse strategy:
@@ -58,7 +59,6 @@ export function parseWowToJSON(logline: string): any {
     it's correctly quoted and escaped for JSON.parse to succeed
   */
   const parametersForJson = escape_commas(logline).split(",");
-  let jsonParameters;
   let buf = "";
   for (const p of parametersForJson) {
     if (buf) {
@@ -82,9 +82,9 @@ export function parseWowToJSON(logline: string): any {
         // Prefix and suffix represent the potential []() characters
         //  that are list separators in the log. Find these and save them.
         // eslint-disable-next-line no-useless-escape
-        let openingMarkers = /^([\(\)\]\[]+)/g;
+        const openingMarkers = /^([\(\)\]\[]+)/g;
         // eslint-disable-next-line no-useless-escape
-        let closingMarkers = /([\(\)\]\[]+)$/g;
+        const closingMarkers = /([\(\)\]\[]+)$/g;
         let prefix = openingMarkers.exec(p) || "";
         let suffix = closingMarkers.exec(p) || "";
         prefix = prefix ? prefix[0] : "";
@@ -103,6 +103,5 @@ export function parseWowToJSON(logline: string): any {
   buf = buf.replace(/\(/g, "[");
   buf = buf.replace(/\)/g, "]");
 
-  jsonParameters = JSON.parse(`{"data":[${un_escape_commas(buf)}]}`);
-  return jsonParameters;
+  return JSON.parse(`{"data":[${un_escape_commas(buf)}]}`);
 }

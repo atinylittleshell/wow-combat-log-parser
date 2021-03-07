@@ -51,6 +51,7 @@ export interface ILogLine {
   id: string;
   timestamp: number;
   event: LogEvent;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   parameters: any[];
 }
 
