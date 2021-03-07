@@ -43,12 +43,14 @@ const Warrior = {
     },
     { spellId: "46968", name: "Shockwave", tags: [SpellTag.Control] },
     { spellId: "107570", name: "Storm Bolt", tags: [SpellTag.Control] },
+    { spellId: "132169", name: "Storm Bolt", tags: [SpellTag.Control] },
     { spellId: "107574", name: "Avatar", tags: [SpellTag.Offensive] },
     { spellId: "236077", name: "Disarm", tags: [] },
     { spellId: "236236", name: "Disarm (Protection)", tags: [] },
     // -- Arms
     { spellId: "5246", name: "Intimidating Shout", tags: [SpellTag.Control] },
     { spellId: "97462", name: "Rallying Cry", tags: [SpellTag.Defensive] },
+    { spellId: "97463", name: "Rallying Cry", tags: [SpellTag.Defensive] },
     { spellId: "118038", name: "Die by the Sword", tags: [SpellTag.Defensive] },
     { spellId: "167105", name: "Colossus Smash", tags: [] },
     { spellId: "262161", name: "Warbreaker", tags: [SpellTag.Offensive] },
@@ -85,6 +87,11 @@ const Warrior = {
       name: "War Banner",
       tags: [SpellTag.Defensive],
     },
+    {
+      spellId: "236321",
+      name: "War Banner",
+      tags: [SpellTag.Defensive],
+    },
   ],
 };
 
@@ -113,11 +120,17 @@ const Paladin = {
     { spellId: "216331", name: "Avenging Crusader", tags: [] },
     { spellId: "224668", name: "Crusade", tags: [] },
     { spellId: "231895", name: "Crusade", tags: [] },
+    { spellId: "105421", name: "Blinding Light", tags: [SpellTag.Control] },
     { spellId: "115750", name: "Blinding Light", tags: [SpellTag.Control] },
     // -- Holy
     { spellId: "498", name: "Divine Protection", tags: [SpellTag.Defensive] },
     {
       spellId: "6940",
+      name: "Blessing of Sacrifice",
+      tags: [SpellTag.Defensive],
+    },
+    {
+      spellId: "199448",
       name: "Blessing of Sacrifice",
       tags: [SpellTag.Defensive],
     },
@@ -133,6 +146,16 @@ const Paladin = {
     {
       spellId: "86659",
       name: "Guardian of Ancient Kings",
+      tags: [SpellTag.Defensive],
+    },
+    {
+      spellId: "337851",
+      name: "Guardian of Ancient Kings",
+      tags: [SpellTag.Defensive],
+    },
+    {
+      spellId: "337852",
+      name: "Reign of Ancient Kings",
       tags: [SpellTag.Defensive],
     },
     {
@@ -153,6 +176,11 @@ const Paladin = {
     { spellId: "210220", name: "Holy Wrath", tags: [] },
     { spellId: "210256", name: "Blessing of Sanctuary", tags: [] },
     // -- PvP
+    {
+      spellId: "199450",
+      name: "Ultimate Sacrifice",
+      tags: [SpellTag.Defensive],
+    },
     {
       spellId: "199452",
       name: "Ultimate Sacrifice",
@@ -187,6 +215,7 @@ const Hunter = {
       name: "Aspect of the Turtle",
       tags: [SpellTag.Defensive],
     },
+    { spellId: "3355", name: "Freezing Trap", tags: [SpellTag.Control] },
     { spellId: "187650", name: "Freezing Trap", tags: [SpellTag.Control] },
     { spellId: "202914", name: "Spider Sting", tags: [] },
     { spellId: "209997", name: "Play Dead", tags: [SpellTag.Defensive] },
@@ -194,6 +223,7 @@ const Hunter = {
     { spellId: "781", name: "Disengage", tags: [] },
     { spellId: "19386", name: "Wyvern Sting", tags: [SpellTag.Control] },
     { spellId: "19574", name: "Bestial Wrath", tags: [] },
+    { spellId: "24394", name: "Intimidation", tags: [SpellTag.Control] },
     { spellId: "19577", name: "Intimidation", tags: [SpellTag.Control] },
     { spellId: "109248", name: "Binding Shot", tags: [] },
     { spellId: "147362", name: "Counter Shot", tags: [] },
@@ -239,6 +269,7 @@ const Rogue = {
     { spellId: "1725", name: "Distract", tags: [] },
     { spellId: "1766", name: "Kick", tags: [] },
     { spellId: "1856", name: "Vanish", tags: [SpellTag.Defensive] },
+    { spellId: "11327", name: "Vanish", tags: [SpellTag.Defensive] },
     { spellId: "2983", name: "Sprint", tags: [] },
     { spellId: "31224", name: "Cloak of Shadows", tags: [SpellTag.Defensive] },
     { spellId: "57934", name: "Tricks of the Trade", tags: [] },
@@ -269,6 +300,7 @@ const Rogue = {
     // -- Subtlety
     { spellId: "121471", name: "Shadow Blades", tags: [SpellTag.Offensive] },
     { spellId: "185313", name: "Shadow Dance", tags: [SpellTag.Offensive] },
+    { spellId: "185422", name: "Shadow Dance", tags: [SpellTag.Offensive] },
     { spellId: "207736", name: "Shadowy Duel", tags: [SpellTag.Offensive] },
     { spellId: "209782", name: "Goremaw's Bite", tags: [] },
     { spellId: "212182", name: "Smoke Bomb", tags: [SpellTag.Control] },
@@ -298,6 +330,11 @@ const Priest = {
     { spellId: "47536", name: "Rapture", tags: [SpellTag.Defensive] },
     {
       spellId: "62618",
+      name: "Power Word: Barrier",
+      tags: [SpellTag.Defensive],
+    },
+    {
+      spellId: "81782",
       name: "Power Word: Barrier",
       tags: [SpellTag.Defensive],
     },
@@ -344,6 +381,7 @@ const DeathKnight = {
     { spellId: "48707", name: "Anti-Magic Shell", tags: [SpellTag.Defensive] },
     { spellId: "49576", name: "Death Grip", tags: [] },
     { spellId: "51052", name: "Anti-Magic Zone", tags: [SpellTag.Defensive] },
+    { spellId: "145629", name: "Anti-Magic Zone", tags: [SpellTag.Defensive] },
     { spellId: "61999", name: "Raise Ally", tags: [] },
     { spellId: "77606", name: "Dark Simulacrum", tags: [] },
     { spellId: "212552", name: "Wraith Walk", tags: [] },
@@ -390,6 +428,7 @@ const DeathKnight = {
     { spellId: "43265", name: "Death and Decay", tags: [] },
     { spellId: "152280", name: "Defile", tags: [] },
     { spellId: "47481", name: "Gnaw (Ghoul)", tags: [SpellTag.Control] },
+    { spellId: "91800", name: "Gnaw (Ghoul)", tags: [SpellTag.Control] },
     { spellId: "47482", name: "Leap (Ghoul)", tags: [] },
     { spellId: "49206", name: "Summon Gargoyle", tags: [] },
     { spellId: "207349", name: "Dark Arbiter", tags: [] },
@@ -437,6 +476,7 @@ const Shaman = {
     { spellId: "192058", name: "Capacitor", tags: [] },
     { spellId: "192077", name: "Wind Rush Totem", tags: [] },
     { spellId: "204330", name: "Skyfury Totem", tags: [SpellTag.Offensive] },
+    { spellId: "208963", name: "Skyfury Totem", tags: [SpellTag.Offensive] },
     { spellId: "204331", name: "Counterstrike Totem", tags: [] },
     { spellId: "204332", name: "Windfury Totem", tags: [] },
     // -- Elemental
@@ -474,6 +514,7 @@ const Shaman = {
     { spellId: "207778", name: "Gift of the Queen", tags: [] },
     // -- PvP
     { spellId: "305483", name: "Lightning Lasso", tags: [SpellTag.Offensive] },
+    { spellId: "305485", name: "Lightning Lasso", tags: [SpellTag.Offensive] },
   ],
 };
 
@@ -502,6 +543,7 @@ const Mage = {
     { spellId: "136511", name: "Ring of Frost", tags: [SpellTag.Control] },
     { spellId: "140376", name: "Ring of Frost", tags: [SpellTag.Control] },
     { spellId: "113724", name: "Ring of Frost", tags: [SpellTag.Control] },
+    { spellId: "321329", name: "Ring of Frost", tags: [SpellTag.Control] },
     { spellId: "116011", name: "Rune of Power", tags: [] },
     { spellId: "198111", name: "Temporal Shield", tags: [SpellTag.Defensive] },
     // -- Arcane
@@ -549,6 +591,7 @@ const Warlock = {
     { spellId: "20707", name: "Soulstone", tags: [] },
     { spellId: "5782", name: "Fear", tags: [SpellTag.Control] },
     { spellId: "342914", name: "Fear", tags: [SpellTag.Control] },
+    { spellId: "118699", name: "Fear", tags: [SpellTag.Control] },
     { spellId: "30283", name: "Shadowfury", tags: [SpellTag.Control] },
     { spellId: "104773", name: "Unending Resolve", tags: [SpellTag.Defensive] },
     { spellId: "108416", name: "Dark Pact", tags: [] },
@@ -766,12 +809,12 @@ const DemonHunter = {
     {
       spellId: "187827",
       name: "Metamorphosis (Vengeance)",
-      tags: [SpellTag.Control, SpellTag.Offensive],
+      tags: [SpellTag.Offensive],
     },
     {
       spellId: "162264",
       name: "Metamorphosis",
-      tags: [SpellTag.Control, SpellTag.Offensive],
+      tags: [SpellTag.Offensive],
     },
     { spellId: "196718", name: "Darkness", tags: [SpellTag.Defensive] },
     { spellId: "198013", name: "Eye Beam", tags: [] },
