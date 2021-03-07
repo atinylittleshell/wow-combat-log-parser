@@ -1,5 +1,12 @@
 import { CombatUnitClass, CombatUnitPowerType } from "./types";
 
+export function nullthrows<T>(value: T | null | undefined): T {
+  if (value === null || value === undefined) {
+    throw Error("this value cannot be null or undefined");
+  }
+  return value;
+}
+
 export const parseQuotedName = (quotedName: string): string => {
   return quotedName.replace(/"/g, "");
 };
