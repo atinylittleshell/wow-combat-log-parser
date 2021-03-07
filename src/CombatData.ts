@@ -25,7 +25,6 @@ import { parseQuotedName } from "./utils";
 
 export interface ICombatData {
   id: string;
-  isWellFormed: boolean;
   startTime: number;
   endTime: number;
   units: { [unitId: string]: ICombatUnit };
@@ -35,11 +34,18 @@ export interface ICombatData {
   hasAdvancedLogging: boolean;
   rawLines: string[];
   linesNotParsedCount: number;
-  startInfo?: ArenaMatchStartInfo;
-  endInfo?: ArenaMatchEndInfo;
+  startInfo: ArenaMatchStartInfo;
+  endInfo: ArenaMatchEndInfo;
 }
 
-export class CombatData implements ICombatData {
+export interface IMalformedCombatData {
+  id: string;
+  startTime: number;
+  rawLines: string[];
+  linesNotParsedCount: number;
+}
+
+export class CombatData {
   public endInfo: ArenaMatchEndInfo | undefined = undefined;
   public startInfo: ArenaMatchStartInfo | undefined = undefined;
   public id: string = uniqueId("combat");
@@ -329,6 +335,8 @@ export class CombatData implements ICombatData {
       playerUnits.length === this.combatantMetadata.size &&
       deadPlayerCount > 0 &&
       !wasTimeout &&
+      this.startInfo &&
+      this.endInfo &&
       deadPlayerCount < this.combatantMetadata.size &&
       (this.result === CombatResult.Win || this.result === CombatResult.Lose)
     ) {

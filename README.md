@@ -17,18 +17,18 @@ Type definitions are already included in the package, so no need to install @typ
 ## Usage
 
 ```javascript
-import { CombatData, WoWCombatLogParser } from "wow-combat-log-parser";
+import { ICombatData, IMalformedCombatData, WoWCombatLogParser } from "wow-combat-log-parser";
 
 const logParser = new WoWCombatLogParser();
 
-logParser.on("arena_match_started", (data) => {
-  const combat = data as CombatData;
-  // do something with the combat object
+logParser.on("arena_match_ended", (data) => {
+  const combat = data as ICombatData;
+  // do something with the valid combat object
 });
 
-logParser.on("arena_match_ended", (data) => {
-  const combat = data as CombatData;
-  // do something with the combat object
+logParser.on("malformed_arena_match_detected", (data) => {
+  const malformedCombat = data as IMalformedCombatData;
+  // do something with the malformed combat object
 });
 
 // populate the lines array by reading from the wow combat log file

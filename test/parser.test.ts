@@ -7,15 +7,24 @@ import {
   WoWCombatLogParser,
   CombatUnitPowerType,
 } from "../src";
+import { IMalformedCombatData } from "../src/CombatData";
 
-const parseLogFileAsync = (logFileName: string): Promise<ICombatData[]> => {
+const parseLogFileAsync = (
+  logFileName: string
+): Promise<[ICombatData[], IMalformedCombatData[]]> => {
   return new Promise(resolve => {
     const logParser = new WoWCombatLogParser();
     const results: ICombatData[] = [];
+    const malformedResults: IMalformedCombatData[] = [];
 
     logParser.on("arena_match_ended", data => {
       const combat = data as ICombatData;
       results.push(combat);
+    });
+
+    logParser.on("malformed_arena_match_detected", data => {
+      const combat = data as IMalformedCombatData;
+      malformedResults.push(combat);
     });
 
     lineReader.eachLine(
@@ -23,7 +32,7 @@ const parseLogFileAsync = (logFileName: string): Promise<ICombatData[]> => {
       (line, last) => {
         logParser.parseLine(line);
         if (last) {
-          resolve(results);
+          resolve([results, malformedResults]);
           return false;
         }
         return true;
@@ -36,7 +45,7 @@ describe("parser tests", () => {
   describe("parsing logs outside of arena matches", () => {
     let combats: ICombatData[] = [];
     beforeAll(async () => {
-      combats = await parseLogFileAsync("no_arena.txt");
+      [combats] = await parseLogFileAsync("no_arena.txt");
     });
 
     it("should not return any Combat objects", async () => {
@@ -47,7 +56,7 @@ describe("parser tests", () => {
   describe("parsing a short match", () => {
     let combats: ICombatData[] = [];
     beforeAll(async () => {
-      combats = await parseLogFileAsync("short_match.txt");
+      [combats] = await parseLogFileAsync("short_match.txt");
     });
 
     it("should return a single match", () => {
@@ -116,31 +125,31 @@ describe("parser tests", () => {
 
   describe("parsing a malformed log file that has double start bug", () => {
     let combats: ICombatData[] = [];
+    let malformedCombats: IMalformedCombatData[] = [];
     beforeAll(async () => {
-      combats = await parseLogFileAsync("double_start.txt");
+      [combats, malformedCombats] = await parseLogFileAsync("double_start.txt");
     });
 
-    it("should return two matches", () => {
-      expect(combats).toHaveLength(2);
+    it("should return one valid match", () => {
+      expect(combats).toHaveLength(1);
+    });
+    it("should return one malformed match", () => {
+      expect(malformedCombats).toHaveLength(1);
     });
 
-    it("should buffer the raw log [0]", () => {
-      expect(combats[0].rawLines.length).toEqual(7);
+    it("should buffer the malformed raw log", () => {
+      expect(malformedCombats[0].rawLines.length).toEqual(7);
     });
 
-    it("should buffer the raw log [1]", () => {
-      expect(combats[1].rawLines.length).toEqual(10);
-    });
-
-    it("should mark the first match as malformed", () => {
-      expect(combats[0].isWellFormed).toBeFalsy();
+    it("should buffer the valid raw log", () => {
+      expect(combats[0].rawLines.length).toEqual(10);
     });
   });
 
   describe("parsing a real log file without advanced combat logging", () => {
     let combats: ICombatData[] = [];
     beforeAll(async () => {
-      combats = await parseLogFileAsync("real_match_no_advanced.txt");
+      [combats] = await parseLogFileAsync("real_match_no_advanced.txt");
     });
 
     it("should return a single match", () => {
@@ -175,16 +184,16 @@ describe("parser tests", () => {
   describe("parsing a log with two matches", () => {
     let combats: ICombatData[] = [];
     beforeAll(async () => {
-      combats = await parseLogFileAsync("two_short_matches.txt");
+      [combats] = await parseLogFileAsync("two_short_matches.txt");
     });
 
-    it("should return a single match", () => {
+    it("should return two matches", () => {
       expect(combats).toHaveLength(2);
     });
 
     it("should buffer the raw logs", () => {
       expect(combats[0].rawLines.length).toEqual(11);
-      expect(combats[1].rawLines.length).toEqual(9);
+      expect(combats[1].rawLines.length).toEqual(10);
     });
 
     it("should count the lines it cant parse", () => {
@@ -219,31 +228,33 @@ describe("parser tests", () => {
 
   describe("parsing a log with no end will time out", () => {
     let combats: ICombatData[] = [];
+    let malformedCombats: IMalformedCombatData[] = [];
     beforeAll(async () => {
-      combats = await parseLogFileAsync("match_without_end.txt");
+      [combats, malformedCombats] = await parseLogFileAsync(
+        "match_without_end.txt"
+      );
     });
 
-    it("should return a single match", () => {
-      expect(combats).toHaveLength(1);
+    it("should return no valid match", () => {
+      expect(combats).toHaveLength(0);
+    });
+    it("should return one malformed match", () => {
+      expect(malformedCombats).toHaveLength(1);
     });
 
     it("should buffer the raw logs", () => {
-      expect(combats[0].rawLines.length).toEqual(10);
+      expect(malformedCombats[0].rawLines.length).toEqual(10);
     });
 
     it("should count the lines it cant parse", () => {
-      expect(combats[0].linesNotParsedCount).toEqual(1);
-    });
-
-    it("should mark the match as malformed", () => {
-      expect(combats[0].isWellFormed).toBeFalsy();
+      expect(malformedCombats[0].linesNotParsedCount).toEqual(1);
     });
   });
 
   describe("parsing a log with advanced logging", () => {
     let combats: ICombatData[] = [];
     beforeAll(async () => {
-      combats = await parseLogFileAsync("skirmish_with_advanced_logging.txt");
+      [combats] = await parseLogFileAsync("skirmish_with_advanced_logging.txt");
     });
 
     it("should return a single match", () => {
