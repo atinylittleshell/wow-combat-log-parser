@@ -4,7 +4,7 @@ import { CombatData, ICombatData, IMalformedCombatData } from "./CombatData";
 import { ILogLine, LogEvent } from "./types";
 import { parseWowToJSON } from "./jsonparse";
 import { nullthrows } from "./utils";
-export { ICombatData } from "./CombatData";
+export { ICombatData, IMalformedCombatData } from "./CombatData";
 export { ICombatUnit } from "./CombatUnit";
 export * from "./types";
 export * from "./utils";
