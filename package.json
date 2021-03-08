@@ -95,6 +95,7 @@
     "@size-limit/preset-small-lib": "^4.9.1",
     "@types/line-reader": "^0.0.32",
     "@types/lodash": "^4.14.168",
+    "@types/md5": "^2.3.0",
     "husky": "^4.3.8",
     "size-limit": "^4.9.1",
     "tsdx": "^0.14.1",
@@ -107,6 +108,7 @@
     "line-reader": "^0.4.0",
     "lodash": "^4.17.20",
     "lodash-es": "^4.17.20",
+    "md5": "^2.3.0",
     "moment": "^2.29.1"
   },
   "resolutions": {

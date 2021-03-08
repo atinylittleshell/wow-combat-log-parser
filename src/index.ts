@@ -3,7 +3,7 @@ import moment from "moment";
 import { CombatData, ICombatData, IMalformedCombatData } from "./CombatData";
 import { ILogLine, LogEvent } from "./types";
 import { parseWowToJSON } from "./jsonparse";
-import { nullthrows } from "./utils";
+import { nullthrows, computeCanonicalHash } from "./utils";
 export { ICombatData, IMalformedCombatData } from "./CombatData";
 export { ICombatUnit } from "./CombatUnit";
 export * from "./types";
@@ -157,7 +157,7 @@ export class WoWCombatLogParser extends EventEmitter {
       );
       if (this.currentCombat.isWellFormed) {
         const plainCombatDataObject: ICombatData = {
-          id: this.currentCombat.id,
+          id: computeCanonicalHash(this.currentLinebuffer),
           startTime: this.currentCombat.startTime,
           endTime: this.currentCombat.endTime,
           units: this.currentCombat.units,
@@ -173,7 +173,7 @@ export class WoWCombatLogParser extends EventEmitter {
         this.emit("arena_match_ended", plainCombatDataObject);
       } else {
         const malformedCombatObject: IMalformedCombatData = {
-          id: this.currentCombat.id,
+          id: computeCanonicalHash(this.currentLinebuffer),
           startTime: this.currentCombat.startTime,
           rawLines: this.currentLinebuffer,
           linesNotParsedCount: this.linesNotParsedCount,

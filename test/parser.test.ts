@@ -121,6 +121,11 @@ describe("parser tests", () => {
         1
       );
     });
+
+    it("should compute the correct hash id", () => {
+      const combat = combats[0];
+      expect(combat.id).toEqual("f3750ed46db5cabc1d25882e6fa2c67b");
+    });
   });
 
   describe("parsing a malformed log file that has double start bug", () => {
