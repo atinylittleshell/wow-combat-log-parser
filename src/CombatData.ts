@@ -28,7 +28,7 @@ export interface ICombatData {
   startTime: number;
   endTime: number;
   units: { [unitId: string]: ICombatUnit };
-  playerTeamId: number;
+  playerTeamId: string;
   playerTeamRating: number;
   result: CombatResult;
   hasAdvancedLogging: boolean;
@@ -53,7 +53,7 @@ export class CombatData {
   public startTime = 0;
   public endTime = 0;
   public units: { [unitId: string]: CombatUnit } = {};
-  public playerTeamId = -1;
+  public playerTeamId = "";
   public playerTeamRating = 0;
   public result: CombatResult = CombatResult.Unknown;
   public hasAdvancedLogging = false;
@@ -98,9 +98,10 @@ export class CombatData {
 
     if (logLine.event === LogEvent.COMBATANT_INFO) {
       const infoAction = new CombatantInfoAction(logLine);
-      const unitId = logLine.parameters[0].toString();
-      const specId = logLine.parameters[23];
-      if (specId in CombatUnitSpec) {
+      const unitId: string = logLine.parameters[0].toString();
+      const specId: string = logLine.parameters[23].toString();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if ((<any>Object).values(CombatUnitSpec).indexOf(specId) >= 0) {
         const spec = specId as CombatUnitSpec;
         let unitClass = CombatUnitClass.None;
         switch (spec) {
@@ -310,9 +311,9 @@ export class CombatData {
     const deadPlayerCount = playerUnits.filter(p => p.deathRecords.length > 0)
       .length;
 
-    if (this.playerTeamId >= 0) {
+    if (this.playerTeamId) {
       this.playerTeamRating =
-        this.playerTeamId === 0
+        this.playerTeamId === "0"
           ? this.endInfo?.team0MMR || 0
           : this.endInfo?.team1MMR || 0;
     }

@@ -3,8 +3,8 @@ import { ILogLine, CombatantInfo, EquippedItem, CovenantInfo } from "../types";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function parseCovenantInfo(val: any[]): CovenantInfo {
   return {
-    soulbindId: val[0],
-    covenantId: val[1],
+    soulbindId: val[0].toString(),
+    covenantId: val[1].toString(),
     conduitIdsJSON: JSON.stringify(val[4]),
     item2: val[2],
     item3JSON: JSON.stringify(val[3]),
@@ -14,11 +14,11 @@ function parseCovenantInfo(val: any[]): CovenantInfo {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function parseEquippedItems(val: any[]): EquippedItem[] {
   return val.map(eqi => ({
-    id: eqi[0],
+    id: eqi[0].toString(),
     ilvl: eqi[1],
-    enchants: eqi[2],
-    bonuses: eqi[3],
-    gems: eqi[4],
+    enchants: eqi[2].map((v: number) => v.toString()),
+    bonuses: eqi[3].map((v: number) => v.toString()),
+    gems: eqi[4].map((v: number) => v.toString()),
   }));
 }
 
@@ -38,7 +38,7 @@ export class CombatantInfoAction {
     this.timestamp = logLine.timestamp;
 
     this.info = {
-      teamId: logLine.parameters[1],
+      teamId: logLine.parameters[1].toString(),
       strength: logLine.parameters[2],
       agility: logLine.parameters[3],
       stamina: logLine.parameters[4],
@@ -60,9 +60,9 @@ export class CombatantInfoAction {
       versatilityHealingDone: logLine.parameters[20],
       versatilityDamageTaken: logLine.parameters[21],
       armor: logLine.parameters[22],
-      specId: logLine.parameters[23],
-      talents: logLine.parameters[24],
-      pvpTalents: logLine.parameters[25],
+      specId: logLine.parameters[23].toString(),
+      talents: logLine.parameters[24].map((v: number) => v.toString()),
+      pvpTalents: logLine.parameters[25].map((v: number) => v.toString()),
       covenantInfo: parseCovenantInfo(logLine.parameters[26]),
       equipment: parseEquippedItems(logLine.parameters[27]),
       interestingAurasJSON: JSON.stringify(logLine.parameters[28]),
