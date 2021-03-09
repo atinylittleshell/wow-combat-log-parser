@@ -137,7 +137,6 @@ export class WoWCombatLogParser extends EventEmitter {
   private startNewCombat(logLine: ILogLine): void {
     this.currentCombat = new CombatData();
     this.currentCombat.startTime = logLine.timestamp || 0;
-    this.currentCombat.playerTeamId = parseInt(logLine.parameters[3]);
     this.state = LogParsingState.IN_MATCH;
 
     this.currentCombat.readLogLine(logLine);
@@ -148,13 +147,7 @@ export class WoWCombatLogParser extends EventEmitter {
       if (logLine) {
         this.currentCombat.readLogLine(logLine);
       }
-      this.currentCombat.end(
-        [
-          parseInt(logLine ? logLine.parameters[2] : "0"), // team0 rating
-          parseInt(logLine ? logLine.parameters[3] : "0"), // team1 rating
-        ],
-        wasTimeout
-      );
+      this.currentCombat.end(wasTimeout);
       if (this.currentCombat.isWellFormed) {
         const plainCombatDataObject: ICombatData = {
           id: this.currentCombat.id,

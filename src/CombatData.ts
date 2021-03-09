@@ -28,7 +28,7 @@ export interface ICombatData {
   startTime: number;
   endTime: number;
   units: { [unitId: string]: ICombatUnit };
-  playerTeamId: number;
+  playerTeamId: string;
   playerTeamRating: number;
   result: CombatResult;
   hasAdvancedLogging: boolean;
@@ -53,14 +53,13 @@ export class CombatData {
   public startTime = 0;
   public endTime = 0;
   public units: { [unitId: string]: CombatUnit } = {};
-  public playerTeamId = -1;
+  public playerTeamId = "";
   public playerTeamRating = 0;
   public result: CombatResult = CombatResult.Unknown;
   public hasAdvancedLogging = false;
   public rawLines: string[] = [];
   public linesNotParsedCount = 0;
 
-  private lastDeathReaction: CombatUnitReaction = CombatUnitReaction.Neutral;
   private combatantMetadata: Map<string, ICombatantMetadata> = new Map<
     string,
     ICombatantMetadata
@@ -99,9 +98,10 @@ export class CombatData {
 
     if (logLine.event === LogEvent.COMBATANT_INFO) {
       const infoAction = new CombatantInfoAction(logLine);
-      const unitId = logLine.parameters[0].toString();
-      const specId = logLine.parameters[23];
-      if (specId in CombatUnitSpec) {
+      const unitId: string = logLine.parameters[0].toString();
+      const specId: string = logLine.parameters[23].toString();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if ((<any>Object).values(CombatUnitSpec).indexOf(specId) >= 0) {
         const spec = specId as CombatUnitSpec;
         let unitClass = CombatUnitClass.None;
         switch (spec) {
@@ -206,14 +206,6 @@ export class CombatData {
     srcUnit.proveReaction(this.getUnitReaction(srcFlag));
     destUnit.proveReaction(this.getUnitReaction(destFlag));
 
-    if (
-      logLine.event === LogEvent.UNIT_DIED &&
-      this.getUnitType(destFlag) === CombatUnitType.Player &&
-      this.getUnitReaction(destFlag) !== CombatUnitReaction.Neutral
-    ) {
-      this.lastDeathReaction = this.getUnitReaction(destFlag);
-    }
-
     switch (logLine.event) {
       case LogEvent.SWING_DAMAGE:
       case LogEvent.RANGE_DAMAGE:
@@ -295,13 +287,16 @@ export class CombatData {
     this.combatantMetadata.set(id, combatantMetadata);
   }
 
-  public end(teamRatings: number[], wasTimeout?: boolean) {
+  public end(wasTimeout?: boolean) {
     _.forEach(this.units, unit => {
       unit.endActivity();
       if (this.combatantMetadata.has(unit.id)) {
         const metadata = this.combatantMetadata.get(unit.id);
         if (metadata) {
           unit.info = metadata?.info;
+          if (unit.reaction === CombatUnitReaction.Friendly) {
+            this.playerTeamId = metadata.info.teamId;
+          }
         }
         unit.proveClass(metadata?.class || CombatUnitClass.None);
         unit.proveSpec(metadata?.spec || CombatUnitSpec.None);
@@ -316,17 +311,19 @@ export class CombatData {
     const deadPlayerCount = playerUnits.filter(p => p.deathRecords.length > 0)
       .length;
 
-    if (this.playerTeamId >= 0) {
+    if (this.playerTeamId) {
       this.playerTeamRating =
-        this.playerTeamId < teamRatings.length
-          ? teamRatings[this.playerTeamId]
-          : 0;
+        this.playerTeamId === "0"
+          ? this.endInfo?.team0MMR || 0
+          : this.endInfo?.team1MMR || 0;
     }
 
-    if (this.lastDeathReaction === CombatUnitReaction.Friendly) {
-      this.result = CombatResult.Lose;
-    } else if (this.lastDeathReaction === CombatUnitReaction.Hostile) {
-      this.result = CombatResult.Win;
+    if (this.endInfo) {
+      if (this.endInfo.winningTeamId === this.playerTeamId) {
+        this.result = CombatResult.Win;
+      } else {
+        this.result = CombatResult.Lose;
+      }
     } else {
       this.result = CombatResult.Unknown;
     }
