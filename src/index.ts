@@ -1,9 +1,10 @@
 import EventEmitter from "eventemitter3";
 import moment from "moment";
-import { CombatData, ICombatData } from "./CombatData";
+import { CombatData, ICombatData, IMalformedCombatData } from "./CombatData";
 import { ILogLine, LogEvent } from "./types";
 import { parseWowToJSON } from "./jsonparse";
-export { ICombatData } from "./CombatData";
+import { nullthrows, computeCanonicalHash } from "./utils";
+export { ICombatData, IMalformedCombatData } from "./CombatData";
 export { ICombatUnit } from "./CombatUnit";
 export * from "./types";
 export * from "./utils";
@@ -136,23 +137,8 @@ export class WoWCombatLogParser extends EventEmitter {
   private startNewCombat(logLine: ILogLine): void {
     this.currentCombat = new CombatData();
     this.currentCombat.startTime = logLine.timestamp || 0;
-    this.currentCombat.playerTeamId = parseInt(logLine.parameters[3]);
     this.state = LogParsingState.IN_MATCH;
 
-    const plainCombatDataObject: ICombatData = {
-      id: this.currentCombat.id,
-      isWellFormed: this.currentCombat.isWellFormed,
-      startTime: this.currentCombat.startTime,
-      endTime: this.currentCombat.endTime,
-      units: this.currentCombat.units,
-      playerTeamId: this.currentCombat.playerTeamId,
-      playerTeamRating: this.currentCombat.playerTeamRating,
-      result: this.currentCombat.result,
-      hasAdvancedLogging: this.currentCombat.hasAdvancedLogging,
-      rawLines: this.currentLinebuffer,
-      linesNotParsedCount: this.linesNotParsedCount,
-    };
-    this.emit("arena_match_started", plainCombatDataObject);
     this.currentCombat.readLogLine(logLine);
   }
 
@@ -161,29 +147,32 @@ export class WoWCombatLogParser extends EventEmitter {
       if (logLine) {
         this.currentCombat.readLogLine(logLine);
       }
-      this.currentCombat.end(
-        [
-          parseInt(logLine ? logLine.parameters[2] : "0"), // team0 rating
-          parseInt(logLine ? logLine.parameters[3] : "0"), // team1 rating
-        ],
-        wasTimeout
-      );
-      const plainCombatDataObject: ICombatData = {
-        id: this.currentCombat.id,
-        isWellFormed: this.currentCombat.isWellFormed,
-        startTime: this.currentCombat.startTime,
-        endTime: this.currentCombat.endTime,
-        units: this.currentCombat.units,
-        playerTeamId: this.currentCombat.playerTeamId,
-        playerTeamRating: this.currentCombat.playerTeamRating,
-        result: this.currentCombat.result,
-        hasAdvancedLogging: this.currentCombat.hasAdvancedLogging,
-        rawLines: this.currentLinebuffer,
-        linesNotParsedCount: this.linesNotParsedCount,
-        startInfo: this.currentCombat.startInfo,
-        endInfo: this.currentCombat.endInfo,
-      };
-      this.emit("arena_match_ended", plainCombatDataObject);
+      this.currentCombat.end(wasTimeout);
+      if (this.currentCombat.isWellFormed) {
+        const plainCombatDataObject: ICombatData = {
+          id: computeCanonicalHash(this.currentLinebuffer),
+          startTime: this.currentCombat.startTime,
+          endTime: this.currentCombat.endTime,
+          units: this.currentCombat.units,
+          playerTeamId: this.currentCombat.playerTeamId,
+          playerTeamRating: this.currentCombat.playerTeamRating,
+          result: this.currentCombat.result,
+          hasAdvancedLogging: this.currentCombat.hasAdvancedLogging,
+          rawLines: this.currentLinebuffer,
+          linesNotParsedCount: this.linesNotParsedCount,
+          startInfo: nullthrows(this.currentCombat.startInfo),
+          endInfo: nullthrows(this.currentCombat.endInfo),
+        };
+        this.emit("arena_match_ended", plainCombatDataObject);
+      } else {
+        const malformedCombatObject: IMalformedCombatData = {
+          id: computeCanonicalHash(this.currentLinebuffer),
+          startTime: this.currentCombat.startTime,
+          rawLines: this.currentLinebuffer,
+          linesNotParsedCount: this.linesNotParsedCount,
+        };
+        this.emit("malformed_arena_match_detected", malformedCombatObject);
+      }
       this.currentCombat = null;
       this.currentLinebuffer = [];
       this.linesNotParsedCount = 0;

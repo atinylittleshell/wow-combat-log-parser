@@ -1,8 +1,20 @@
+import md5 from "md5";
 import { CombatUnitClass, CombatUnitPowerType } from "./types";
+
+export function nullthrows<T>(value: T | null | undefined): T {
+  if (value === null || value === undefined) {
+    throw Error("this value cannot be null or undefined");
+  }
+  return value;
+}
 
 export const parseQuotedName = (quotedName: string): string => {
   return quotedName.replace(/"/g, "");
 };
+
+export function computeCanonicalHash(buffer: string[]): string {
+  return md5(buffer.join("\n").slice(1024));
+}
 
 export const getClassColor = (unitClass: CombatUnitClass): string => {
   switch (unitClass) {

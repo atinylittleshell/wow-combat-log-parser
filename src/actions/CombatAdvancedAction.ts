@@ -46,7 +46,7 @@ export class CombatAdvancedAction extends CombatAction {
     const powerType = logLine.parameters[advancedLoggingOffset + 8]
       .toString()
       .split("|")
-      .map((v: string) => parseInt(v));
+      .map((v: string) => v);
     const currentPower = logLine.parameters[advancedLoggingOffset + 9]
       .toString()
       .split("|")

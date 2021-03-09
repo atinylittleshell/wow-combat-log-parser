@@ -84,88 +84,88 @@ export enum CombatUnitClass {
 }
 
 export enum CombatUnitSpec {
-  None = 0,
-  DeathKnight_Blood = 250,
-  DeathKnight_Frost = 251,
-  DeathKnight_Unholy = 252,
-  DemonHunter_Havoc = 577,
-  DemonHunter_Vengeance = 581,
-  Druid_Balance = 102,
-  Druid_Feral = 103,
-  Druid_Guardian = 104,
-  Druid_Restoration = 105,
-  Hunter_BeastMastery = 253,
-  Hunter_Marksmanship = 254,
-  Hunter_Survival = 255,
-  Mage_Arcane = 62,
-  Mage_Fire = 63,
-  Mage_Frost = 64,
-  Monk_BrewMaster = 268,
-  Monk_Windwalker = 269,
-  Monk_Mistweaver = 270,
-  Paladin_Holy = 65,
-  Paladin_Protection = 66,
-  Paladin_Retribution = 70,
-  Priest_Discipline = 256,
-  Priest_Holy = 257,
-  Priest_Shadow = 258,
-  Rogue_Assassination = 259,
-  Rogue_Outlaw = 260,
-  Rogue_Subtlety = 261,
-  Shaman_Elemental = 262,
-  Shaman_Enhancement = 263,
-  Shaman_Restoration = 264,
-  Warlock_Affliction = 265,
-  Warlock_Demonology = 266,
-  Warlock_Destruction = 267,
-  Warrior_Arms = 71,
-  Warrior_Fury = 72,
-  Warrior_Protection = 73,
+  None = "0",
+  DeathKnight_Blood = "250",
+  DeathKnight_Frost = "251",
+  DeathKnight_Unholy = "252",
+  DemonHunter_Havoc = "577",
+  DemonHunter_Vengeance = "581",
+  Druid_Balance = "102",
+  Druid_Feral = "103",
+  Druid_Guardian = "104",
+  Druid_Restoration = "105",
+  Hunter_BeastMastery = "253",
+  Hunter_Marksmanship = "254",
+  Hunter_Survival = "255",
+  Mage_Arcane = "62",
+  Mage_Fire = "63",
+  Mage_Frost = "64",
+  Monk_BrewMaster = "268",
+  Monk_Windwalker = "269",
+  Monk_Mistweaver = "270",
+  Paladin_Holy = "65",
+  Paladin_Protection = "66",
+  Paladin_Retribution = "70",
+  Priest_Discipline = "256",
+  Priest_Holy = "257",
+  Priest_Shadow = "258",
+  Rogue_Assassination = "259",
+  Rogue_Outlaw = "260",
+  Rogue_Subtlety = "261",
+  Shaman_Elemental = "262",
+  Shaman_Enhancement = "263",
+  Shaman_Restoration = "264",
+  Warlock_Affliction = "265",
+  Warlock_Demonology = "266",
+  Warlock_Destruction = "267",
+  Warrior_Arms = "71",
+  Warrior_Fury = "72",
+  Warrior_Protection = "73",
 }
 
 export enum CombatUnitPowerType {
-  HealthCost = -2,
-  None = -1,
-  Mana = 0,
-  Rage = 1,
-  Focus = 2,
-  Energy = 3,
-  ComboPoints = 4,
-  Runes = 5,
-  RunicPower = 6,
-  SoulShards = 7,
-  LunarPower = 8,
-  HolyPower = 9,
-  Alternate = 10,
-  Maelstrom = 11,
-  Chi = 12,
-  Insanity = 13,
-  Obsolete = 14,
-  Obsolete2 = 15,
-  ArcaneCharges = 16,
-  Fury = 17,
-  Pain = 18,
-  NumPowerTypes = 19,
+  HealthCost = "-2",
+  None = "-1",
+  Mana = "0",
+  Rage = "1",
+  Focus = "2",
+  Energy = "3",
+  ComboPoints = "4",
+  Runes = "5",
+  RunicPower = "6",
+  SoulShards = "7",
+  LunarPower = "8",
+  HolyPower = "9",
+  Alternate = "10",
+  Maelstrom = "11",
+  Chi = "12",
+  Insanity = "13",
+  Obsolete = "14",
+  Obsolete2 = "15",
+  ArcaneCharges = "16",
+  Fury = "17",
+  Pain = "18",
+  NumPowerTypes = "19",
 }
 
 export interface EquippedItem {
-  bonuses: number[];
-  enchants: number[];
-  gems: number[];
-  id: number;
+  bonuses: string[];
+  enchants: string[];
+  gems: string[];
+  id: string;
   ilvl: number;
 }
 
 export interface CovenantInfo {
-  covenantId: number;
-  soulbindId: number;
+  covenantId: string;
+  soulbindId: string;
   conduitIdsJSON: string;
   item2: number[]; // Always empty?
   item3JSON: string; // This is related to soulbind tree choices somehow
 }
 
 export interface CombatantInfo {
-  teamId: number;
+  teamId: string;
   strength: number;
   agility: number;
   stamina: number;
@@ -187,9 +187,9 @@ export interface CombatantInfo {
   versatilityHealingDone: number;
   versatilityDamageTaken: number;
   armor: number;
-  specId: number;
-  talents: number[];
-  pvpTalents: number[];
+  specId: string;
+  talents: string[];
+  pvpTalents: string[];
   covenantInfo: CovenantInfo;
   equipment: EquippedItem[];
   interestingAurasJSON: string;
