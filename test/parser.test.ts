@@ -1,9 +1,9 @@
 import path from "path";
 import lineReader from "line-reader";
 import {
-  ICombatData,
   CombatResult,
   CombatUnitSpec,
+  ICombatData,
   WoWCombatLogParser,
   CombatUnitPowerType,
 } from "../src";
@@ -61,6 +61,11 @@ describe("parser tests", () => {
 
     it("should return a single match", () => {
       expect(combats).toHaveLength(1);
+    });
+
+    it("reaction based fields should populate", () => {
+      expect(combats[0].playerTeamId).toEqual("0");
+      expect(combats[0].playerTeamRating).toEqual(1440);
     });
 
     it("should buffer the raw log", () => {
