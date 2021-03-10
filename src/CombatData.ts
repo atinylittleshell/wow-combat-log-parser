@@ -294,14 +294,21 @@ export class CombatData {
         const metadata = this.combatantMetadata.get(unit.id);
         if (metadata) {
           unit.info = metadata?.info;
-          if (unit.reaction === CombatUnitReaction.Friendly) {
-            this.playerTeamId = metadata.info.teamId;
-          }
         }
         unit.proveClass(metadata?.class || CombatUnitClass.None);
         unit.proveSpec(metadata?.spec || CombatUnitSpec.None);
       }
       unit.end();
+    });
+
+    // units are finalized, check playerTeam info
+    _.forEach(this.units, unit => {
+      const metadata = this.combatantMetadata.get(unit.id);
+      if (metadata) {
+        if (unit.reaction === CombatUnitReaction.Friendly) {
+          this.playerTeamId = metadata.info.teamId;
+        }
+      }
     });
 
     // a valid arena combat should have at least two friendly units and two hostile units
