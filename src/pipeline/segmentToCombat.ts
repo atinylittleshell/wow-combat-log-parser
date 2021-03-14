@@ -21,7 +21,7 @@ export const segmentToCombat = () => {
         const combat = new CombatData();
         combat.startTime = segment.events[0].timestamp || 0;
         segment.events.forEach(e => {
-          combat.readLogLine(e.logLine);
+          combat.readEvent(e);
         });
         combat.end();
 

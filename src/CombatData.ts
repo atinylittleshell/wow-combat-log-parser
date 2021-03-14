@@ -6,7 +6,6 @@ import {
   ArenaMatchStartInfo,
 } from "./actions/ArenaMatchStart";
 import { ArenaMatchEnd, ArenaMatchEndInfo } from "./actions/ArenaMatchEnd";
-import { CombatAction } from "./actions/CombatAction";
 import { CombatantInfoAction } from "./actions/CombatantInfoAction";
 import { CombatAdvancedAction } from "./actions/CombatAdvancedAction";
 import { CombatHpUpdateAction } from "./actions/CombatHpUpdateAction";
@@ -18,10 +17,9 @@ import {
   CombatUnitSpec,
   CombatUnitType,
   ICombatantMetadata,
-  ILogLine,
   LogEvent,
 } from "./types";
-import { parseQuotedName } from "./utils";
+import { CombatEvent } from "./pipeline/logLineToCombatEvent";
 
 export interface ICombatData {
   id: string;
@@ -67,41 +65,40 @@ export class CombatData {
     ICombatantMetadata
   >();
 
-  public readLogLine(logLine: ILogLine) {
+  public readEvent(event: CombatEvent) {
     if (this.startTime === 0) {
-      this.startTime = logLine.timestamp;
+      this.startTime = event.timestamp;
     }
-    this.endTime = logLine.timestamp;
+    this.endTime = event.timestamp;
 
-    if (logLine.event === LogEvent.ARENA_MATCH_START) {
-      const arenaStart = new ArenaMatchStart(logLine);
+    if (event instanceof ArenaMatchStart) {
       this.startInfo = {
-        timestamp: arenaStart.timestamp,
-        zoneId: arenaStart.zoneId,
-        item1: arenaStart.item1,
-        bracket: arenaStart.bracket,
-        isRanked: arenaStart.isRanked,
+        timestamp: event.timestamp,
+        zoneId: event.zoneId,
+        item1: event.item1,
+        bracket: event.bracket,
+        isRanked: event.isRanked,
       };
+      return;
     }
-    if (logLine.event === LogEvent.ARENA_MATCH_END) {
-      const arenaEnd = new ArenaMatchEnd(logLine);
+    if (event instanceof ArenaMatchEnd) {
       this.endInfo = {
-        timestamp: arenaEnd.timestamp,
-        winningTeamId: arenaEnd.winningTeamId,
-        matchDurationInSeconds: arenaEnd.matchDurationInSeconds,
-        team0MMR: arenaEnd.team0MMR,
-        team1MMR: arenaEnd.team1MMR,
+        timestamp: event.timestamp,
+        winningTeamId: event.winningTeamId,
+        matchDurationInSeconds: event.matchDurationInSeconds,
+        team0MMR: event.team0MMR,
+        team1MMR: event.team1MMR,
       };
-    }
-
-    if (logLine.parameters.length < 8) {
       return;
     }
 
-    if (logLine.event === LogEvent.COMBATANT_INFO) {
-      const infoAction = new CombatantInfoAction(logLine);
-      const unitId: string = logLine.parameters[0].toString();
-      const specId: string = logLine.parameters[23].toString();
+    if (event.logLine.parameters.length < 8) {
+      return;
+    }
+
+    if (event instanceof CombatantInfoAction) {
+      const unitId: string = event.logLine.parameters[0].toString();
+      const specId: string = event.info.specId;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if ((<any>Object).values(CombatUnitSpec).indexOf(specId) >= 0) {
         const spec = specId as CombatUnitSpec;
@@ -171,19 +168,19 @@ export class CombatData {
         this.registerCombatant(unitId, {
           spec,
           class: unitClass,
-          info: infoAction.info,
+          info: event.info,
         });
       }
       return;
     }
 
-    const srcGUID = logLine.parameters[0].toString();
-    const srcName = parseQuotedName(logLine.parameters[1]);
-    const srcFlag = logLine.parameters[2];
+    const srcGUID = event.srcUnitId;
+    const srcName = event.srcUnitName;
+    const srcFlag = event.srcUnitFlags;
 
-    const destGUID = logLine.parameters[4].toString();
-    const destName = parseQuotedName(logLine.parameters[5]);
-    const destFlag = logLine.parameters[6];
+    const destGUID = event.destUnitId;
+    const destName = event.destUnitName;
+    const destFlag = event.destUnitFlags;
 
     if (!this.units[srcGUID]) {
       this.units[srcGUID] = new CombatUnit(srcGUID, srcName);
@@ -199,8 +196,8 @@ export class CombatData {
         "failed to parse source unit or dest unit from the log line"
       );
     }
-    srcUnit.endTime = logLine.timestamp;
-    destUnit.endTime = logLine.timestamp;
+    srcUnit.endTime = event.timestamp;
+    destUnit.endTime = event.timestamp;
 
     srcUnit.proveType(this.getUnitType(srcFlag));
     destUnit.proveType(this.getUnitType(destFlag));
@@ -208,13 +205,13 @@ export class CombatData {
     srcUnit.proveReaction(this.getUnitReaction(srcFlag));
     destUnit.proveReaction(this.getUnitReaction(destFlag));
 
-    switch (logLine.event) {
+    switch (event.logLine.event) {
       case LogEvent.SWING_DAMAGE:
       case LogEvent.RANGE_DAMAGE:
       case LogEvent.SPELL_DAMAGE:
       case LogEvent.SPELL_PERIODIC_DAMAGE:
         {
-          const damageAction = new CombatHpUpdateAction(logLine);
+          const damageAction = event as CombatHpUpdateAction;
           if (srcGUID !== destGUID) {
             srcUnit.damageOut.push(damageAction);
           }
@@ -229,7 +226,7 @@ export class CombatData {
       case LogEvent.SPELL_HEAL:
       case LogEvent.SPELL_PERIODIC_HEAL:
         {
-          const healAction = new CombatHpUpdateAction(logLine);
+          const healAction = event as CombatHpUpdateAction;
           srcUnit.healOut.push(healAction);
           destUnit.healIn.push(healAction);
           if (healAction.advanced) {
@@ -247,8 +244,7 @@ export class CombatData {
       case LogEvent.SPELL_AURA_BROKEN:
       case LogEvent.SPELL_AURA_BROKEN_SPELL:
         {
-          const auraEvent = new CombatAction(logLine);
-          destUnit.auraEvents.push(auraEvent);
+          destUnit.auraEvents.push(event);
         }
         break;
       case LogEvent.SPELL_INTERRUPT:
@@ -256,30 +252,29 @@ export class CombatData {
       case LogEvent.SPELL_DISPEL:
       case LogEvent.SPELL_DISPEL_FAILED:
       case LogEvent.SPELL_EXTRA_ATTACKS:
-        srcUnit.actionOut.push(logLine);
-        destUnit.actionIn.push(logLine);
+        srcUnit.actionOut.push(event.logLine);
+        destUnit.actionIn.push(event.logLine);
         break;
       case LogEvent.UNIT_DIED:
-        destUnit.deathRecords.push(logLine);
+        destUnit.deathRecords.push(event.logLine);
         break;
       case LogEvent.SPELL_CAST_SUCCESS:
         {
-          const advancedAction = new CombatAdvancedAction(logLine);
+          const advancedAction = event as CombatAdvancedAction;
           if (advancedAction.advanced) {
             const advancedActor = this.units[advancedAction.advancedActorId];
             advancedActor?.advancedActions.push(advancedAction);
             this.hasAdvancedLogging = true;
           }
           srcUnit.spellCastEvents.push(advancedAction);
-          srcUnit.actionOut.push(logLine);
-          destUnit.actionIn.push(logLine);
+          srcUnit.actionOut.push(event.logLine);
+          destUnit.actionIn.push(event.logLine);
         }
         break;
       case LogEvent.SPELL_CAST_START:
       case LogEvent.SPELL_CAST_FAILED:
         {
-          const action = new CombatAction(logLine);
-          srcUnit.spellCastEvents.push(action);
+          srcUnit.spellCastEvents.push(event);
         }
         break;
     }
