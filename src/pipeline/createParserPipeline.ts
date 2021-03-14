@@ -1,6 +1,6 @@
 import { Subject } from "rxjs";
 import { ICombatData, IMalformedCombatData } from "../CombatData";
-import { combatEventsToSegments } from "./combatEventsToSegments";
+import { combatEventsToSegment } from "./combatEventsToSegment";
 import { logLineToCombatEvent } from "./logLineToCombatEvent";
 import { segmentToCombat } from "./segmentToCombat";
 import { stringToLogLine } from "./stringToLogLine";
@@ -15,7 +15,7 @@ export const createParserPipeline = (
     .pipe(
       stringToLogLine(),
       logLineToCombatEvent(),
-      combatEventsToSegments(),
+      combatEventsToSegment(),
       segmentToCombat()
     )
     .subscribe({

@@ -10,7 +10,7 @@ export interface ICombatEventSegment {
   lines: string[];
 }
 
-export const combatEventsToSegments = () => {
+export const combatEventsToSegment = () => {
   return (input: Observable<CombatEvent | string>) => {
     return new Observable<ICombatEventSegment>(output => {
       let lastTimestamp = 0;
