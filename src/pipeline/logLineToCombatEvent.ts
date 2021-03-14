@@ -5,6 +5,7 @@ import { ArenaMatchStart } from "../actions/ArenaMatchStart";
 import { CombatAction } from "../actions/CombatAction";
 import { CombatAdvancedAction } from "../actions/CombatAdvancedAction";
 import { CombatantInfoAction } from "../actions/CombatantInfoAction";
+import { CombatExtraSpellAction } from "../actions/CombatExtraSpellAction";
 import { CombatHpUpdateAction } from "../actions/CombatHpUpdateAction";
 import { ILogLine, LogEvent } from "../types";
 
@@ -43,10 +44,6 @@ export const logLineToCombatEvent = () => {
           case LogEvent.SPELL_AURA_REMOVED_DOSE:
           case LogEvent.SPELL_AURA_BROKEN:
           case LogEvent.SPELL_AURA_BROKEN_SPELL:
-          case LogEvent.SPELL_INTERRUPT:
-          case LogEvent.SPELL_STOLEN:
-          case LogEvent.SPELL_DISPEL:
-          case LogEvent.SPELL_DISPEL_FAILED:
           case LogEvent.SPELL_EXTRA_ATTACKS:
           case LogEvent.UNIT_DIED:
           case LogEvent.SPELL_CAST_START:
@@ -54,6 +51,11 @@ export const logLineToCombatEvent = () => {
           case LogEvent.SPELL_ABSORBED:
           case LogEvent.SPELL_SUMMON:
             return new CombatAction(logLine);
+          case LogEvent.SPELL_INTERRUPT:
+          case LogEvent.SPELL_STOLEN:
+          case LogEvent.SPELL_DISPEL:
+          case LogEvent.SPELL_DISPEL_FAILED:
+            return new CombatExtraSpellAction(logLine);
           case LogEvent.SPELL_CAST_SUCCESS:
           case LogEvent.SPELL_ENERGIZE:
           case LogEvent.SPELL_PERIODIC_ENERGIZE:
