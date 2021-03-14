@@ -1,5 +1,5 @@
 {
-  "version": "3.2.0",
+  "version": "3.3.0-beta.1",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -21,7 +21,10 @@
     "publish:no-bump": "git checkout publish-to-npm && git merge --no-edit --no-ff main && git push && git checkout main",
     "publish:patch": "git checkout main && bump patch -t \"v%s\" -p && yarn publish:no-bump",
     "publish:minor": "git checkout main && bump minor -t \"v%s\" -p && yarn publish:no-bump",
-    "publish:major": "git checkout main && bump major -t \"v%s\" -p && yarn publish:no-bump"
+    "publish:major": "git checkout main && bump major -t \"v%s\" -p && yarn publish:no-bump",
+    "pre:patch": "bump prepatch -t \"v%s-beta\" -p && npm publish --tag beta",
+    "pre:minor": "bump preminor -t \"v%s-beta\" -p && npm publish --tag beta",
+    "pre:major": "bump premajor -t \"v%s-beta\" -p && npm publish --tag beta"
   },
   "peerDependencies": {},
   "husky": {
