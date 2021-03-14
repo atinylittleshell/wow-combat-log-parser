@@ -4,7 +4,7 @@ import { ArenaMatchEnd } from "../actions/ArenaMatchEnd";
 import { ArenaMatchStart } from "../actions/ArenaMatchStart";
 import { CombatData, ICombatData, IMalformedCombatData } from "../CombatData";
 import { computeCanonicalHash, nullthrows } from "../utils";
-import { ICombatEventSegment } from "./combatEventsToSegments";
+import { ICombatEventSegment } from "./combatEventsToSegment";
 import { isNonNull } from "./common";
 
 export const segmentToCombat = () => {
