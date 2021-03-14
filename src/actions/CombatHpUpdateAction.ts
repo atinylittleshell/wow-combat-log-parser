@@ -5,9 +5,7 @@ export class CombatHpUpdateAction extends CombatAdvancedAction {
   public static supports(logLine: ILogLine): boolean {
     return (
       super.supports(logLine) &&
-      (logLine.event.endsWith("_DAMAGE") ||
-        logLine.event.endsWith("_HEAL") ||
-        logLine.event.endsWith("_DAMAGE_LANDED"))
+      (logLine.event.endsWith("_DAMAGE") || logLine.event.endsWith("_HEAL"))
     );
   }
 
@@ -19,10 +17,7 @@ export class CombatHpUpdateAction extends CombatAdvancedAction {
       throw new Error("event not supported");
     }
 
-    if (
-      logLine.event === "SWING_DAMAGE" ||
-      logLine.event === "SWING_DAMAGE_LANDED"
-    ) {
+    if (logLine.event === "SWING_DAMAGE") {
       this.amount = -1 * logLine.parameters[25];
     } else if (logLine.event.endsWith("_DAMAGE")) {
       this.amount = -1 * logLine.parameters[28];

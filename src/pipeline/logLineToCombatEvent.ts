@@ -30,7 +30,6 @@ export const logLineToCombatEvent = () => {
           case LogEvent.COMBATANT_INFO:
             return new CombatantInfoAction(logLine);
           case LogEvent.SWING_DAMAGE:
-          case LogEvent.SWING_DAMAGE_LANDED:
           case LogEvent.RANGE_DAMAGE:
           case LogEvent.SPELL_DAMAGE:
           case LogEvent.SPELL_PERIODIC_DAMAGE:
