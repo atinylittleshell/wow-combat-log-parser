@@ -10,6 +10,8 @@ export * from "./actions/ArenaMatchStart";
 export * from "./actions/CombatHpUpdateAction";
 export * from "./classMetadata";
 export * from "./covenantMetadata";
+export * from "./pipeline/stringToLogLine";
+export * from "./pipeline/logLineToCombatEvent";
 
 export class WoWCombatLogParser extends EventEmitter {
   private pipeline: (nextLine: string) => void = () => {
