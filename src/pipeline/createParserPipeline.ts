@@ -9,9 +9,9 @@ export const createParserPipeline = (
   onValidCombat: (combat: ICombatData) => void,
   onMalformedCombat: (combat: IMalformedCombatData) => void
 ) => {
-  const subject = new Subject<string>();
+  const rawLogs = new Subject<string>();
 
-  subject
+  rawLogs
     .pipe(
       stringToLogLine(),
       logLineToCombatEvent(),
@@ -29,6 +29,6 @@ export const createParserPipeline = (
     });
 
   return (nextLine: string) => {
-    subject.next(nextLine);
+    rawLogs.next(nextLine);
   };
 };
