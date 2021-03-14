@@ -16,8 +16,11 @@ export class CombatAdvancedAction extends CombatAction {
         logLine.event === "SPELL_PERIODIC_DAMAGE" ||
         logLine.event === "SPELL_HEAL" ||
         logLine.event === "SPELL_PERIODIC_HEAL" ||
+        logLine.event === "SPELL_ENERGIZE" ||
+        logLine.event === "SPELL_PERIODIC_ENERGIZE" ||
         logLine.event === "RANGE_DAMAGE" ||
         logLine.event === "SWING_DAMAGE" ||
+        logLine.event === "SWING_DAMAGE_LANDED" ||
         logLine.event === "SPELL_CAST_SUCCESS")
     );
   }

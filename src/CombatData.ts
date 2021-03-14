@@ -25,6 +25,7 @@ import { parseQuotedName } from "./utils";
 
 export interface ICombatData {
   id: string;
+  isWellFormed: true;
   startTime: number;
   endTime: number;
   units: { [unitId: string]: ICombatUnit };
@@ -40,6 +41,7 @@ export interface ICombatData {
 
 export interface IMalformedCombatData {
   id: string;
+  isWellFormed: false;
   startTime: number;
   rawLines: string[];
   linesNotParsedCount: number;

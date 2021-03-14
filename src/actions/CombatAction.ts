@@ -6,7 +6,8 @@ export class CombatAction {
     return (
       logLine.event.startsWith("SWING_") ||
       logLine.event.startsWith("RANGE_") ||
-      logLine.event.startsWith("SPELL_")
+      logLine.event.startsWith("SPELL_") ||
+      logLine.event === "UNIT_DIED"
     );
   }
 
