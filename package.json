@@ -1,5 +1,5 @@
 {
-  "version": "3.2.0",
+  "version": "3.6.1-beta.1",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -21,7 +21,10 @@
     "publish:no-bump": "git checkout publish-to-npm && git merge --no-edit --no-ff main && git push && git checkout main",
     "publish:patch": "git checkout main && bump patch -t \"v%s\" -p && yarn publish:no-bump",
     "publish:minor": "git checkout main && bump minor -t \"v%s\" -p && yarn publish:no-bump",
-    "publish:major": "git checkout main && bump major -t \"v%s\" -p && yarn publish:no-bump"
+    "publish:major": "git checkout main && bump major -t \"v%s\" -p && yarn publish:no-bump",
+    "pre:patch": "bump prepatch -t \"v%s-beta\" -p && cross-env npm_config_registry=https://registry.npmjs.org/ npm publish --tag beta",
+    "pre:minor": "bump preminor -t \"v%s-beta\" -p && cross-env npm_config_registry=https://registry.npmjs.org/ npm publish --tag beta",
+    "pre:major": "bump premajor -t \"v%s-beta\" -p && cross-env npm_config_registry=https://registry.npmjs.org/ npm publish --tag beta"
   },
   "peerDependencies": {},
   "husky": {
@@ -96,6 +99,7 @@
     "@types/line-reader": "^0.0.32",
     "@types/lodash": "^4.14.168",
     "@types/md5": "^2.3.0",
+    "cross-env": "^7.0.3",
     "husky": "^4.3.8",
     "size-limit": "^4.9.1",
     "tsdx": "^0.14.1",
@@ -109,7 +113,8 @@
     "lodash": "^4.17.20",
     "lodash-es": "^4.17.20",
     "md5": "^2.3.0",
-    "moment": "^2.29.1"
+    "moment": "^2.29.1",
+    "rxjs": "^6.6.6"
   },
   "resolutions": {
     "**/@typescript-eslint/eslint-plugin": "^4.1.1",

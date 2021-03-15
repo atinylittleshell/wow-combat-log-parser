@@ -4,8 +4,8 @@ import {
   CombatResult,
   CombatUnitSpec,
   ICombatData,
-  WoWCombatLogParser,
   CombatUnitPowerType,
+  WoWCombatLogParser,
 } from "../src";
 import { IMalformedCombatData } from "../src/CombatData";
 
@@ -50,6 +50,22 @@ describe("parser tests", () => {
 
     it("should not return any Combat objects", async () => {
       expect(combats).toHaveLength(0);
+    });
+  });
+
+  describe("parsing a short match to verify ID hashing", () => {
+    let combats: ICombatData[] = [];
+    beforeAll(async () => {
+      [combats] = await parseLogFileAsync("short_match_original.txt");
+    });
+
+    it("should return a single match", () => {
+      expect(combats).toHaveLength(1);
+    });
+
+    it("should compute the correct hash id", () => {
+      const combat = combats[0];
+      expect(combat.id).toEqual("f3750ed46db5cabc1d25882e6fa2c67b");
     });
   });
 
@@ -129,7 +145,7 @@ describe("parser tests", () => {
 
     it("should compute the correct hash id", () => {
       const combat = combats[0];
-      expect(combat.id).toEqual("f3750ed46db5cabc1d25882e6fa2c67b");
+      expect(combat.id).toEqual("65801fbacf7700cc1fa3744ecaffd4a2");
     });
   });
 
@@ -175,7 +191,7 @@ describe("parser tests", () => {
     });
 
     it("should count the lines it cant parse", () => {
-      expect(combats[0].linesNotParsedCount).toEqual(98);
+      expect(combats[0].linesNotParsedCount).toEqual(87);
     });
 
     it("should have aura events", () => {
