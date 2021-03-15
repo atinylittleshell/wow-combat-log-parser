@@ -53,6 +53,22 @@ describe("parser tests", () => {
     });
   });
 
+  describe("parsing a short match to verify ID hashing", () => {
+    let combats: ICombatData[] = [];
+    beforeAll(async () => {
+      [combats] = await parseLogFileAsync("short_match_original.txt");
+    });
+
+    it("should return a single match", () => {
+      expect(combats).toHaveLength(1);
+    });
+
+    it("should compute the correct hash id", () => {
+      const combat = combats[0];
+      expect(combat.id).toEqual("f3750ed46db5cabc1d25882e6fa2c67b");
+    });
+  });
+
   describe("parsing a short match", () => {
     let combats: ICombatData[] = [];
     beforeAll(async () => {
