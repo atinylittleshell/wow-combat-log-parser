@@ -303,5 +303,13 @@ describe("parser tests", () => {
           .advancedActorPowers[0].max
       ).toEqual(42565);
     });
+
+    it("should have merged pet activities correctly", () => {
+      expect(
+        combats[0].units["Player-57-0C9DA89C"].damageOut.filter(
+          e => e.srcUnitId === "Creature-0-3886-1505-13080-103673-00001E55D3"
+        ).length
+      ).toEqual(7);
+    });
   });
 });

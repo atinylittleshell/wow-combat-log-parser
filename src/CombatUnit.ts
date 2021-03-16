@@ -41,6 +41,7 @@ export class CombatUnit implements ICombatUnit {
 
   public info: CombatantInfo | undefined = undefined;
   public id = "";
+  public ownerId = "";
   public name = "";
   public isWellFormed = false;
   public isActive = false;
@@ -89,6 +90,16 @@ export class CombatUnit implements ICombatUnit {
       reaction,
       (this.reactionProofs.get(reaction) || 0) + 1
     );
+  }
+
+  public proveOwner(ownerId: string) {
+    if (
+      ownerId.length &&
+      ownerId !== "0000000000000000" &&
+      !this.ownerId.length
+    ) {
+      this.ownerId = ownerId;
+    }
   }
 
   public proveType(type: CombatUnitType) {
