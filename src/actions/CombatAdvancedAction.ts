@@ -26,6 +26,7 @@ export class CombatAdvancedAction extends CombatAction {
   }
 
   public readonly advancedActorId: string;
+  public readonly advancedOwnerId: string;
   public readonly advancedActorCurrentHp: number;
   public readonly advancedActorMaxHp: number;
   public readonly advancedActorPowers: ICombatUnitPower[];
@@ -43,6 +44,9 @@ export class CombatAdvancedAction extends CombatAction {
 
     this.advanced = logLine.parameters[advancedLoggingOffset] != 0;
     this.advancedActorId = logLine.parameters[advancedLoggingOffset].toString();
+    this.advancedOwnerId = logLine.parameters[
+      advancedLoggingOffset + 1
+    ].toString();
     this.advancedActorCurrentHp = logLine.parameters[advancedLoggingOffset + 2];
     this.advancedActorMaxHp = logLine.parameters[advancedLoggingOffset + 3];
 

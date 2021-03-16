@@ -220,6 +220,10 @@ export class CombatData {
             const advancedActor = this.units[damageAction.advancedActorId];
             advancedActor?.advancedActions.push(damageAction);
             this.hasAdvancedLogging = true;
+
+            if (damageAction.advancedOwnerId !== "0000000000000000") {
+              advancedActor.proveOwner(damageAction.advancedOwnerId);
+            }
           }
         }
         break;
@@ -233,6 +237,10 @@ export class CombatData {
             const advancedActor = this.units[healAction.advancedActorId];
             advancedActor?.advancedActions.push(healAction);
             this.hasAdvancedLogging = true;
+
+            if (healAction.advancedOwnerId !== "0000000000000000") {
+              advancedActor.proveOwner(healAction.advancedOwnerId);
+            }
           }
         }
         break;
@@ -267,14 +275,18 @@ export class CombatData {
             this.hasAdvancedLogging = true;
           }
           srcUnit.spellCastEvents.push(advancedAction);
-          srcUnit.actionOut.push(event.logLine);
-          destUnit.actionIn.push(event.logLine);
         }
         break;
       case LogEvent.SPELL_CAST_START:
       case LogEvent.SPELL_CAST_FAILED:
         {
           srcUnit.spellCastEvents.push(event);
+        }
+        break;
+      case LogEvent.SPELL_SUMMON:
+        {
+          srcUnit.actionOut.push(event.logLine);
+          destUnit.proveOwner(srcUnit.id);
         }
         break;
     }
@@ -296,6 +308,28 @@ export class CombatData {
         unit.proveSpec(metadata?.spec || CombatUnitSpec.None);
       }
       unit.end();
+    });
+
+    // merge pet output activities into their owners
+    _.forEach(this.units, unit => {
+      if (unit.type !== CombatUnitType.Player && unit.ownerId.length) {
+        const owner = this.units[unit.ownerId];
+        if (!owner) {
+          return;
+        }
+
+        owner.damageOut = owner.damageOut
+          .concat(unit.damageOut)
+          .sort((a, b) => a.timestamp - b.timestamp);
+
+        owner.healOut = owner.healOut
+          .concat(unit.healOut)
+          .sort((a, b) => a.timestamp - b.timestamp);
+
+        owner.actionOut = owner.actionOut
+          .concat(unit.actionOut)
+          .sort((a, b) => a.timestamp - b.timestamp);
+      }
     });
 
     // units are finalized, check playerTeam info
