@@ -853,7 +853,16 @@ const Neutral = {
   blizNumber: 0,
   abilities: [
     { spellId: "", name: "Will to Survive", tags: [SpellTag.Defensive] },
-    { spellId: "", name: "Gladiator's Medallion", tags: [SpellTag.Defensive] },
+    {
+      spellId: "336126",
+      name: "Gladiator's Medallion",
+      tags: [SpellTag.Defensive],
+    },
+    {
+      spellId: "336135",
+      name: "Adaptation",
+      tags: [SpellTag.Defensive],
+    },
     {
       spellId: "",
       name: "Weapons of Order",
