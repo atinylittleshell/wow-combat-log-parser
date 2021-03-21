@@ -266,7 +266,7 @@ export class CombatData {
       case LogEvent.UNIT_DIED:
         if (
           event.logLine.parameters.length > 8 &&
-          event.logLine.parameters[event.logLine.parameters.length - 1] === 1
+          event.logLine.parameters[8] === 1 // 8 is unconsciousOnDeath in wowcombatlog
         ) {
           destUnit.consciousDeathRecords.push(event.logLine);
         } else {
