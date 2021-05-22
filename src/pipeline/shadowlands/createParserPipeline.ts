@@ -3,7 +3,7 @@ import { ICombatData, IMalformedCombatData } from "../../CombatData";
 import { combatEventsToSegment } from "./combatEventsToSegment";
 import { logLineToCombatEvent } from "./logLineToCombatEvent";
 import { segmentToCombat } from "./segmentToCombat";
-import { stringToLogLine } from "./stringToLogLine";
+import { stringToLogLine } from "../common/stringToLogLine";
 
 export const createShadowlandsParserPipeline = (
   onValidCombat: (combat: ICombatData) => void,

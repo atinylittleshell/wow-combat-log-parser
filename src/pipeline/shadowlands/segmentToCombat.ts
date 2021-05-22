@@ -9,7 +9,7 @@ import {
 } from "../../CombatData";
 import { computeCanonicalHash, nullthrows } from "../../utils";
 import { ICombatEventSegment } from "./combatEventsToSegment";
-import { isNonNull } from "../common";
+import { isNonNull } from "../common/utils";
 
 export const segmentToCombat = () => {
   return pipe(

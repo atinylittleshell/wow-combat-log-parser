@@ -12,7 +12,7 @@ export * from "./actions/CombatHpUpdateAction";
 export * from "./actions/CombatExtraSpellAction";
 export * from "./classMetadata";
 export * from "./covenantMetadata";
-export * from "./pipeline/shadowlands/stringToLogLine";
+export * from "./pipeline/common/stringToLogLine";
 export * from "./pipeline/shadowlands/logLineToCombatEvent";
 
 export interface IParserContext {
