@@ -1,3 +1,10 @@
+import { ArenaMatchEnd } from "./actions/ArenaMatchEnd";
+import { ArenaMatchStart } from "./actions/ArenaMatchStart";
+import { CombatAction } from "./actions/CombatAction";
+import { CombatantInfoAction } from "./actions/CombatantInfoAction";
+
+export type WowVersion = "tbc" | "shadowlands";
+
 export enum LogEvent {
   ARENA_MATCH_START = "ARENA_MATCH_START",
   ARENA_MATCH_END = "ARENA_MATCH_END",
@@ -42,6 +49,12 @@ export enum LogEvent {
   DAMAGE_SPLIT = "DAMAGE_SPLIT",
   UNIT_DIED = "UNIT_DIED",
 }
+
+export type CombatEvent =
+  | ArenaMatchStart
+  | ArenaMatchEnd
+  | CombatAction
+  | CombatantInfoAction;
 
 export enum CombatResult {
   Unknown,

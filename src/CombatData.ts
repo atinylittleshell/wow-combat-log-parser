@@ -11,6 +11,7 @@ import { CombatAdvancedAction } from "./actions/CombatAdvancedAction";
 import { CombatHpUpdateAction } from "./actions/CombatHpUpdateAction";
 import { CombatUnit, ICombatUnit } from "./CombatUnit";
 import {
+  CombatEvent,
   CombatResult,
   CombatUnitClass,
   CombatUnitReaction,
@@ -18,11 +19,12 @@ import {
   CombatUnitType,
   ICombatantMetadata,
   LogEvent,
+  WowVersion,
 } from "./types";
-import { CombatEvent } from "./pipeline/logLineToCombatEvent";
 
 export interface ICombatData {
   id: string;
+  wowVersion: WowVersion;
   isWellFormed: true;
   startTime: number;
   endTime: number;

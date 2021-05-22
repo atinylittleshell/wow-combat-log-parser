@@ -1,11 +1,15 @@
 import { pipe } from "rxjs";
 import { filter, map } from "rxjs/operators";
-import { ArenaMatchEnd } from "../actions/ArenaMatchEnd";
-import { ArenaMatchStart } from "../actions/ArenaMatchStart";
-import { CombatData, ICombatData, IMalformedCombatData } from "../CombatData";
-import { computeCanonicalHash, nullthrows } from "../utils";
+import { ArenaMatchEnd } from "../../actions/ArenaMatchEnd";
+import { ArenaMatchStart } from "../../actions/ArenaMatchStart";
+import {
+  CombatData,
+  ICombatData,
+  IMalformedCombatData,
+} from "../../CombatData";
+import { computeCanonicalHash, nullthrows } from "../../utils";
 import { ICombatEventSegment } from "./combatEventsToSegment";
-import { isNonNull } from "./common";
+import { isNonNull } from "../common";
 
 export const segmentToCombat = () => {
   return pipe(
@@ -28,6 +32,7 @@ export const segmentToCombat = () => {
         if (combat.isWellFormed) {
           const plainCombatDataObject: ICombatData = {
             id: computeCanonicalHash(segment.lines),
+            wowVersion: "shadowlands",
             isWellFormed: true,
             startTime: combat.startTime,
             endTime: combat.endTime,

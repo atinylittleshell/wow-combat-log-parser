@@ -1,8 +1,8 @@
 import moment from "moment";
 import { pipe } from "rxjs";
 import { map } from "rxjs/operators";
-import { parseWowToJSON } from "../jsonparse";
-import { ILogLine, LogEvent } from "../types";
+import { parseWowToJSON } from "../../jsonparse";
+import { ILogLine, LogEvent } from "../../types";
 
 const LINE_PARSER = /^(\d+)\/(\d+)\s+(\d+):(\d+):(\d+).(\d+)\s+([A-Z_]+),(.+)\s*$/;
 let nextId = 0;
