@@ -1,5 +1,6 @@
 import EventEmitter from "eventemitter3";
-import { createShadowlandsParserPipeline } from "./pipeline/shadowlands/createParserPipeline";
+import { createShadowlandsParserPipeline } from "./pipeline/shadowlands";
+import { createTBCParserPipeline } from "./pipeline/tbc";
 import { WowVersion } from "./types";
 export { ICombatData, IMalformedCombatData } from "./CombatData";
 export { ICombatUnit } from "./CombatUnit";
@@ -13,7 +14,7 @@ export * from "./actions/CombatExtraSpellAction";
 export * from "./classMetadata";
 export * from "./covenantMetadata";
 export * from "./pipeline/common/stringToLogLine";
-export * from "./pipeline/shadowlands/logLineToCombatEvent";
+export * from "./pipeline/common/logLineToCombatEvent";
 
 export interface IParserContext {
   wowVersion: WowVersion | null;
@@ -50,10 +51,13 @@ export class WoWCombatLogParser extends EventEmitter {
       const wowVersion: WowVersion = wowBuild.startsWith("2.")
         ? "tbc"
         : "shadowlands";
+      const pipelineFactory =
+        wowVersion === "tbc"
+          ? createTBCParserPipeline
+          : createShadowlandsParserPipeline;
       this.context = {
         wowVersion,
-        // TODO: build tbc pipeline and use it accordingly
-        pipeline: createShadowlandsParserPipeline(
+        pipeline: pipelineFactory(
           combat => {
             this.emit("arena_match_ended", combat);
           },

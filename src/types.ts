@@ -56,6 +56,11 @@ export type CombatEvent =
   | CombatAction
   | CombatantInfoAction;
 
+export interface ICombatEventSegment {
+  events: CombatEvent[];
+  lines: string[];
+}
+
 export enum CombatResult {
   Unknown,
   DrawGame,

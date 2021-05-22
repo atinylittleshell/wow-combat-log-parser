@@ -5,7 +5,7 @@ import { CombatEvent, ICombatEventSegment } from "../../types";
 
 const COMBAT_AUTO_TIMEOUT_SECS = 60;
 
-export const combatEventsToSegment = () => {
+export const inferCombatEventSegments = () => {
   return (input: Observable<CombatEvent | string>) => {
     return new Observable<ICombatEventSegment>(output => {
       let lastTimestamp = 0;
@@ -13,6 +13,8 @@ export const combatEventsToSegment = () => {
 
       input.subscribe({
         next: event => {
+          // TODO: implement actual segmentation logic
+
           // this means the line could not be parsed correctly, in which case we
           // still want to store it as raw log in the "lines" buffer.
           if (typeof event === "string") {
