@@ -24,6 +24,13 @@ import {
 } from "./types";
 import { getUnitReaction, getUnitType } from "./utils";
 import { CombatAction } from "./actions/CombatAction";
+import { classMetadata } from "./classMetadata";
+
+const SPELL_ID_TO_CLASS_MAP = new Map<string, CombatUnitClass>(
+  classMetadata.flatMap(cls => {
+    return cls.abilities.map(ability => [ability.spellId, cls.unitClass]);
+  })
+);
 
 export interface ICombatData {
   id: string;
@@ -313,6 +320,13 @@ export class CombatData {
             this.hasAdvancedLogging = true;
           }
           srcUnit.spellCastEvents.push(advancedAction);
+
+          if (this.wowVersion === "tbc" && advancedAction.spellId) {
+            const unitClass = SPELL_ID_TO_CLASS_MAP.get(advancedAction.spellId);
+            if (unitClass) {
+              srcUnit.proveClass(unitClass);
+            }
+          }
         }
         break;
       case LogEvent.SPELL_CAST_START:
