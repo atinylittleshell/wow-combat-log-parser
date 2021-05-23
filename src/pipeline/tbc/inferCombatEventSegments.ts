@@ -1,20 +1,27 @@
 import { Observable } from "rxjs";
-import { ArenaMatchEnd } from "../../actions/ArenaMatchEnd";
-import { ArenaMatchStart } from "../../actions/ArenaMatchStart";
-import { CombatEvent, ICombatEventSegment } from "../../types";
+import { CombatAction } from "../../actions/CombatAction";
+import {
+  CombatEvent,
+  CombatUnitType,
+  ICombatEventSegment,
+  LogEvent,
+} from "../../types";
+import { getUnitReaction, getUnitType } from "../../utils";
 
 const COMBAT_AUTO_TIMEOUT_SECS = 60;
+
+type State = "MATCH_NOT_STARTED" | "MATCH_STARTED";
 
 export const inferCombatEventSegments = () => {
   return (input: Observable<CombatEvent | string>) => {
     return new Observable<ICombatEventSegment>(output => {
-      let lastTimestamp = 0;
+      let state: State = "MATCH_NOT_STARTED";
+      let lastSignificantEventTime = 0;
       let currentBuffer: ICombatEventSegment = { events: [], lines: [] };
+      const currentSegmentCombatantIds = new Set<string>();
 
       input.subscribe({
         next: event => {
-          // TODO: implement actual segmentation logic
-
           // this means the line could not be parsed correctly, in which case we
           // still want to store it as raw log in the "lines" buffer.
           if (typeof event === "string") {
@@ -27,29 +34,100 @@ export const inferCombatEventSegments = () => {
               return;
             }
 
-            output.next(currentBuffer);
+            // find the last death event from a known combatant
+            // and treat that as the last event of the segment
+            let i = currentBuffer.events.length - 1;
+            for (; i >= 0; --i) {
+              const event = currentBuffer.events[i];
+              if (
+                event instanceof CombatAction &&
+                event.logLine.event === LogEvent.UNIT_DIED &&
+                currentSegmentCombatantIds.has(event.destUnitId)
+              ) {
+                break;
+              }
+            }
+            if (i > 0) {
+              currentBuffer.events = currentBuffer.events.slice(0, i + 1);
+              output.next(currentBuffer);
+            }
 
             currentBuffer = {
               events: [],
               lines: [],
             };
+            currentSegmentCombatantIds.clear();
+            lastSignificantEventTime = 0;
           };
 
-          const timeout =
-            event.timestamp - lastTimestamp > COMBAT_AUTO_TIMEOUT_SECS * 1000;
+          const isMatchStartEvent =
+            event instanceof CombatAction &&
+            event.logLine.event === LogEvent.SPELL_AURA_REMOVED &&
+            event.spellId === "32727"; // arena preparation buff
 
-          if (timeout || event instanceof ArenaMatchStart) {
-            emitCurrentBuffer();
+          switch (state) {
+            case "MATCH_NOT_STARTED":
+              // when not in a match, the only event that matters is
+              // match start. when that happens we change state to reflect
+              // that we are now in a match.
+              if (isMatchStartEvent) {
+                state = "MATCH_STARTED";
+                currentSegmentCombatantIds.add(
+                  (event as CombatAction).destUnitId
+                );
+                lastSignificantEventTime = event.timestamp;
+              } else {
+                return;
+              }
+              break;
+            case "MATCH_STARTED":
+              if (isMatchStartEvent) {
+                if (
+                  Math.abs(
+                    event.timestamp - currentBuffer.events[0].timestamp
+                  ) > 5000
+                ) {
+                  emitCurrentBuffer();
+                }
+                currentSegmentCombatantIds.add(
+                  (event as CombatAction).destUnitId
+                );
+                lastSignificantEventTime = event.timestamp;
+              } else if (
+                event.timestamp - lastSignificantEventTime >
+                COMBAT_AUTO_TIMEOUT_SECS * 1000
+              ) {
+                emitCurrentBuffer();
+                state = "MATCH_NOT_STARTED";
+              } else {
+                // a significant event is an interaction between two players from
+                // different teams and one of them is a known combatant.
+                const isSignificantEvent =
+                  event instanceof CombatAction &&
+                  event.srcUnitId !== event.destUnitId &&
+                  getUnitReaction(event.srcUnitFlags) !==
+                    getUnitReaction(event.destUnitFlags) &&
+                  getUnitType(event.srcUnitFlags) === CombatUnitType.Player &&
+                  getUnitType(event.destUnitFlags) === CombatUnitType.Player &&
+                  (currentSegmentCombatantIds.has(event.srcUnitId) ||
+                    currentSegmentCombatantIds.has(event.destUnitId));
+                if (isSignificantEvent) {
+                  currentSegmentCombatantIds.add(
+                    (event as CombatAction).srcUnitId
+                  );
+                  currentSegmentCombatantIds.add(
+                    (event as CombatAction).destUnitId
+                  );
+                  lastSignificantEventTime = event.timestamp;
+                }
+              }
+              break;
           }
 
-          currentBuffer.events.push(event);
-          currentBuffer.lines.push(event.logLine.raw);
-
-          if (event instanceof ArenaMatchEnd) {
-            emitCurrentBuffer();
+          if (state === "MATCH_STARTED") {
+            currentBuffer.events.push(event);
+            currentBuffer.lines.push(event.logLine.raw);
           }
-
-          lastTimestamp = event.timestamp;
         },
         error: e => {
           output.error(e);

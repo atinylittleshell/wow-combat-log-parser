@@ -333,4 +333,15 @@ describe("parser tests", () => {
       ).toHaveLength(2);
     });
   });
+
+  describe("parsing a tbc log file", () => {
+    let combats: ICombatData[] = [];
+    beforeAll(async () => {
+      [combats] = await parseLogFileAsync("tbc_multiple_matches.txt");
+    });
+
+    it("should return 5 matches", () => {
+      expect(combats).toHaveLength(5);
+    });
+  });
 });

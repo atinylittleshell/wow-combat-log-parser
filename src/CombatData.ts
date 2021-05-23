@@ -21,6 +21,7 @@ import {
   LogEvent,
   WowVersion,
 } from "./types";
+import { getUnitReaction, getUnitType } from "./utils";
 
 export interface ICombatData {
   id: string;
@@ -201,11 +202,11 @@ export class CombatData {
     srcUnit.endTime = event.timestamp;
     destUnit.endTime = event.timestamp;
 
-    srcUnit.proveType(this.getUnitType(srcFlag));
-    destUnit.proveType(this.getUnitType(destFlag));
+    srcUnit.proveType(getUnitType(srcFlag));
+    destUnit.proveType(getUnitType(destFlag));
 
-    srcUnit.proveReaction(this.getUnitReaction(srcFlag));
-    destUnit.proveReaction(this.getUnitReaction(destFlag));
+    srcUnit.proveReaction(getUnitReaction(srcFlag));
+    destUnit.proveReaction(getUnitReaction(destFlag));
 
     switch (event.logLine.event) {
       case LogEvent.SWING_DAMAGE:
@@ -385,32 +386,6 @@ export class CombatData {
       (this.result === CombatResult.Win || this.result === CombatResult.Lose)
     ) {
       this.isWellFormed = true;
-    }
-  }
-
-  private getUnitType(flag: number): CombatUnitType {
-    // tslint:disable-next-line: no-bitwise
-    const masked = flag & 0x0000fc00;
-    switch (masked) {
-      case 0x00001000:
-        return CombatUnitType.Pet;
-      case 0x00000400:
-        return CombatUnitType.Player;
-      default:
-        return CombatUnitType.None;
-    }
-  }
-
-  private getUnitReaction(flag: number): CombatUnitReaction {
-    // tslint:disable-next-line: no-bitwise
-    const masked = flag & 0x000000f0;
-    switch (masked) {
-      case 0x00000040:
-        return CombatUnitReaction.Hostile;
-      case 0x00000010:
-        return CombatUnitReaction.Friendly;
-      default:
-        return CombatUnitReaction.Neutral;
     }
   }
 }

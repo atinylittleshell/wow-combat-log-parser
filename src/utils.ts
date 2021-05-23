@@ -1,5 +1,10 @@
 import md5 from "md5";
-import { CombatUnitClass, CombatUnitPowerType } from "./types";
+import {
+  CombatUnitClass,
+  CombatUnitPowerType,
+  CombatUnitReaction,
+  CombatUnitType,
+} from "./types";
 
 export function nullthrows<T>(value: T | null | undefined): T {
   if (value === null || value === undefined) {
@@ -14,6 +19,31 @@ export const parseQuotedName = (quotedName: string): string => {
 
 export function computeCanonicalHash(buffer: string[]): string {
   return md5(buffer.join("\n").slice(1024));
+}
+
+export function getUnitType(flag: number): CombatUnitType {
+  // tslint:disable-next-line: no-bitwise
+  const masked = flag & 0x0000fc00;
+  switch (masked) {
+    case 0x00001000:
+      return CombatUnitType.Pet;
+    case 0x00000400:
+      return CombatUnitType.Player;
+    default:
+      return CombatUnitType.None;
+  }
+}
+export function getUnitReaction(flag: number): CombatUnitReaction {
+  // tslint:disable-next-line: no-bitwise
+  const masked = flag & 0x000000f0;
+  switch (masked) {
+    case 0x00000040:
+      return CombatUnitReaction.Hostile;
+    case 0x00000010:
+      return CombatUnitReaction.Friendly;
+    default:
+      return CombatUnitReaction.Neutral;
+  }
 }
 
 export const getClassColor = (unitClass: CombatUnitClass): string => {
