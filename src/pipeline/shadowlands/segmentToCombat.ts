@@ -22,7 +22,7 @@ export const segmentToCombat = () => {
         segment.events[0] instanceof ArenaMatchStart &&
         segment.events[segment.events.length - 1] instanceof ArenaMatchEnd
       ) {
-        const combat = new CombatData();
+        const combat = new CombatData("shadowlands");
         combat.startTime = segment.events[0].timestamp || 0;
         segment.events.forEach(e => {
           combat.readEvent(e);
@@ -32,7 +32,7 @@ export const segmentToCombat = () => {
         if (combat.isWellFormed) {
           const plainCombatDataObject: ICombatData = {
             id: computeCanonicalHash(segment.lines),
-            wowVersion: "shadowlands",
+            wowVersion: combat.wowVersion,
             isWellFormed: true,
             startTime: combat.startTime,
             endTime: combat.endTime,

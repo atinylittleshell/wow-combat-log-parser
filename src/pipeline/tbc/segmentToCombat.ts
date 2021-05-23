@@ -16,7 +16,7 @@ export const segmentToCombat = () => {
       | IMalformedCombatData
       | null => {
       if (segment.events.length >= 3) {
-        const combat = new CombatData();
+        const combat = new CombatData("tbc");
         combat.startTime = segment.events[0].timestamp || 0;
         segment.events.forEach(e => {
           combat.readEvent(e);
@@ -26,7 +26,7 @@ export const segmentToCombat = () => {
         if (combat.isWellFormed) {
           const plainCombatDataObject: ICombatData = {
             id: computeCanonicalHash(segment.lines),
-            wowVersion: "tbc",
+            wowVersion: combat.wowVersion,
             isWellFormed: true,
             startTime: combat.startTime,
             endTime: combat.endTime,

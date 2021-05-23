@@ -343,5 +343,16 @@ describe("parser tests", () => {
     it("should return 5 matches", () => {
       expect(combats).toHaveLength(5);
     });
+
+    it("should have 3 losses", () => {
+      expect(combats.filter(c => c.result === CombatResult.Lose)).toHaveLength(
+        3
+      );
+    });
+    it("should have 2 wins", () => {
+      expect(combats.filter(c => c.result === CombatResult.Win)).toHaveLength(
+        2
+      );
+    });
   });
 });
