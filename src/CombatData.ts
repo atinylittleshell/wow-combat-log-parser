@@ -224,6 +224,7 @@ export class CombatData {
     if (this.wowVersion === "tbc") {
       const isMatchStartEvent =
         event.logLine.event === LogEvent.SPELL_AURA_REMOVED &&
+        getUnitType(event.destUnitFlags) === CombatUnitType.Player &&
         event.spellId === "32727"; // arena preparation buff
       if (isMatchStartEvent) {
         this.inferredCombatantIds.add(event.destUnitId);

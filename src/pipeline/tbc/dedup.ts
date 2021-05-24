@@ -24,6 +24,8 @@ export const dedup = () => {
               lastTimestamp = timestamp;
               output.next(line);
             }
+          } else {
+            output.next(line);
           }
         },
         error: e => {

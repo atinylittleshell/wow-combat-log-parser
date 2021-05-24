@@ -338,22 +338,28 @@ describe("parser tests", () => {
 
   describe("parsing a tbc log file", () => {
     let combats: ICombatData[] = [];
+    let malformedCombats: IMalformedCombatData[] = [];
     beforeAll(async () => {
-      [combats] = await parseLogFileAsync("tbc_multiple_matches.txt");
+      [combats, malformedCombats] = await parseLogFileAsync(
+        "tbc_multiple_matches.txt"
+      );
     });
 
+    it("should return no malformed matches", () => {
+      expect(malformedCombats).toHaveLength(0);
+    });
     it("should return 5 matches", () => {
       expect(combats).toHaveLength(5);
     });
 
-    it("should have 3 losses", () => {
+    it("should have 2 loss", () => {
       expect(combats.filter(c => c.result === CombatResult.Lose)).toHaveLength(
-        3
+        2
       );
     });
-    it("should have 2 wins", () => {
+    it("should have 3 wins", () => {
       expect(combats.filter(c => c.result === CombatResult.Win)).toHaveLength(
-        2
+        3
       );
     });
     it("should have the correct class inferred", () => {

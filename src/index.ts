@@ -2,6 +2,7 @@ import EventEmitter from "eventemitter3";
 import { createShadowlandsParserPipeline } from "./pipeline/shadowlands";
 import { createTBCParserPipeline } from "./pipeline/tbc";
 import { WowVersion } from "./types";
+import { PIPELINE_FLUSH_SIGNAL } from "./utils";
 export { ICombatData, IMalformedCombatData } from "./CombatData";
 export { ICombatUnit } from "./CombatUnit";
 export * from "./types";
@@ -47,6 +48,10 @@ export class WoWCombatLogParser extends EventEmitter {
   public parseLine(line: string): void {
     const wowVersionLineMatches = line.match(WOW_VERSION_LINE_PARSER);
     if (wowVersionLineMatches && wowVersionLineMatches.length > 0) {
+      if (this.context.wowVersion) {
+        this.context.pipeline(PIPELINE_FLUSH_SIGNAL);
+      }
+
       const wowBuild = wowVersionLineMatches[2];
       const wowVersion: WowVersion = wowBuild.startsWith("2.")
         ? "tbc"

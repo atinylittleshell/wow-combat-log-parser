@@ -6,7 +6,11 @@ import {
   ICombatEventSegment,
   LogEvent,
 } from "../../types";
-import { getUnitReaction, getUnitType } from "../../utils";
+import {
+  getUnitReaction,
+  getUnitType,
+  PIPELINE_FLUSH_SIGNAL,
+} from "../../utils";
 
 const COMBAT_AUTO_TIMEOUT_SECS = 60;
 
@@ -20,49 +24,55 @@ export const inferCombatEventSegments = () => {
       let currentBuffer: ICombatEventSegment = { events: [], lines: [] };
       const currentSegmentCombatantIds = new Set<string>();
 
+      const emitCurrentBuffer = () => {
+        if (!currentBuffer.lines.length) {
+          return;
+        }
+
+        // find the last death event from a known combatant
+        // and treat that as the last event of the segment
+        let i = currentBuffer.events.length - 1;
+        for (; i >= 0; --i) {
+          const event = currentBuffer.events[i];
+          if (
+            event instanceof CombatAction &&
+            event.logLine.event === LogEvent.UNIT_DIED &&
+            currentSegmentCombatantIds.has(event.destUnitId)
+          ) {
+            break;
+          }
+        }
+        if (i > 0) {
+          currentBuffer.events = currentBuffer.events.slice(0, i + 1);
+          output.next(currentBuffer);
+        }
+
+        currentBuffer = {
+          events: [],
+          lines: [],
+        };
+        currentSegmentCombatantIds.clear();
+        lastSignificantEventTime = 0;
+      };
+
       input.subscribe({
         next: event => {
-          // this means the line could not be parsed correctly, in which case we
-          // still want to store it as raw log in the "lines" buffer.
           if (typeof event === "string") {
-            currentBuffer.lines.push(event);
+            if (event === PIPELINE_FLUSH_SIGNAL && state === "MATCH_STARTED") {
+              emitCurrentBuffer();
+              state = "MATCH_NOT_STARTED";
+            } else {
+              // this means the line could not be parsed correctly, in which case we
+              // still want to store it as raw log in the "lines" buffer.
+              currentBuffer.lines.push(event);
+            }
             return;
           }
-
-          const emitCurrentBuffer = () => {
-            if (!currentBuffer.lines.length) {
-              return;
-            }
-
-            // find the last death event from a known combatant
-            // and treat that as the last event of the segment
-            let i = currentBuffer.events.length - 1;
-            for (; i >= 0; --i) {
-              const event = currentBuffer.events[i];
-              if (
-                event instanceof CombatAction &&
-                event.logLine.event === LogEvent.UNIT_DIED &&
-                currentSegmentCombatantIds.has(event.destUnitId)
-              ) {
-                break;
-              }
-            }
-            if (i > 0) {
-              currentBuffer.events = currentBuffer.events.slice(0, i + 1);
-              output.next(currentBuffer);
-            }
-
-            currentBuffer = {
-              events: [],
-              lines: [],
-            };
-            currentSegmentCombatantIds.clear();
-            lastSignificantEventTime = 0;
-          };
 
           const isMatchStartEvent =
             event instanceof CombatAction &&
             event.logLine.event === LogEvent.SPELL_AURA_REMOVED &&
+            getUnitType(event.destUnitFlags) === CombatUnitType.Player &&
             event.spellId === "32727"; // arena preparation buff
 
           switch (state) {

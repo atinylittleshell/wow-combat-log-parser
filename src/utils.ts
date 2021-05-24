@@ -6,6 +6,8 @@ import {
   CombatUnitType,
 } from "./types";
 
+export const PIPELINE_FLUSH_SIGNAL = "__WOW_ARENA_LOGS_PIPELINE_FLUSH_SIGNAL__";
+
 export function nullthrows<T>(value: T | null | undefined): T {
   if (value === null || value === undefined) {
     throw Error("this value cannot be null or undefined");
