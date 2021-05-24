@@ -290,9 +290,7 @@ export class CombatData {
       case LogEvent.SPELL_AURA_REMOVED_DOSE:
       case LogEvent.SPELL_AURA_BROKEN:
       case LogEvent.SPELL_AURA_BROKEN_SPELL:
-        {
-          destUnit.auraEvents.push(event);
-        }
+        destUnit.auraEvents.push(event);
         break;
       case LogEvent.SPELL_INTERRUPT:
       case LogEvent.SPELL_STOLEN:
@@ -332,15 +330,11 @@ export class CombatData {
         break;
       case LogEvent.SPELL_CAST_START:
       case LogEvent.SPELL_CAST_FAILED:
-        {
-          srcUnit.spellCastEvents.push(event);
-        }
+        srcUnit.spellCastEvents.push(event);
         break;
       case LogEvent.SPELL_SUMMON:
-        {
-          srcUnit.actionOut.push(event.logLine);
-          destUnit.proveOwner(srcUnit.id);
-        }
+        srcUnit.actionOut.push(event.logLine);
+        destUnit.proveOwner(srcUnit.id);
         break;
     }
   }

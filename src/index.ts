@@ -32,10 +32,6 @@ export class WoWCombatLogParser extends EventEmitter {
     },
   };
 
-  constructor() {
-    super();
-  }
-
   public resetParserStates(): void {
     this.context = {
       wowVersion: null,
