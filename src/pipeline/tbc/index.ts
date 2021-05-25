@@ -1,11 +1,12 @@
 import { Subject } from "rxjs";
-import { ICombatData, IMalformedCombatData } from "../CombatData";
-import { combatEventsToSegment } from "./combatEventsToSegment";
-import { logLineToCombatEvent } from "./logLineToCombatEvent";
+import { ICombatData, IMalformedCombatData } from "../../CombatData";
+import { logLineToCombatEvent } from "../common/logLineToCombatEvent";
+import { stringToLogLine } from "../common/stringToLogLine";
+import { dedup } from "./dedup";
+import { inferCombatEventSegments } from "./inferCombatEventSegments";
 import { segmentToCombat } from "./segmentToCombat";
-import { stringToLogLine } from "./stringToLogLine";
 
-export const createParserPipeline = (
+export const createTBCParserPipeline = (
   onValidCombat: (combat: ICombatData) => void,
   onMalformedCombat: (combat: IMalformedCombatData) => void
 ) => {
@@ -13,9 +14,10 @@ export const createParserPipeline = (
 
   rawLogs
     .pipe(
+      dedup(),
       stringToLogLine(),
       logLineToCombatEvent(),
-      combatEventsToSegment(),
+      inferCombatEventSegments(),
       segmentToCombat()
     )
     .subscribe({

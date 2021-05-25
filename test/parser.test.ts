@@ -6,6 +6,7 @@ import {
   ICombatData,
   CombatUnitPowerType,
   WoWCombatLogParser,
+  CombatUnitClass,
 } from "../src";
 import { IMalformedCombatData } from "../src/CombatData";
 
@@ -95,6 +96,7 @@ describe("parser tests", () => {
     it("should have correct combatant metadata", () => {
       const combat = combats[0];
       const combatant = combat.units["Player-57-0CE7FCBF"];
+      expect(combatant.class).toEqual(CombatUnitClass.Warrior);
       expect(combatant.spec).toEqual(CombatUnitSpec.Warrior_Arms);
       expect(combatant.info?.specId).toEqual(CombatUnitSpec.Warrior_Arms);
       expect(combatant.info?.equipment[10].bonuses[2]).toEqual("1492");
@@ -331,6 +333,41 @@ describe("parser tests", () => {
       expect(
         combats[0].units["Player-127-0827487A"].consciousDeathRecords
       ).toHaveLength(2);
+    });
+  });
+
+  describe("parsing a tbc log file", () => {
+    let combats: ICombatData[] = [];
+    let malformedCombats: IMalformedCombatData[] = [];
+    beforeAll(async () => {
+      [combats, malformedCombats] = await parseLogFileAsync(
+        "tbc_multiple_matches.txt"
+      );
+    });
+
+    it("should return no malformed matches", () => {
+      expect(malformedCombats).toHaveLength(0);
+    });
+    it("should return 5 matches", () => {
+      expect(combats).toHaveLength(5);
+    });
+
+    it("should have 2 loss", () => {
+      expect(combats.filter(c => c.result === CombatResult.Lose)).toHaveLength(
+        2
+      );
+    });
+    it("should have 3 wins", () => {
+      expect(combats.filter(c => c.result === CombatResult.Win)).toHaveLength(
+        3
+      );
+    });
+    it("should have the correct class inferred", () => {
+      expect(
+        Object.values(combats[0].units).filter(
+          u => u.name === "Assinoth-Whitemane"
+        )[0].class
+      ).toEqual(CombatUnitClass.Rogue);
     });
   });
 });
