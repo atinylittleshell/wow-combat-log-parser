@@ -32,6 +32,11 @@ export class WoWCombatLogParser extends EventEmitter {
     },
   };
 
+  constructor(initialWowVersion: WowVersion | null = null) {
+    super();
+    this.resetParserStates(initialWowVersion);
+  }
+
   public resetParserStates(wowVersion: WowVersion | null = null): void {
     if (wowVersion === null) {
       this.context = {
