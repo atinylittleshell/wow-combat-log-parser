@@ -1,14 +1,9 @@
 import { Observable } from "rxjs";
-import { ArenaMatchEnd } from "../actions/ArenaMatchEnd";
-import { ArenaMatchStart } from "../actions/ArenaMatchStart";
-import { CombatEvent } from "./logLineToCombatEvent";
+import { ArenaMatchEnd } from "../../actions/ArenaMatchEnd";
+import { ArenaMatchStart } from "../../actions/ArenaMatchStart";
+import { CombatEvent, ICombatEventSegment } from "../../types";
 
 const COMBAT_AUTO_TIMEOUT_SECS = 60;
-
-export interface ICombatEventSegment {
-  events: CombatEvent[];
-  lines: string[];
-}
 
 export const combatEventsToSegment = () => {
   return (input: Observable<CombatEvent | string>) => {

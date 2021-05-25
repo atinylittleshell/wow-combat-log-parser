@@ -11,18 +11,30 @@ import { CombatAdvancedAction } from "./actions/CombatAdvancedAction";
 import { CombatHpUpdateAction } from "./actions/CombatHpUpdateAction";
 import { CombatUnit, ICombatUnit } from "./CombatUnit";
 import {
+  CombatEvent,
   CombatResult,
   CombatUnitClass,
   CombatUnitReaction,
   CombatUnitSpec,
   CombatUnitType,
   ICombatantMetadata,
+  ILogLine,
   LogEvent,
+  WowVersion,
 } from "./types";
-import { CombatEvent } from "./pipeline/logLineToCombatEvent";
+import { getUnitReaction, getUnitType } from "./utils";
+import { CombatAction } from "./actions/CombatAction";
+import { classMetadata } from "./classMetadata";
+
+const SPELL_ID_TO_CLASS_MAP = new Map<string, CombatUnitClass>(
+  classMetadata.flatMap(cls => {
+    return cls.abilities.map(ability => [ability.spellId, cls.unitClass]);
+  })
+);
 
 export interface ICombatData {
   id: string;
+  wowVersion: WowVersion;
   isWellFormed: true;
   startTime: number;
   endTime: number;
@@ -64,6 +76,10 @@ export class CombatData {
     string,
     ICombatantMetadata
   >();
+
+  private inferredCombatantIds: Set<string> = new Set<string>();
+
+  constructor(public readonly wowVersion: WowVersion) {}
 
   public readEvent(event: CombatEvent) {
     if (this.startTime === 0) {
@@ -199,11 +215,34 @@ export class CombatData {
     srcUnit.endTime = event.timestamp;
     destUnit.endTime = event.timestamp;
 
-    srcUnit.proveType(this.getUnitType(srcFlag));
-    destUnit.proveType(this.getUnitType(destFlag));
+    srcUnit.proveType(getUnitType(srcFlag));
+    destUnit.proveType(getUnitType(destFlag));
 
-    srcUnit.proveReaction(this.getUnitReaction(srcFlag));
-    destUnit.proveReaction(this.getUnitReaction(destFlag));
+    srcUnit.proveReaction(getUnitReaction(srcFlag));
+    destUnit.proveReaction(getUnitReaction(destFlag));
+
+    if (this.wowVersion === "tbc") {
+      const isMatchStartEvent =
+        event.logLine.event === LogEvent.SPELL_AURA_REMOVED &&
+        getUnitType(event.destUnitFlags) === CombatUnitType.Player &&
+        event.spellId === "32727"; // arena preparation buff
+      if (isMatchStartEvent) {
+        this.inferredCombatantIds.add(event.destUnitId);
+      } else {
+        const isSignificantEvent =
+          event.srcUnitId !== event.destUnitId &&
+          getUnitReaction(event.srcUnitFlags) !==
+            getUnitReaction(event.destUnitFlags) &&
+          getUnitType(event.srcUnitFlags) === CombatUnitType.Player &&
+          getUnitType(event.destUnitFlags) === CombatUnitType.Player &&
+          (this.inferredCombatantIds.has(event.srcUnitId) ||
+            this.inferredCombatantIds.has(event.destUnitId));
+        if (isSignificantEvent) {
+          this.inferredCombatantIds.add(event.srcUnitId);
+          this.inferredCombatantIds.add(event.destUnitId);
+        }
+      }
+    }
 
     switch (event.logLine.event) {
       case LogEvent.SWING_DAMAGE:
@@ -251,9 +290,7 @@ export class CombatData {
       case LogEvent.SPELL_AURA_REMOVED_DOSE:
       case LogEvent.SPELL_AURA_BROKEN:
       case LogEvent.SPELL_AURA_BROKEN_SPELL:
-        {
-          destUnit.auraEvents.push(event);
-        }
+        destUnit.auraEvents.push(event);
         break;
       case LogEvent.SPELL_INTERRUPT:
       case LogEvent.SPELL_STOLEN:
@@ -282,25 +319,113 @@ export class CombatData {
             this.hasAdvancedLogging = true;
           }
           srcUnit.spellCastEvents.push(advancedAction);
+
+          if (this.wowVersion === "tbc" && advancedAction.spellId) {
+            const unitClass = SPELL_ID_TO_CLASS_MAP.get(advancedAction.spellId);
+            if (unitClass) {
+              srcUnit.proveClass(unitClass);
+            }
+          }
         }
         break;
       case LogEvent.SPELL_CAST_START:
       case LogEvent.SPELL_CAST_FAILED:
-        {
-          srcUnit.spellCastEvents.push(event);
-        }
+        srcUnit.spellCastEvents.push(event);
         break;
       case LogEvent.SPELL_SUMMON:
-        {
-          srcUnit.actionOut.push(event.logLine);
-          destUnit.proveOwner(srcUnit.id);
-        }
+        srcUnit.actionOut.push(event.logLine);
+        destUnit.proveOwner(srcUnit.id);
         break;
     }
   }
 
   public registerCombatant(id: string, combatantMetadata: ICombatantMetadata) {
     this.combatantMetadata.set(id, combatantMetadata);
+  }
+
+  private inferMatchMetadata() {
+    this.playerTeamId = "0"; // for TBC logs, we always use 0 as the owner's team
+    this.playerTeamRating = 0;
+
+    this.startInfo = {
+      timestamp: this.startTime,
+      bracket: "",
+      isRanked: true,
+      zoneId: "",
+      item1: "",
+    };
+
+    const allDeaths = Object.values(this.units)
+      .filter(
+        u => u.type === CombatUnitType.Player && u.deathRecords.length > 0
+      )
+      .flatMap(u => u.deathRecords)
+      .sort((a, b) => a.timestamp - b.timestamp);
+    const lastDeath = allDeaths.length
+      ? new CombatAction(_.last(allDeaths) as ILogLine)
+      : null;
+    this.endInfo = {
+      winningTeamId: lastDeath
+        ? getUnitReaction(lastDeath.destUnitFlags) ===
+          CombatUnitReaction.Friendly
+          ? "1"
+          : "0"
+        : "0",
+      matchDurationInSeconds: (this.endTime - this.startTime) / 1000,
+      team0MMR: 0,
+      team1MMR: 0,
+      timestamp: this.endTime,
+    };
+
+    this.inferredCombatantIds.forEach(id => {
+      const unit = this.units[id];
+      const metadata = {
+        spec: unit.spec,
+        class: unit.class,
+        info: {
+          teamId: unit.reaction === CombatUnitReaction.Friendly ? "0" : "1",
+          strength: 0,
+          agility: 0,
+          stamina: 0,
+          intelligence: 0,
+          dodge: 0,
+          parry: 0,
+          block: 0,
+          critMelee: 0,
+          critRanged: 0,
+          critSpell: 0,
+          speed: 0,
+          lifesteal: 0,
+          hasteMelee: 0,
+          hasteRanged: 0,
+          hasteSpell: 0,
+          avoidance: 0,
+          mastery: 0,
+          versatilityDamgeDone: 0,
+          versatilityHealingDone: 0,
+          versatilityDamageTaken: 0,
+          armor: 0,
+          specId: "",
+          talents: [],
+          pvpTalents: [],
+          covenantInfo: {
+            covenantId: "",
+            conduitIdsJSON: "",
+            soulbindId: "",
+            item2: [],
+            item3JSON: "",
+          },
+          equipment: [],
+          interestingAurasJSON: "",
+          item29: 0,
+          item30: 0,
+          personalRating: 0,
+          highestPvpTier: 0,
+        },
+      };
+      unit.info = metadata.info;
+      this.combatantMetadata.set(id, metadata);
+    });
   }
 
   public end(wasTimeout?: boolean) {
@@ -316,6 +441,10 @@ export class CombatData {
       }
       unit.end();
     });
+
+    if (this.wowVersion === "tbc") {
+      this.inferMatchMetadata();
+    }
 
     // merge pet output activities into their owners
     _.forEach(this.units, unit => {
@@ -383,32 +512,6 @@ export class CombatData {
       (this.result === CombatResult.Win || this.result === CombatResult.Lose)
     ) {
       this.isWellFormed = true;
-    }
-  }
-
-  private getUnitType(flag: number): CombatUnitType {
-    // tslint:disable-next-line: no-bitwise
-    const masked = flag & 0x0000fc00;
-    switch (masked) {
-      case 0x00001000:
-        return CombatUnitType.Pet;
-      case 0x00000400:
-        return CombatUnitType.Player;
-      default:
-        return CombatUnitType.None;
-    }
-  }
-
-  private getUnitReaction(flag: number): CombatUnitReaction {
-    // tslint:disable-next-line: no-bitwise
-    const masked = flag & 0x000000f0;
-    switch (masked) {
-      case 0x00000040:
-        return CombatUnitReaction.Hostile;
-      case 0x00000010:
-        return CombatUnitReaction.Friendly;
-      default:
-        return CombatUnitReaction.Neutral;
     }
   }
 }

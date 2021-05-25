@@ -69,6 +69,10 @@ export class CombatUnit implements ICombatUnit {
     CombatUnitType,
     number
   >();
+  private classProofs: Map<CombatUnitClass, number> = new Map<
+    CombatUnitClass,
+    number
+  >();
 
   constructor(id: string, name: string) {
     this.id = id;
@@ -76,7 +80,11 @@ export class CombatUnit implements ICombatUnit {
   }
 
   public proveClass(unitClass: CombatUnitClass) {
-    this.class = unitClass;
+    if (!this.classProofs.has(unitClass)) {
+      this.classProofs.set(unitClass, 0);
+    }
+
+    this.classProofs.set(unitClass, (this.classProofs.get(unitClass) || 0) + 1);
   }
 
   public proveSpec(spec: CombatUnitSpec) {
@@ -146,9 +154,17 @@ export class CombatUnit implements ICombatUnit {
       this.reaction = sorted[0][0];
     }
 
+    if (this.classProofs.size > 0) {
+      const proofs: [CombatUnitClass, number][] = [];
+      this.classProofs.forEach((value, key) => {
+        proofs.push([key, value]);
+      });
+      const sorted = _.sortBy(proofs, proof => -proof[1]);
+      this.class = sorted[0][0];
+    }
+
     if (
       this.class !== CombatUnitClass.None &&
-      this.spec !== CombatUnitSpec.None &&
       this.type !== CombatUnitType.None &&
       this.reaction !== CombatUnitReaction.Neutral &&
       this.isActive
