@@ -32,13 +32,17 @@ export class WoWCombatLogParser extends EventEmitter {
     },
   };
 
-  public resetParserStates(): void {
-    this.context = {
-      wowVersion: null,
-      pipeline: () => {
-        return;
-      },
-    };
+  public resetParserStates(wowVersion: WowVersion | null = null): void {
+    if (wowVersion === null) {
+      this.context = {
+        wowVersion,
+        pipeline: () => {
+          return;
+        },
+      };
+    } else {
+      this.setWowVersion(wowVersion);
+    }
   }
 
   public flush(): void {
@@ -58,21 +62,7 @@ export class WoWCombatLogParser extends EventEmitter {
       const wowVersion: WowVersion = wowBuild.startsWith("2.")
         ? "tbc"
         : "shadowlands";
-      const pipelineFactory =
-        wowVersion === "tbc"
-          ? createTBCParserPipeline
-          : createShadowlandsParserPipeline;
-      this.context = {
-        wowVersion,
-        pipeline: pipelineFactory(
-          combat => {
-            this.emit("arena_match_ended", combat);
-          },
-          malformedCombat => {
-            this.emit("malformed_arena_match_detected", malformedCombat);
-          }
-        ),
-      };
+      this.setWowVersion(wowVersion);
     } else {
       if (!this.context.wowVersion) {
         this.context = {
@@ -89,5 +79,23 @@ export class WoWCombatLogParser extends EventEmitter {
       }
       this.context.pipeline(line);
     }
+  }
+
+  private setWowVersion(wowVersion: WowVersion) {
+    const pipelineFactory =
+      wowVersion === "tbc"
+        ? createTBCParserPipeline
+        : createShadowlandsParserPipeline;
+    this.context = {
+      wowVersion,
+      pipeline: pipelineFactory(
+        combat => {
+          this.emit("arena_match_ended", combat);
+        },
+        malformedCombat => {
+          this.emit("malformed_arena_match_detected", malformedCombat);
+        }
+      ),
+    };
   }
 }
