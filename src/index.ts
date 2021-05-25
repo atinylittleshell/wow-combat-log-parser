@@ -41,6 +41,12 @@ export class WoWCombatLogParser extends EventEmitter {
     };
   }
 
+  public flush(): void {
+    if (this.context.wowVersion) {
+      this.context.pipeline(PIPELINE_FLUSH_SIGNAL);
+    }
+  }
+
   public parseLine(line: string): void {
     const wowVersionLineMatches = line.match(WOW_VERSION_LINE_PARSER);
     if (wowVersionLineMatches && wowVersionLineMatches.length > 0) {

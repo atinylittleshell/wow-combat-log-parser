@@ -39,6 +39,8 @@ const parseLogFileAsync = (
         return true;
       }
     );
+
+    logParser.flush();
   });
 };
 
