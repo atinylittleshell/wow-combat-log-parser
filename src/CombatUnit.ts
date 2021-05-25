@@ -30,6 +30,7 @@ export interface ICombatUnit {
   auraEvents: CombatAction[];
   spellCastEvents: CombatAction[];
   deathRecords: ILogLine[];
+  consciousDeathRecords: ILogLine[];
   advancedActions: CombatAdvancedAction[];
 }
 
@@ -55,6 +56,7 @@ export class CombatUnit implements ICombatUnit {
   public auraEvents: CombatAction[] = [];
   public spellCastEvents: CombatAction[] = [];
   public deathRecords: ILogLine[] = [];
+  public consciousDeathRecords: ILogLine[] = [];
   public advancedActions: CombatAdvancedAction[] = [];
 
   public startTime = 0;

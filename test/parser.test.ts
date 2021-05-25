@@ -312,4 +312,25 @@ describe("parser tests", () => {
       ).toEqual(7);
     });
   });
+
+  describe("parsing a log with conscious death", () => {
+    let combats: ICombatData[] = [];
+    beforeAll(async () => {
+      [combats] = await parseLogFileAsync("short_match_consciousdeath.txt");
+    });
+
+    it("should return a single match", () => {
+      expect(combats).toHaveLength(1);
+    });
+
+    it("should have correct conscious death data", () => {
+      expect(combats[0].units["Player-127-0827487A"].deathRecords).toHaveLength(
+        1
+      );
+
+      expect(
+        combats[0].units["Player-127-0827487A"].consciousDeathRecords
+      ).toHaveLength(2);
+    });
+  });
 });
