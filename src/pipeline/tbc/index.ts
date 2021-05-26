@@ -16,7 +16,7 @@ export const createTBCParserPipeline = (
     .pipe(
       dedup(),
       stringToLogLine(),
-      logLineToCombatEvent(),
+      logLineToCombatEvent("tbc"),
       inferCombatEventSegments(),
       segmentToCombat()
     )
