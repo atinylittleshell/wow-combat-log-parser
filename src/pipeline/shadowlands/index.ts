@@ -14,7 +14,7 @@ export const createShadowlandsParserPipeline = (
   rawLogs
     .pipe(
       stringToLogLine(),
-      logLineToCombatEvent(),
+      logLineToCombatEvent("shadowlands"),
       combatEventsToSegment(),
       segmentToCombat()
     )

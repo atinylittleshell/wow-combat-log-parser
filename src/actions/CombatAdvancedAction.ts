@@ -1,5 +1,5 @@
 import { CombatAction } from "./CombatAction";
-import { CombatUnitPowerType, ILogLine } from "../types";
+import { CombatUnitPowerType, ILogLine, WowVersion } from "../types";
 import _ from "lodash";
 
 export interface ICombatUnitPower {
@@ -32,9 +32,11 @@ export class CombatAdvancedAction extends CombatAction {
   public readonly advancedActorPowers: ICombatUnitPower[];
   public readonly advancedActorPositionX: number;
   public readonly advancedActorPositionY: number;
+  public readonly advancedActorFacing: number;
+  public readonly advancedActorItemLevel: number;
   public readonly advanced: boolean;
 
-  constructor(logLine: ILogLine) {
+  constructor(logLine: ILogLine, wowVersion: WowVersion) {
     super(logLine);
     if (!CombatAdvancedAction.supports(logLine)) {
       throw new Error("event not supported");
@@ -50,15 +52,23 @@ export class CombatAdvancedAction extends CombatAction {
     this.advancedActorCurrentHp = logLine.parameters[advancedLoggingOffset + 2];
     this.advancedActorMaxHp = logLine.parameters[advancedLoggingOffset + 3];
 
-    const powerType = logLine.parameters[advancedLoggingOffset + 8]
+    const wowVersionOffset = wowVersion === "shadowlands" ? 0 : -1;
+
+    const powerType = logLine.parameters[
+      advancedLoggingOffset + wowVersionOffset + 8
+    ]
       .toString()
       .split("|")
       .map((v: string) => v);
-    const currentPower = logLine.parameters[advancedLoggingOffset + 9]
+    const currentPower = logLine.parameters[
+      advancedLoggingOffset + wowVersionOffset + 9
+    ]
       .toString()
       .split("|")
       .map((v: string) => parseInt(v));
-    const maxPower = logLine.parameters[advancedLoggingOffset + 10]
+    const maxPower = logLine.parameters[
+      advancedLoggingOffset + wowVersionOffset + 10
+    ]
       .toString()
       .split("|")
       .map((v: string) => parseInt(v));
@@ -69,8 +79,13 @@ export class CombatAdvancedAction extends CombatAction {
     }));
 
     this.advancedActorPositionX =
-      logLine.parameters[advancedLoggingOffset + 12];
+      logLine.parameters[advancedLoggingOffset + wowVersionOffset + 12];
     this.advancedActorPositionY =
-      logLine.parameters[advancedLoggingOffset + 13];
+      logLine.parameters[advancedLoggingOffset + wowVersionOffset + 13];
+
+    this.advancedActorFacing =
+      logLine.parameters[advancedLoggingOffset + wowVersionOffset + 15];
+    this.advancedActorItemLevel =
+      logLine.parameters[advancedLoggingOffset + wowVersionOffset + 16];
   }
 }

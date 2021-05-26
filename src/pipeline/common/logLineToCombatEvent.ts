@@ -7,9 +7,9 @@ import { CombatAdvancedAction } from "../../actions/CombatAdvancedAction";
 import { CombatantInfoAction } from "../../actions/CombatantInfoAction";
 import { CombatExtraSpellAction } from "../../actions/CombatExtraSpellAction";
 import { CombatHpUpdateAction } from "../../actions/CombatHpUpdateAction";
-import { CombatEvent, ILogLine, LogEvent } from "../../types";
+import { CombatEvent, ILogLine, LogEvent, WowVersion } from "../../types";
 
-export const logLineToCombatEvent = () => {
+export const logLineToCombatEvent = (wowVersion: WowVersion) => {
   return pipe(
     map((logLine: ILogLine | string): CombatEvent | string => {
       if (typeof logLine === "string") {
@@ -30,7 +30,7 @@ export const logLineToCombatEvent = () => {
           case LogEvent.SPELL_PERIODIC_DAMAGE:
           case LogEvent.SPELL_HEAL:
           case LogEvent.SPELL_PERIODIC_HEAL:
-            return new CombatHpUpdateAction(logLine);
+            return new CombatHpUpdateAction(logLine, wowVersion);
           case LogEvent.SPELL_AURA_APPLIED:
           case LogEvent.SPELL_AURA_APPLIED_DOSE:
           case LogEvent.SPELL_AURA_REFRESH:
@@ -53,7 +53,7 @@ export const logLineToCombatEvent = () => {
           case LogEvent.SPELL_CAST_SUCCESS:
           case LogEvent.SPELL_ENERGIZE:
           case LogEvent.SPELL_PERIODIC_ENERGIZE:
-            return new CombatAdvancedAction(logLine);
+            return new CombatAdvancedAction(logLine, wowVersion);
           default:
             return logLine.raw;
         }
