@@ -6,7 +6,11 @@ import {
   ICombatData,
   IMalformedCombatData,
 } from "../../CombatData";
-import { CombatUnitType, ICombatEventSegment } from "../../types";
+import {
+  CombatUnitReaction,
+  CombatUnitType,
+  ICombatEventSegment,
+} from "../../types";
 import { computeCanonicalHash, nullthrows } from "../../utils";
 import { isNonNull } from "../common/utils";
 
@@ -24,14 +28,23 @@ export const segmentToCombat = () => {
         });
         combat.end();
 
-        const playerCount = _.values(combat.units).filter(
-          u => u.type === CombatUnitType.Player
+        const friendlyTeamCount = _.values(combat.units).filter(
+          u =>
+            u.type === CombatUnitType.Player &&
+            u.reaction === CombatUnitReaction.Friendly
         ).length;
+        const enemyTeamCount = _.values(combat.units).filter(
+          u =>
+            u.type === CombatUnitType.Player &&
+            u.reaction === CombatUnitReaction.Hostile
+        ).length;
+        const biggestTeam = Math.max(friendlyTeamCount, enemyTeamCount);
+
         let inferredBracket = "2v2";
-        if (playerCount > 4) {
+        if (biggestTeam > 2) {
           inferredBracket = "3v3";
         }
-        if (playerCount > 6) {
+        if (biggestTeam > 3) {
           inferredBracket = "5v5";
         }
 
