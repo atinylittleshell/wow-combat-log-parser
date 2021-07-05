@@ -17970,7 +17970,7 @@ const Neutral = {
   icon: "",
   blizNumber: 0,
   abilities: [
-    { spellId: "", name: "Will to Survive", tags: [SpellTag.Defensive] },
+    { spellId: "59752", name: "Will to Survive", tags: [SpellTag.Defensive] },
     {
       spellId: "336126",
       name: "Gladiator's Medallion",
@@ -17982,7 +17982,7 @@ const Neutral = {
       tags: [SpellTag.Defensive],
     },
     {
-      spellId: "",
+      spellId: "311054",
       name: "Weapons of Order",
       tags: [SpellTag.Offensive, SpellTag.Defensive],
     },
