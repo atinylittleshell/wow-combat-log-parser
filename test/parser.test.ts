@@ -371,5 +371,9 @@ describe("parser tests", () => {
         )[0].class
       ).toEqual(CombatUnitClass.Rogue);
     });
+
+    it("should have the correct bracket inferred", () => {
+      expect(combats[0].startInfo.bracket).toEqual("2v2");
+    });
   });
 });
