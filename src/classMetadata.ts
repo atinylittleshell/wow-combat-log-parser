@@ -1815,7 +1815,7 @@ const Paladin = {
       tags: [SpellTag.Defensive],
     },
     { spellId: "96231", name: "Rebuke", tags: [] },
-    { spellId: "152262", name: "Seraphim", tags: [] },
+    { spellId: "152262", name: "Seraphim", tags: [SpellTag.Offensive] },
     { spellId: "190784", name: "Divine Steed", tags: [] },
     { spellId: "209202", name: "Eye of Tyr", tags: [] },
     { spellId: "215652", name: "Shield of Virtue", tags: [] },
@@ -7367,6 +7367,11 @@ const Priest = {
     { spellId: "200183", name: "Apotheosis", tags: [SpellTag.Defensive] },
     { spellId: "213610", name: "Holy Ward", tags: [] },
     { spellId: "215769", name: "Spirit of Redemption", tags: [] },
+    {
+      spellId: "200200",
+      name: "Holy Word: Chastise",
+      tags: [SpellTag.Control],
+    },
     // -- Shadow
     { spellId: "15286", name: "Vampiric Embrace", tags: [] },
     { spellId: "15487", name: "Silence", tags: [] },
@@ -15779,6 +15784,7 @@ const Druid = {
       name: "Convoke the Spirits",
       tags: [SpellTag.Offensive],
     },
+    { spellId: "163505", name: "Rake", tags: [SpellTag.Control] },
     { spellId: "1850", name: "Dash", tags: [] },
     { spellId: "33786", name: "Cyclone", tags: [SpellTag.Control] },
     { spellId: "252216", name: "Tiger Dash", tags: [] },
