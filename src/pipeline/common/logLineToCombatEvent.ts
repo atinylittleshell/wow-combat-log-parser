@@ -2,6 +2,7 @@ import { pipe } from "rxjs";
 import { map } from "rxjs/operators";
 import { ArenaMatchEnd } from "../../actions/ArenaMatchEnd";
 import { ArenaMatchStart } from "../../actions/ArenaMatchStart";
+import { CombatAbsorbAction } from "../../actions/CombatAbsorbAction";
 import { CombatAction } from "../../actions/CombatAction";
 import { CombatAdvancedAction } from "../../actions/CombatAdvancedAction";
 import { CombatantInfoAction } from "../../actions/CombatantInfoAction";
@@ -31,6 +32,8 @@ export const logLineToCombatEvent = (wowVersion: WowVersion) => {
           case LogEvent.SPELL_HEAL:
           case LogEvent.SPELL_PERIODIC_HEAL:
             return new CombatHpUpdateAction(logLine, wowVersion);
+          case LogEvent.SPELL_ABSORBED:
+            return new CombatAbsorbAction(logLine, wowVersion);
           case LogEvent.SPELL_AURA_APPLIED:
           case LogEvent.SPELL_AURA_APPLIED_DOSE:
           case LogEvent.SPELL_AURA_REFRESH:
@@ -42,7 +45,6 @@ export const logLineToCombatEvent = (wowVersion: WowVersion) => {
           case LogEvent.UNIT_DIED:
           case LogEvent.SPELL_CAST_START:
           case LogEvent.SPELL_CAST_FAILED:
-          case LogEvent.SPELL_ABSORBED:
           case LogEvent.SPELL_SUMMON:
             return new CombatAction(logLine);
           case LogEvent.SPELL_INTERRUPT:

@@ -11,6 +11,7 @@ export * from "./actions/CombatAction";
 export * from "./actions/ArenaMatchEnd";
 export * from "./actions/ArenaMatchStart";
 export * from "./actions/CombatHpUpdateAction";
+export * from "./actions/CombatAbsorbAction";
 export * from "./actions/CombatExtraSpellAction";
 export * from "./classMetadata";
 export * from "./covenantMetadata";

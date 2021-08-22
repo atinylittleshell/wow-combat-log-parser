@@ -25,6 +25,7 @@ import {
 import { getUnitReaction, getUnitType } from "./utils";
 import { CombatAction } from "./actions/CombatAction";
 import { classMetadata } from "./classMetadata";
+import { CombatAbsorbAction } from "./actions/CombatAbsorbAction";
 
 const SPELL_ID_TO_CLASS_MAP = new Map<string, CombatUnitClass>(
   classMetadata.flatMap(cls => {
@@ -245,6 +246,14 @@ export class CombatData {
     }
 
     switch (event.logLine.event) {
+      case LogEvent.SPELL_ABSORBED:
+        {
+          const absorbAction = event as CombatAbsorbAction;
+          const shieldOwner = this.units[absorbAction.shieldOwnerUnitId];
+          shieldOwner.absorbsOut.push(absorbAction);
+          destUnit.absorbsIn.push(absorbAction);
+        }
+        break;
       case LogEvent.SWING_DAMAGE:
       case LogEvent.RANGE_DAMAGE:
       case LogEvent.SPELL_DAMAGE:

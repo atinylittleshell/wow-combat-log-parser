@@ -195,7 +195,7 @@ describe("parser tests", () => {
     });
 
     it("should count the lines it cant parse", () => {
-      expect(combats[0].linesNotParsedCount).toEqual(87);
+      expect(combats[0].linesNotParsedCount).toEqual(97);
     });
 
     it("should have aura events", () => {
@@ -281,6 +281,47 @@ describe("parser tests", () => {
     });
   });
 
+  describe("parsing a log with disc priest shields", () => {
+    let combats: ICombatData[] = [];
+    beforeAll(async () => {
+      [combats] = await parseLogFileAsync("disc_priest_2v2.txt");
+    });
+
+    it("should count spell absorbs correctly", () => {
+      // Absorbs out should only be counting shields the caster owns
+      Object.keys(combats[0].units).forEach(k => {
+        combats[0].units[k].absorbsOut.forEach(c => {
+          expect(c.shieldOwnerUnitId).toBe(k);
+        });
+      });
+
+      // Absorbs in should be counting all absorbs that prevent dmg on you
+      Object.keys(combats[0].units).forEach(k => {
+        combats[0].units[k].absorbsIn.forEach(c => {
+          expect(c.destUnitId).toBe(k);
+        });
+      });
+
+      // DearShark-Purge the Wicked->ExcellentGayal [LiberalWildebeest-Power Word: Shield]
+      // Purge the wicked is cast on ExcellentGayal and a shield cast by LiberalW absorbs it
+      const sampleCast =
+        combats[0].units["c66f15ba-fe98-405a-9cba-881612324e62"].absorbsOut[1];
+
+      expect(sampleCast.shieldSpellName).toBe("Power Word: Shield");
+      expect(sampleCast.destUnitName).toBe("ExcellentGayal");
+      expect(sampleCast.srcUnitName).toBe("DearShark");
+      expect(sampleCast.shieldOwnerUnitName).toBe("LiberalWildebeest");
+
+      // Total absorb by LiberalWildebeast
+      const totalAbs = combats[0].units[
+        "c66f15ba-fe98-405a-9cba-881612324e62"
+      ].absorbsOut.reduce((prev, cur) => prev + cur.absorbedAmount, 0);
+      expect(totalAbs).toBe(7587);
+
+      expect(combats).toHaveLength(1);
+    });
+  });
+
   describe("parsing a log with advanced logging", () => {
     let combats: ICombatData[] = [];
     beforeAll(async () => {
@@ -288,6 +329,15 @@ describe("parser tests", () => {
     });
 
     it("should return a single match", () => {
+      // 2/6 00:39:26.082  SPELL_ABSORBED,Player-57-0C9DA89C,"Gooldaan-Illidan",0x511,0x0,Player-57-0ABB28BC,"Raikendk-Illidan",0x10548,0x0,980,"Agony",0x20,Player-57-0ABB28BC,"Raikendk-Illidan",0x10548,0x0,324867,"Fleshcraft",0x20,32,32,nil
+
+      // console.log(
+      //   "out",
+      //   combats[0].units["Player-57-0ABB28BC"].absorbsOut.length,
+      //   combats[0].units["Player-57-0ABB28BC"].absorbsOut[8]
+      // );
+
+      // console.log("in", combats[0].units["Player-57-0ABB28BC"].absorbsIn[4]);
       expect(combats).toHaveLength(1);
     });
 
