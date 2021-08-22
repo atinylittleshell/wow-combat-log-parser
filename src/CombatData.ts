@@ -249,10 +249,16 @@ export class CombatData {
       case LogEvent.SPELL_ABSORBED:
         {
           const absorbAction = event as CombatAbsorbAction;
-          const shieldOwner = this.units[absorbAction.shieldOwnerUnitId];
-          if (shieldOwner === undefined) {
-            console.log(event, this.units);
+          // There is an edge case where the first spell of a match is a SPELL_ABSORBED
+          // event and the unit that cast the shield isn't registered in the units array yet
+          // In this case - add the unit to the list before attempting to push the event
+          if (!this.units[absorbAction.shieldOwnerUnitId]) {
+            this.units[absorbAction.shieldOwnerUnitId] = new CombatUnit(
+              absorbAction.shieldOwnerUnitId,
+              absorbAction.shieldOwnerUnitName
+            );
           }
+          const shieldOwner = this.units[absorbAction.shieldOwnerUnitId];
           shieldOwner.absorbsOut.push(absorbAction);
           destUnit.absorbsIn.push(absorbAction);
         }
