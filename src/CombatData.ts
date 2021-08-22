@@ -117,7 +117,7 @@ export class CombatData {
       const unitId: string = event.logLine.parameters[0].toString();
       const specId: string = event.info.specId;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      if ((<any>Object).values(CombatUnitSpec).indexOf(specId) >= 0) {
+      if ((Object as any).values(CombatUnitSpec).indexOf(specId) >= 0) {
         const spec = specId as CombatUnitSpec;
         let unitClass = CombatUnitClass.None;
         switch (spec) {

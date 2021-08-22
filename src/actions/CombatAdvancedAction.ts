@@ -44,7 +44,7 @@ export class CombatAdvancedAction extends CombatAction {
 
     const advancedLoggingOffset = logLine.event.startsWith("SWING_") ? 8 : 11;
 
-    this.advanced = logLine.parameters[advancedLoggingOffset] != 0;
+    this.advanced = logLine.parameters[advancedLoggingOffset] !== 0;
     this.advancedActorId = logLine.parameters[advancedLoggingOffset].toString();
     this.advancedOwnerId = logLine.parameters[
       advancedLoggingOffset + 1
