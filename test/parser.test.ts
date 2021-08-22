@@ -329,15 +329,6 @@ describe("parser tests", () => {
     });
 
     it("should return a single match", () => {
-      // 2/6 00:39:26.082  SPELL_ABSORBED,Player-57-0C9DA89C,"Gooldaan-Illidan",0x511,0x0,Player-57-0ABB28BC,"Raikendk-Illidan",0x10548,0x0,980,"Agony",0x20,Player-57-0ABB28BC,"Raikendk-Illidan",0x10548,0x0,324867,"Fleshcraft",0x20,32,32,nil
-
-      // console.log(
-      //   "out",
-      //   combats[0].units["Player-57-0ABB28BC"].absorbsOut.length,
-      //   combats[0].units["Player-57-0ABB28BC"].absorbsOut[8]
-      // );
-
-      // console.log("in", combats[0].units["Player-57-0ABB28BC"].absorbsIn[4]);
       expect(combats).toHaveLength(1);
     });
 
