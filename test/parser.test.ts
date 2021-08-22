@@ -195,7 +195,7 @@ describe("parser tests", () => {
     });
 
     it("should count the lines it cant parse", () => {
-      expect(combats[0].linesNotParsedCount).toEqual(97);
+      expect(combats[0].linesNotParsedCount).toEqual(87);
     });
 
     it("should have aura events", () => {
@@ -316,7 +316,7 @@ describe("parser tests", () => {
       const totalAbs = combats[0].units[
         "c66f15ba-fe98-405a-9cba-881612324e62"
       ].absorbsOut.reduce((prev, cur) => prev + cur.absorbedAmount, 0);
-      expect(totalAbs).toBe(7587);
+      expect(totalAbs).toBe(8413);
 
       expect(combats).toHaveLength(1);
     });

@@ -250,6 +250,9 @@ export class CombatData {
         {
           const absorbAction = event as CombatAbsorbAction;
           const shieldOwner = this.units[absorbAction.shieldOwnerUnitId];
+          if (shieldOwner === undefined) {
+            console.log(event, this.units);
+          }
           shieldOwner.absorbsOut.push(absorbAction);
           destUnit.absorbsIn.push(absorbAction);
         }

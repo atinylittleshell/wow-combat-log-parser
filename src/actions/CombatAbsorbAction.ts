@@ -24,6 +24,10 @@ export class CombatAbsorbAction extends CombatAction {
       throw new Error("event not supported");
     }
 
+    // tbc are 17/20, sl are 18/21
+    // 3 fields are missing for melee absorb events
+    const meleeAbsorbOffset = logLine.parameters.length < 20 ? 3 : 0;
+
     // 8/20 22:11:20.529 SPELL_ABSORBED,
     //                0                     1              2       3
     // ATTACKER: Player-1084-09FC4747,"Acèdin-TarrenMill",0x10548,0x0,
@@ -50,29 +54,39 @@ export class CombatAbsorbAction extends CombatAction {
     //  15    16                 17   18    19
     // 10901,"Power Word: Shield",0x2,1424,1518
 
-    // 5/24 11:56:30.749  SPELL_ABSORBED,
-    // Pet-0-4390-572-19853-17252-01004BFD4E,"Jhuuthun",0x1112,0x0,
-    // Player-4731-01DFE217,"Synthesizer-Earthfury",0x10548,0x0,
-    // Player-4726-0135B902,"Aetarius-Sulfuras",0x548,0x0,
-    // 10901,"Power Word: Shield",0x2,163,215
+    // 17 - melee - tbc
+    // 5/24 11:44:30.749  SPELL_ABSORBED,
+    // Pet-0-4401-559-20609-17252-01004BFD4E,"Jhuuthun",0x1148,0x0,
+    // Player-4399-0130E5C1,"Blury-Kurinnaxx",0x512,0x0,
+    // Player-4399-0130E5C1,"Blury-Kurinnaxx",0x512,0x0,
+    // 13033,"Ice Barrier",0x10,152,192
 
-    // 5/24 11:56:34.833  SPELL_ABSORBED,
-    // Player-4395-01C5EEA8,"Assinoth-Whitemane",0x511,0x0,
-    // Player-4731-01DFE217,"Synthesizer-Earthfury",0x10548,0x0,
-    // 17348,"Hemorrhage",0x1,
-    // Player-4731-01DFE217,"Synthesizer-Earthfury",0x10548,0x0,10193,"Mana Shield",0x40,348,432
+    // 18 - melee - SL
+    // 2/6 00:40:06.214  SPELL_ABSORBED,
+    // Creature-0-3886-1505-13080-26125-00001E55D5,"Risen Ghoul",0x2148,0x0,
+    // Player-57-0A628E42,"Teckkno-Illidan",0x512,0x0,
+    // Player-57-0A628E42,"Teckkno-Illidan",0x512,0x0,
+    // 17,"Power Word: Shield",0x2,70,156,nil
 
-    this.shieldOwnerUnitId = logLine.parameters[11].toString();
-    this.shieldOwnerUnitName = parseQuotedName(logLine.parameters[12]);
-    this.shieldOwnerUnitFlags = logLine.parameters[13];
+    this.shieldOwnerUnitId = logLine.parameters[
+      11 - meleeAbsorbOffset
+    ].toString();
+    this.shieldOwnerUnitName = parseQuotedName(
+      logLine.parameters[12 - meleeAbsorbOffset]
+    );
+    this.shieldOwnerUnitFlags = logLine.parameters[13 - meleeAbsorbOffset];
 
-    this.shieldSpellId = logLine.parameters[15].toString();
-    this.shieldSpellName = parseQuotedName(logLine.parameters[16]);
-    this.shieldSpellSchool = logLine.parameters[17].toString();
+    this.shieldSpellId = logLine.parameters[15 - meleeAbsorbOffset].toString();
+    this.shieldSpellName = parseQuotedName(
+      logLine.parameters[16 - meleeAbsorbOffset]
+    );
+    this.shieldSpellSchool = logLine.parameters[
+      17 - meleeAbsorbOffset
+    ].toString();
 
-    this.absorbedAmount = logLine.parameters[18];
+    this.absorbedAmount = logLine.parameters[18 - meleeAbsorbOffset];
     if (wowVersion === "shadowlands") {
-      this.critical = logLine.parameters[20] === "1";
+      this.critical = logLine.parameters[20 - meleeAbsorbOffset] === "1";
     } else {
       this.critical = null;
     }

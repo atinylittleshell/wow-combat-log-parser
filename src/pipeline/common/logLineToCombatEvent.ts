@@ -32,8 +32,12 @@ export const logLineToCombatEvent = (wowVersion: WowVersion) => {
           case LogEvent.SPELL_HEAL:
           case LogEvent.SPELL_PERIODIC_HEAL:
             return new CombatHpUpdateAction(logLine, wowVersion);
-          case LogEvent.SPELL_ABSORBED:
-            return new CombatAbsorbAction(logLine, wowVersion);
+          case LogEvent.SPELL_ABSORBED: {
+            const act = new CombatAbsorbAction(logLine, wowVersion);
+            // console.log(logLine.parameters.length, "good", wowVersion);
+            // console.log(logLine.raw);
+            return act;
+          }
           case LogEvent.SPELL_AURA_APPLIED:
           case LogEvent.SPELL_AURA_APPLIED_DOSE:
           case LogEvent.SPELL_AURA_REFRESH:
@@ -60,6 +64,17 @@ export const logLineToCombatEvent = (wowVersion: WowVersion) => {
             return logLine.raw;
         }
       } catch (e) {
+        // console.log("=========================");
+
+        // console.log(
+        //   logLine.parameters.length,
+        //   "bad",
+        //   wowVersion,
+        //   logLine.parameters[8],
+        //   logLine.parameters[9]
+        // );
+        // console.log(e);
+        // console.log(logLine.raw);
         return logLine.raw;
       }
     })
