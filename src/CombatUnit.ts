@@ -27,7 +27,9 @@ export interface ICombatUnit {
   healIn: CombatHpUpdateAction[];
   healOut: CombatHpUpdateAction[];
 
+  // absorbsIn counts all absorbs that prevented damage on the ICombatUnit
   absorbsIn: CombatAbsorbAction[];
+  // absorbsOut counts shields the ICombatUnit casted
   absorbsOut: CombatAbsorbAction[];
 
   actionIn: ILogLine[];
