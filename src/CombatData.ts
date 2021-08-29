@@ -261,6 +261,7 @@ export class CombatData {
           const shieldOwner = this.units[absorbAction.shieldOwnerUnitId];
           shieldOwner.absorbsOut.push(absorbAction);
           destUnit.absorbsIn.push(absorbAction);
+          srcUnit.absorbsDamaged.push(absorbAction);
         }
         break;
       case LogEvent.SWING_DAMAGE:

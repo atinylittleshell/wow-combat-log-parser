@@ -31,6 +31,8 @@ export interface ICombatUnit {
   absorbsIn: CombatAbsorbAction[];
   // absorbsOut counts shields the ICombatUnit casted
   absorbsOut: CombatAbsorbAction[];
+  // absorbsDamaged counts attacks that ICombatUnit casted that hit shields instead of hp
+  absorbsDamaged: CombatAbsorbAction[];
 
   actionIn: ILogLine[];
   actionOut: ILogLine[];
@@ -60,6 +62,7 @@ export class CombatUnit implements ICombatUnit {
   public healOut: CombatHpUpdateAction[] = [];
   public absorbsIn: CombatAbsorbAction[] = [];
   public absorbsOut: CombatAbsorbAction[] = [];
+  public absorbsDamaged: CombatAbsorbAction[] = [];
   public actionIn: ILogLine[] = [];
   public actionOut: ILogLine[] = [];
   public auraEvents: CombatAction[] = [];

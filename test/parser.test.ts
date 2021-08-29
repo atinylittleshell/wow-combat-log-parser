@@ -318,6 +318,16 @@ describe("parser tests", () => {
       ].absorbsOut.reduce((prev, cur) => prev + cur.absorbedAmount, 0);
       expect(totalAbs).toBe(8413);
 
+      // Total absorb-damage by DearShark
+      const totalDamageAbs = combats[0].units[
+        "d745035e-8d20-4ba5-8e0a-3567f4172fa0"
+      ].absorbsDamaged.reduce((prev, cur) => prev + cur.absorbedAmount, 0);
+      expect(totalDamageAbs).toBe(4576);
+      expect(
+        combats[0].units["d745035e-8d20-4ba5-8e0a-3567f4172fa0"].absorbsDamaged
+          .length
+      ).toBe(12);
+
       expect(combats).toHaveLength(1);
     });
   });
