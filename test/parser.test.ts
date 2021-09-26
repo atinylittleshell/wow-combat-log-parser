@@ -7,6 +7,7 @@ import {
   CombatUnitPowerType,
   WoWCombatLogParser,
   CombatUnitClass,
+  CombatAbsorbAction,
 } from "../src";
 import { IMalformedCombatData } from "../src/CombatData";
 
@@ -285,6 +286,21 @@ describe("parser tests", () => {
     let combats: ICombatData[] = [];
     beforeAll(async () => {
       [combats] = await parseLogFileAsync("disc_priest_2v2.txt");
+    });
+
+    it("should allow consumers to examine all events", () => {
+      expect(combats).toHaveLength(1);
+      // Pattern 1: instanceof for events more specific than CombatAction
+      const absorbs = combats[0].events.filter(
+        e => e instanceof CombatAbsorbAction
+      ) as CombatAbsorbAction[];
+      expect(absorbs.filter(a => a.absorbedAmount > 200).length).toBe(27);
+
+      // Pattern 2: events by name from logline values
+      const castFailedEvents = combats[0].events.filter(
+        e => e.logLine.event === "SPELL_CAST_FAILED"
+      );
+      expect(castFailedEvents.length).toBe(4);
     });
 
     it("should count spell absorbs correctly", () => {

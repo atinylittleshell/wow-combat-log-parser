@@ -48,6 +48,7 @@ export interface ICombatData {
   linesNotParsedCount: number;
   startInfo: ArenaMatchStartInfo;
   endInfo: ArenaMatchEndInfo;
+  events: (CombatAction | CombatAdvancedAction)[];
 }
 
 export interface IMalformedCombatData {
@@ -72,6 +73,7 @@ export class CombatData {
   public hasAdvancedLogging = false;
   public rawLines: string[] = [];
   public linesNotParsedCount = 0;
+  public events: (CombatAction | CombatAdvancedAction)[] = [];
 
   private combatantMetadata: Map<string, ICombatantMetadata> = new Map<
     string,
@@ -111,6 +113,10 @@ export class CombatData {
 
     if (event.logLine.parameters.length < 8) {
       return;
+    }
+
+    if (event instanceof CombatAction) {
+      this.events.push(event);
     }
 
     if (event instanceof CombatantInfoAction) {
