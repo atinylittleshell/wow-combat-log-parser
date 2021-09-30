@@ -25,6 +25,7 @@ import {
 import { getUnitReaction, getUnitType } from "./utils";
 import { CombatAction } from "./actions/CombatAction";
 import { classMetadata } from "./classMetadata";
+import { CombatAbsorbAction } from "./actions/CombatAbsorbAction";
 
 const SPELL_ID_TO_CLASS_MAP = new Map<string, CombatUnitClass>(
   classMetadata.flatMap(cls => {
@@ -47,6 +48,7 @@ export interface ICombatData {
   linesNotParsedCount: number;
   startInfo: ArenaMatchStartInfo;
   endInfo: ArenaMatchEndInfo;
+  events: (CombatAction | CombatAdvancedAction)[];
 }
 
 export interface IMalformedCombatData {
@@ -71,6 +73,7 @@ export class CombatData {
   public hasAdvancedLogging = false;
   public rawLines: string[] = [];
   public linesNotParsedCount = 0;
+  public events: (CombatAction | CombatAdvancedAction)[] = [];
 
   private combatantMetadata: Map<string, ICombatantMetadata> = new Map<
     string,
@@ -112,11 +115,15 @@ export class CombatData {
       return;
     }
 
+    if (event instanceof CombatAction) {
+      this.events.push(event);
+    }
+
     if (event instanceof CombatantInfoAction) {
       const unitId: string = event.logLine.parameters[0].toString();
       const specId: string = event.info.specId;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      if ((<any>Object).values(CombatUnitSpec).indexOf(specId) >= 0) {
+      if ((Object as any).values(CombatUnitSpec).indexOf(specId) >= 0) {
         const spec = specId as CombatUnitSpec;
         let unitClass = CombatUnitClass.None;
         switch (spec) {
@@ -245,6 +252,24 @@ export class CombatData {
     }
 
     switch (event.logLine.event) {
+      case LogEvent.SPELL_ABSORBED:
+        {
+          const absorbAction = event as CombatAbsorbAction;
+          // There is an edge case where the first spell of a match is a SPELL_ABSORBED
+          // event and the unit that cast the shield isn't registered in the units array yet
+          // In this case - add the unit to the list before attempting to push the event
+          if (!this.units[absorbAction.shieldOwnerUnitId]) {
+            this.units[absorbAction.shieldOwnerUnitId] = new CombatUnit(
+              absorbAction.shieldOwnerUnitId,
+              absorbAction.shieldOwnerUnitName
+            );
+          }
+          const shieldOwner = this.units[absorbAction.shieldOwnerUnitId];
+          shieldOwner.absorbsOut.push(absorbAction);
+          destUnit.absorbsIn.push(absorbAction);
+          srcUnit.absorbsDamaged.push(absorbAction);
+        }
+        break;
       case LogEvent.SWING_DAMAGE:
       case LogEvent.RANGE_DAMAGE:
       case LogEvent.SPELL_DAMAGE:

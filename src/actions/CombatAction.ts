@@ -37,7 +37,17 @@ export class CombatAction {
     this.destUnitName = parseQuotedName(logLine.parameters[5]);
     this.destUnitFlags = logLine.parameters[6];
 
-    if (
+    if (logLine.event === "SPELL_ABSORBED") {
+      // SPELL_ABSORBED is kind of unique
+      // it holds absorbs for both spell and melee attacks
+      if (logLine.parameters.length < 20) {
+        this.spellId = null;
+        this.spellName = null;
+      } else {
+        this.spellId = logLine.parameters[8].toString();
+        this.spellName = parseQuotedName(logLine.parameters[9]);
+      }
+    } else if (
       logLine.event.startsWith("RANGE_") ||
       logLine.event.startsWith("SPELL_")
     ) {

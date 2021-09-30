@@ -7,6 +7,7 @@ import {
   CombatUnitPowerType,
   WoWCombatLogParser,
   CombatUnitClass,
+  CombatAbsorbAction,
 } from "../src";
 import { IMalformedCombatData } from "../src/CombatData";
 
@@ -278,6 +279,72 @@ describe("parser tests", () => {
 
     it("should count the lines it cant parse", () => {
       expect(malformedCombats[0].linesNotParsedCount).toEqual(1);
+    });
+  });
+
+  describe("parsing a log with disc priest shields", () => {
+    let combats: ICombatData[] = [];
+    beforeAll(async () => {
+      [combats] = await parseLogFileAsync("disc_priest_2v2.txt");
+    });
+
+    it("should allow consumers to examine all events", () => {
+      expect(combats).toHaveLength(1);
+      // Pattern 1: instanceof for events more specific than CombatAction
+      const absorbs = combats[0].events.filter(
+        e => e instanceof CombatAbsorbAction
+      ) as CombatAbsorbAction[];
+      expect(absorbs.filter(a => a.absorbedAmount > 200).length).toBe(27);
+
+      // Pattern 2: events by name from logline values
+      const castFailedEvents = combats[0].events.filter(
+        e => e.logLine.event === "SPELL_CAST_FAILED"
+      );
+      expect(castFailedEvents.length).toBe(4);
+    });
+
+    it("should count spell absorbs correctly", () => {
+      // Absorbs out should only be counting shields the caster owns
+      Object.keys(combats[0].units).forEach(k => {
+        combats[0].units[k].absorbsOut.forEach(c => {
+          expect(c.shieldOwnerUnitId).toBe(k);
+        });
+      });
+
+      // Absorbs in should be counting all absorbs that prevent dmg on you
+      Object.keys(combats[0].units).forEach(k => {
+        combats[0].units[k].absorbsIn.forEach(c => {
+          expect(c.destUnitId).toBe(k);
+        });
+      });
+
+      // DearShark-Purge the Wicked->ExcellentGayal [LiberalWildebeest-Power Word: Shield]
+      // Purge the wicked is cast on ExcellentGayal and a shield cast by LiberalW absorbs it
+      const sampleCast =
+        combats[0].units["c66f15ba-fe98-405a-9cba-881612324e62"].absorbsOut[1];
+
+      expect(sampleCast.shieldSpellName).toBe("Power Word: Shield");
+      expect(sampleCast.destUnitName).toBe("ExcellentGayal");
+      expect(sampleCast.srcUnitName).toBe("DearShark");
+      expect(sampleCast.shieldOwnerUnitName).toBe("LiberalWildebeest");
+
+      // Total absorb by LiberalWildebeast
+      const totalAbs = combats[0].units[
+        "c66f15ba-fe98-405a-9cba-881612324e62"
+      ].absorbsOut.reduce((prev, cur) => prev + cur.absorbedAmount, 0);
+      expect(totalAbs).toBe(8413);
+
+      // Total absorb-damage by DearShark
+      const totalDamageAbs = combats[0].units[
+        "d745035e-8d20-4ba5-8e0a-3567f4172fa0"
+      ].absorbsDamaged.reduce((prev, cur) => prev + cur.absorbedAmount, 0);
+      expect(totalDamageAbs).toBe(4576);
+      expect(
+        combats[0].units["d745035e-8d20-4ba5-8e0a-3567f4172fa0"].absorbsDamaged
+          .length
+      ).toBe(12);
+
+      expect(combats).toHaveLength(1);
     });
   });
 
