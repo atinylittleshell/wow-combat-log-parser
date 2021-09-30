@@ -2,6 +2,7 @@ import _ from "lodash";
 import { CombatAction } from "./actions/CombatAction";
 import { CombatAdvancedAction } from "./actions/CombatAdvancedAction";
 import { CombatHpUpdateAction } from "./actions/CombatHpUpdateAction";
+import { CombatAbsorbAction } from "./actions/CombatAbsorbAction";
 import {
   CombatUnitClass,
   CombatUnitReaction,
@@ -25,6 +26,14 @@ export interface ICombatUnit {
   damageOut: CombatHpUpdateAction[];
   healIn: CombatHpUpdateAction[];
   healOut: CombatHpUpdateAction[];
+
+  // absorbsIn counts all absorbs that prevented damage on the ICombatUnit
+  absorbsIn: CombatAbsorbAction[];
+  // absorbsOut counts shields the ICombatUnit casted
+  absorbsOut: CombatAbsorbAction[];
+  // absorbsDamaged counts attacks that ICombatUnit casted that hit shields instead of hp
+  absorbsDamaged: CombatAbsorbAction[];
+
   actionIn: ILogLine[];
   actionOut: ILogLine[];
   auraEvents: CombatAction[];
@@ -51,6 +60,9 @@ export class CombatUnit implements ICombatUnit {
   public damageOut: CombatHpUpdateAction[] = [];
   public healIn: CombatHpUpdateAction[] = [];
   public healOut: CombatHpUpdateAction[] = [];
+  public absorbsIn: CombatAbsorbAction[] = [];
+  public absorbsOut: CombatAbsorbAction[] = [];
+  public absorbsDamaged: CombatAbsorbAction[] = [];
   public actionIn: ILogLine[] = [];
   public actionOut: ILogLine[] = [];
   public auraEvents: CombatAction[] = [];

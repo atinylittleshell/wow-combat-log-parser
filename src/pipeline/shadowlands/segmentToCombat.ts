@@ -31,6 +31,7 @@ export const segmentToCombat = () => {
 
         if (combat.isWellFormed) {
           const plainCombatDataObject: ICombatData = {
+            events: combat.events,
             id: computeCanonicalHash(segment.lines),
             wowVersion: combat.wowVersion,
             isWellFormed: true,
