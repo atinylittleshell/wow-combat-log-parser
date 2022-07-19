@@ -1,6 +1,5 @@
 {
-  "version": "4.6.1",
-  "license": "MIT",
+  "version": "4.6.5",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
@@ -8,14 +7,14 @@
     "src"
   ],
   "engines": {
-    "node": ">=12"
+    "node": ">=14"
   },
   "scripts": {
     "start": "tsdx watch",
     "build": "tsdx build",
     "test": "tsdx test",
     "lint": "eslint . --ext .ts,.tsx",
-    "prepare": "tsdx build",
+    "prepare": "yarn build",
     "size": "size-limit",
     "analyze": "size-limit --why",
     "publish:no-bump": "git checkout publish-to-npm && git pull && git merge --no-edit --no-ff main && git push && git checkout main",

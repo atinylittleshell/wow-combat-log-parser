@@ -1,6 +1,7 @@
 import _ from "lodash";
 import { pipe } from "rxjs";
 import { filter, map } from "rxjs/operators";
+
 import {
   CombatData,
   ICombatData,

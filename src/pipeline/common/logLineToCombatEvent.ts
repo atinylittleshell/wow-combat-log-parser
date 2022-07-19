@@ -1,13 +1,14 @@
 import { pipe } from "rxjs";
 import { map } from "rxjs/operators";
+
 import { ArenaMatchEnd } from "../../actions/ArenaMatchEnd";
 import { ArenaMatchStart } from "../../actions/ArenaMatchStart";
 import { CombatAbsorbAction } from "../../actions/CombatAbsorbAction";
 import { CombatAction } from "../../actions/CombatAction";
 import { CombatAdvancedAction } from "../../actions/CombatAdvancedAction";
-import { CombatantInfoAction } from "../../actions/CombatantInfoAction";
 import { CombatExtraSpellAction } from "../../actions/CombatExtraSpellAction";
 import { CombatHpUpdateAction } from "../../actions/CombatHpUpdateAction";
+import { CombatantInfoAction } from "../../actions/CombatantInfoAction";
 import { CombatEvent, ILogLine, LogEvent, WowVersion } from "../../types";
 
 export const logLineToCombatEvent = (wowVersion: WowVersion) => {

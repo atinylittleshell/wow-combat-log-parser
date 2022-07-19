@@ -1,8 +1,9 @@
 import _ from "lodash";
+
+import { CombatAbsorbAction } from "./actions/CombatAbsorbAction";
 import { CombatAction } from "./actions/CombatAction";
 import { CombatAdvancedAction } from "./actions/CombatAdvancedAction";
 import { CombatHpUpdateAction } from "./actions/CombatHpUpdateAction";
-import { CombatAbsorbAction } from "./actions/CombatAbsorbAction";
 import {
   CombatUnitClass,
   CombatUnitReaction,

@@ -1,6 +1,7 @@
-import { CombatAction } from "./CombatAction";
-import { CombatUnitPowerType, ILogLine, WowVersion } from "../types";
 import _ from "lodash";
+
+import { CombatUnitPowerType, ILogLine, WowVersion } from "../types";
+import { CombatAction } from "./CombatAction";
 
 export interface ICombatUnitPower {
   type: CombatUnitPowerType;

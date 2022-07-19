@@ -1,4 +1,5 @@
 import { Subject } from "rxjs";
+
 import { ICombatData, IMalformedCombatData } from "../../CombatData";
 import { logLineToCombatEvent } from "../common/logLineToCombatEvent";
 import { stringToLogLine } from "../common/stringToLogLine";

@@ -1,15 +1,19 @@
 /* eslint-disable no-fallthrough */
 import _ from "lodash";
 import { uniqueId } from "lodash";
+
+import { CombatUnit, ICombatUnit } from "./CombatUnit";
+import { ArenaMatchEnd, ArenaMatchEndInfo } from "./actions/ArenaMatchEnd";
 import {
   ArenaMatchStart,
   ArenaMatchStartInfo,
 } from "./actions/ArenaMatchStart";
-import { ArenaMatchEnd, ArenaMatchEndInfo } from "./actions/ArenaMatchEnd";
-import { CombatantInfoAction } from "./actions/CombatantInfoAction";
+import { CombatAbsorbAction } from "./actions/CombatAbsorbAction";
+import { CombatAction } from "./actions/CombatAction";
 import { CombatAdvancedAction } from "./actions/CombatAdvancedAction";
 import { CombatHpUpdateAction } from "./actions/CombatHpUpdateAction";
-import { CombatUnit, ICombatUnit } from "./CombatUnit";
+import { CombatantInfoAction } from "./actions/CombatantInfoAction";
+import { classMetadata } from "./classMetadata";
 import {
   CombatEvent,
   CombatResult,
@@ -23,9 +27,6 @@ import {
   WowVersion,
 } from "./types";
 import { getUnitReaction, getUnitType } from "./utils";
-import { CombatAction } from "./actions/CombatAction";
-import { classMetadata } from "./classMetadata";
-import { CombatAbsorbAction } from "./actions/CombatAbsorbAction";
 
 const SPELL_ID_TO_CLASS_MAP = new Map<string, CombatUnitClass>(
   classMetadata.flatMap(cls => {

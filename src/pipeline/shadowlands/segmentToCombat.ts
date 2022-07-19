@@ -1,12 +1,13 @@
 import { pipe } from "rxjs";
 import { filter, map } from "rxjs/operators";
-import { ArenaMatchEnd } from "../../actions/ArenaMatchEnd";
-import { ArenaMatchStart } from "../../actions/ArenaMatchStart";
+
 import {
   CombatData,
   ICombatData,
   IMalformedCombatData,
 } from "../../CombatData";
+import { ArenaMatchEnd } from "../../actions/ArenaMatchEnd";
+import { ArenaMatchStart } from "../../actions/ArenaMatchStart";
 import { ICombatEventSegment } from "../../types";
 import { computeCanonicalHash, nullthrows } from "../../utils";
 import { isNonNull } from "../common/utils";

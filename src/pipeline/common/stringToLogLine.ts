@@ -1,6 +1,7 @@
 import moment from "moment";
 import { pipe } from "rxjs";
 import { map } from "rxjs/operators";
+
 import { parseWowToJSON } from "../../jsonparse";
 import { ILogLine, LogEvent } from "../../types";
 

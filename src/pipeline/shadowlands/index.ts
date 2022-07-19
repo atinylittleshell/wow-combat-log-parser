@@ -1,9 +1,10 @@
 import { Subject } from "rxjs";
+
 import { ICombatData, IMalformedCombatData } from "../../CombatData";
-import { combatEventsToSegment } from "./combatEventsToSegment";
 import { logLineToCombatEvent } from "../common/logLineToCombatEvent";
-import { segmentToCombat } from "./segmentToCombat";
 import { stringToLogLine } from "../common/stringToLogLine";
+import { combatEventsToSegment } from "./combatEventsToSegment";
+import { segmentToCombat } from "./segmentToCombat";
 
 export const createShadowlandsParserPipeline = (
   onValidCombat: (combat: ICombatData) => void,
