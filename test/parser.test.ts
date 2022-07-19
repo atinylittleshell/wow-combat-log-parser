@@ -1,5 +1,6 @@
-import path from "path";
 import lineReader from "line-reader";
+import path from "path";
+
 import {
   CombatResult,
   CombatUnitSpec,

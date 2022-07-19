@@ -1,9 +1,10 @@
-import path from "path";
 import fs from "fs";
+import path from "path";
 import { from } from "rxjs";
-import { dedup } from "../src/pipeline/tbc/dedup";
-import { stringToLogLine } from "../src/pipeline/common/stringToLogLine";
+
 import { CombatHpUpdateAction } from "../src/actions/CombatHpUpdateAction";
+import { stringToLogLine } from "../src/pipeline/common/stringToLogLine";
+import { dedup } from "../src/pipeline/tbc/dedup";
 import { ILogLine } from "../src/types";
 
 describe("pipeline component tests", () => {

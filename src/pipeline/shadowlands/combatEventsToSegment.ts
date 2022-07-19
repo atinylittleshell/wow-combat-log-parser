@@ -1,4 +1,5 @@
 import { Observable } from "rxjs";
+
 import { ArenaMatchEnd } from "../../actions/ArenaMatchEnd";
 import { ArenaMatchStart } from "../../actions/ArenaMatchStart";
 import { CombatEvent, ICombatEventSegment } from "../../types";

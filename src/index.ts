@@ -1,8 +1,10 @@
 import EventEmitter from "eventemitter3";
+
 import { createShadowlandsParserPipeline } from "./pipeline/shadowlands";
 import { createTBCParserPipeline } from "./pipeline/tbc";
 import { WowVersion } from "./types";
 import { PIPELINE_FLUSH_SIGNAL } from "./utils";
+
 export { ICombatData, IMalformedCombatData } from "./CombatData";
 export { ICombatUnit } from "./CombatUnit";
 export * from "./types";
